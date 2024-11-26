@@ -1,0 +1,14 @@
+.theme-moonwave-light {
+    --base-accent: oklch(64% 0.2 262);
+    --base-accent-bg: oklch(70% 0.2 262 / 24%);
+    --base-accent-fg: oklch(54% 0.2 262);
+    --base-bg-primary: oklch(97% 0.004 90);
+    --base-bg-secondary: oklch(95% 0.004 90);
+    --base-bg-tertiary: oklch(90% 0.004 90);
+    --base-bg-quaternary: oklch(86% 0.004 90 / 50%);
+    --base-fg-primary: oklch(20% 0.005 286);
+    --base-fg-secondary: oklch(65% 0.005 286);
+    --base-fg-tertiary: oklch(82% 0.005 286);
+    --dialog-overlay-bg: oklch(92% 0.004 90 / 50%);
+    --sidebar-input-bg: oklch(92% 0.004 90);
+}

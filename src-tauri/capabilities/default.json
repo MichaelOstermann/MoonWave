@@ -1,0 +1,40 @@
+{
+    "$schema": "../gen/schemas/desktop-schema.json",
+    "identifier": "default",
+    "description": "Capability for the main window",
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "core:default",
+        "updater:default",
+        "process:default",
+        "dialog:default",
+        "store:default",
+        "core:window:allow-start-dragging",
+        "core:window:allow-set-size",
+        "core:window:allow-minimize",
+        "core:window:allow-toggle-maximize",
+        "core:window:allow-is-fullscreen",
+        "core:window:allow-set-fullscreen",
+        "core:window:allow-show",
+        "fs:allow-temp-write",
+        "fs:allow-appdata-write",
+        "fs:allow-audio-read-recursive",
+        {
+            "identifier": "shell:allow-execute",
+            "allow": [
+                {
+                    "name": "openssl",
+                    "cmd": "openssl",
+                    "args": ["sha256", { "validator": ".+" }]
+                },
+                {
+                    "name": "bin/ffmpeg",
+                    "sidecar": true,
+                    "args": true
+                }
+            ]
+        }
+    ]
+}
