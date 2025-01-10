@@ -20,6 +20,7 @@ export const playTrack = action(async ({ trackId, view }: {
 
     if ($playingTrackId.value === trackId) {
         seekTo(0)
+        audio.play()
         onPlaybackSuccess({ track, view: nextPlayingView })
         return true
     }
