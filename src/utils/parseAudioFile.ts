@@ -7,45 +7,45 @@ import { indexBy } from './data/indexBy'
 import { merge } from './data/merge'
 import { replace } from './data/replace'
 import { extensions } from './extensions'
-import { getTrackPathRel } from './getTrackPathRel'
 
-export async function parseAudioFile(absPath: string, ctx: {
+export async function parseAudioFile(opts: {
     date: string
+    relPath: string
+    absPath: string
     tracksByFilehash: Record<string, Track>
     tracksByAudiohash: Record<string, Track>
 }): Promise<Track | null> {
-    const relPath = await getTrackPathRel(absPath)
-    const filehash = await getFilehash(absPath)
+    const filehash = await getFilehash(opts.absPath)
 
-    const trackByFilehash = ctx.tracksByFilehash[filehash]
+    const trackByFilehash = opts.tracksByFilehash[filehash]
     if (trackByFilehash) {
-        const track = merge(trackByFilehash, { path: relPath })
+        const track = merge(trackByFilehash, { path: opts.relPath })
         $tracks.map(replace(trackByFilehash, track))
         return track
     }
 
     const [audiohash, metadata] = await Promise.all([
-        getAudiohash(absPath),
-        getMetadata(absPath),
+        getAudiohash(opts.absPath),
+        getMetadata(opts.absPath),
     ])
 
-    const trackByAudioHash = ctx.tracksByAudiohash[audiohash]
+    const trackByAudioHash = opts.tracksByAudiohash[audiohash]
     if (trackByAudioHash) {
-        const track = merge(trackByAudioHash, { ...metadata, filehash, path: relPath })
+        const track = merge(trackByAudioHash, { ...metadata, filehash, path: opts.relPath })
         $tracks.map(replace(trackByAudioHash, track))
         return track
     }
 
-    const mimetype = await getMimeType(absPath)
+    const mimetype = await getMimeType(opts.absPath)
     if (!mimetype.startsWith('audio/')) return null
 
     const track = {
-        path: relPath,
+        path: opts.relPath,
         id: nanoid(10),
         mimetype,
         filehash,
         audiohash,
-        addedAt: ctx.date,
+        addedAt: opts.date,
         ...metadata,
     }
 
@@ -53,18 +53,26 @@ export async function parseAudioFile(absPath: string, ctx: {
     return track
 }
 
-export async function parseAudioFiles(absPaths: string[], onProgress: () => void): Promise<Set<string>> {
+export async function parseAudioFiles(opts: {
+    libraryPath: string
+    relPaths: string[]
+    onProgress: () => void
+}): Promise<Set<string>> {
     const date = new Date().toISOString()
     const tracksByFilehash = indexBy($tracks.value, t => t.filehash)
     const tracksByAudiohash = indexBy($tracks.value, t => t.audiohash)
-    const ctx = { tracksByFilehash, tracksByAudiohash, date }
-
     const trackIds = new Set<string>()
 
-    for (const absPath of absPaths) {
-        const track = await parseAudioFile(absPath, ctx).catch(() => null)
+    for (const relPath of opts.relPaths) {
+        const track = await parseAudioFile({
+            date,
+            absPath: `${opts.libraryPath}/${relPath}`,
+            relPath,
+            tracksByFilehash,
+            tracksByAudiohash,
+        }).catch(() => null)
         if (track) trackIds.add(track.id)
-        onProgress()
+        opts.onProgress()
     }
 
     return trackIds
