@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { pipeInto } from 'ts-functional-pipe'
 import { match } from 'ts-pattern'
 
-const barHeight = 6
+const barHeight = 8
 const barWidth = 64
 const knobSize = 14
 
@@ -39,10 +39,8 @@ export function VolumeControls(): ReactNode {
 
     useEffect(() => {
         if (!isSeeking) return
-        const left = barLeft + (barHeight / 2)
-        const width = barWidth - barHeight
         const volume = pipeInto(
-            (mouseX - left) / width,
+            (mouseX - barLeft) / barWidth,
             v => Math.max(0, v),
             v => Math.min(1, v),
             v => v.toFixed(2),
@@ -58,7 +56,8 @@ export function VolumeControls(): ReactNode {
                 <Icon className="size-3.5" />
             </Button>
             <div
-                className="flex h-full items-center px-2"
+                data-seeking={isSeeking}
+                className="group flex h-full items-center px-2"
                 onContextMenu={evt => evt.preventDefault()}
                 onMouseDown={(evt) => {
                     const bounds = ref.current?.getBoundingClientRect()
@@ -70,17 +69,16 @@ export function VolumeControls(): ReactNode {
             >
                 <div
                     ref={ref}
-                    className="relative flex h-[--height] items-center justify-end rounded-full bg-[--volume-bar-bg]"
+                    className="relative flex h-[--bar-height] items-center justify-end rounded-full bg-[--volume-bar-bg]"
                     style={{
                         'width': barWidth,
-                        'height': barHeight,
+                        '--bar-height': `${barHeight}px`,
                         '--knob-size': `${knobSize}px`,
-                        '--knob-offset': `${barHeight / 2}px`,
-                        '--knob-position': `${volume * (barWidth - barHeight)}px`,
+                        '--knob-position': `${volume * barWidth}px`,
                     }}
                 >
-                    <div className="absolute left-[--knob-offset] flex translate-x-[--knob-position] items-center justify-center rounded-full">
-                        <div className="absolute size-[--knob-size] rounded-full bg-[--volume-knob-bg]" />
+                    <div className="absolute left-0 flex translate-x-[--knob-position] items-center justify-center rounded-full">
+                        <div className="absolute size-[--bar-height] rounded-full bg-[--volume-knob-bg] transition-all group-hover:size-[--knob-size] group-data-[seeking=true]:size-[--knob-size]" />
                     </div>
                 </div>
             </div>
