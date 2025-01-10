@@ -2,9 +2,8 @@ import type { Track } from '@app/types'
 import { $playlistsToTracksByPlaylistId, $tracksById, $tracksFilter } from '@app/state/state'
 import { pipeInto } from 'ts-functional-pipe'
 import { applyFilterToTracks } from './applyFilterToTracks'
-import { applyOrderToTracks } from './applyOrderToTracks'
-import { getOrderForPlaylist } from './getOrderForPlaylist'
 import { removeUnsupportedTracks } from './removeUnsupportedTracks'
+import { sortView } from './sortTracks'
 
 export function getTracksForPlaylist(playlistId: string, options?: { applyFilter: boolean }): Track[] {
     return pipeInto(
@@ -16,6 +15,6 @@ export function getTracksForPlaylist(playlistId: string, options?: { applyFilter
         tracks => removeUnsupportedTracks(tracks),
         tracks => options?.applyFilter && $tracksFilter.value
             ? applyFilterToTracks(tracks, $tracksFilter.value)
-            : applyOrderToTracks(tracks, getOrderForPlaylist(playlistId)),
+            : sortView(tracks, { name: 'PLAYLIST', value: playlistId }),
     )
 }

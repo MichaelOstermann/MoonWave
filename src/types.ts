@@ -3,10 +3,10 @@ export type Mode =
     | 'REPEAT'
     | 'SHUFFLE'
 
-export type Order = [
-    'ADDED_AT' | 'TITLE' | 'DATE' | 'ALBUM' | 'ARTIST' | 'DURATION' | 'TRACK_NR' | 'DISK_NR',
-    'ASC' | 'DESC',
-]
+export type Sort = {
+    by: 'TITLE' | 'ARTIST' | 'ALBUM' | 'DURATION'
+    order: 'ASC' | 'DESC'
+}
 
 export type FocusedView =
     | 'MAIN'
@@ -43,7 +43,7 @@ export type Playlist = {
     addedAt: string
     title: string
     mode?: Mode
-    order?: Order[]
+    sort?: Sort
 }
 
 export type PlaylistToTrack = {
@@ -55,10 +55,17 @@ export type PlaylistToTrack = {
 export type Config = {
     // TODO
     libraryPath?: string
-    modes?: {
-        library?: Mode
-        recentlyAdded?: Mode
-        unsorted?: Mode
+    library?: {
+        mode?: Mode
+        sort?: Sort
+    }
+    recentlyAdded?: {
+        mode?: Mode
+        sort?: Sort
+    }
+    unsorted?: {
+        mode?: Mode
+        sort?: Sort
     }
     // TODO
     themeMode?: ThemeMode

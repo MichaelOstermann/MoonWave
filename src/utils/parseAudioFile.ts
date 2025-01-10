@@ -10,6 +10,7 @@ import { extensions } from './extensions'
 import { getTrackPathRel } from './getTrackPathRel'
 
 export async function parseAudioFile(absPath: string, ctx: {
+    date: string
     tracksByFilehash: Record<string, Track>
     tracksByAudiohash: Record<string, Track>
 }): Promise<Track | null> {
@@ -44,7 +45,7 @@ export async function parseAudioFile(absPath: string, ctx: {
         mimetype,
         filehash,
         audiohash,
-        addedAt: new Date().toISOString(),
+        addedAt: ctx.date,
         ...metadata,
     }
 
@@ -53,9 +54,10 @@ export async function parseAudioFile(absPath: string, ctx: {
 }
 
 export async function parseAudioFiles(absPaths: string[], onProgress: () => void): Promise<Set<string>> {
+    const date = new Date().toISOString()
     const tracksByFilehash = indexBy($tracks.value, t => t.filehash)
     const tracksByAudiohash = indexBy($tracks.value, t => t.audiohash)
-    const ctx = { tracksByFilehash, tracksByAudiohash }
+    const ctx = { tracksByFilehash, tracksByAudiohash, date }
 
     const trackIds = new Set<string>()
 
