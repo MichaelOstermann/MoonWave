@@ -37,6 +37,8 @@ const h = createHotkeys(config => config
             || ($focusedView.value === binding.context.view && $showCommandMenu.value === false)
     })))
 
+addShortcuts(h, ['cmd+shift+r'], () => window.location.reload())
+
 addShortcuts(h, shortcuts.showCmdMenu, () => $showCommandMenu.map(v => !v))
 addShortcuts(h, shortcuts.createPlaylist, createPlaylist)
 addShortcuts(h, shortcuts.syncLibrary, syncLibrary)

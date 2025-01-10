@@ -56,6 +56,7 @@ export function CommandMenu(): ReactNode {
                 <Command.Input
                     placeholder="Search"
                     className="h-12 w-full bg-transparent pl-10 pr-4 text-sm outline-none placeholder:text-[--input-placeholder-fg]"
+                    onContextMenu={evt => evt.stopPropagation()}
                 />
             </div>
             <Command.List

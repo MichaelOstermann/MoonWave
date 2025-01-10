@@ -9,7 +9,10 @@ export function App() {
     useMountEffect(bootstrap)
 
     return (
-        <div className="app fixed inset-0 flex overflow-hidden">
+        <div
+            className="app fixed inset-0 flex overflow-hidden"
+            onContextMenu={evt => evt.preventDefault()}
+        >
             <CommandMenu />
             <Sidebar />
             <Main />
