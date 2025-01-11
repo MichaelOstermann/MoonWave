@@ -4,7 +4,8 @@ import { useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface SidebarItemProps extends ComponentProps<'div'> {
-    isActive: boolean
+    isActive?: boolean
+    isPlaying?: boolean
     hasMenu?: boolean
     isEditing?: boolean
     isDropTarget?: boolean
@@ -12,6 +13,7 @@ interface SidebarItemProps extends ComponentProps<'div'> {
 
 export function SidebarItem({
     isActive,
+    isPlaying,
     hasMenu,
     isEditing,
     isDropTarget,
@@ -39,7 +41,8 @@ export function SidebarItem({
             ref={ref}
             className={twMerge(
                 'flex h-8 shrink-0 items-center gap-x-1.5 rounded-md px-2.5 text-sm',
-                showBorder && 'shadow-[0_0_0_2px_var(--accent)]',
+                showBorder && 'shadow-[inset_0_0_0_2px_var(--accent)]',
+                !isEditing && isPlaying && 'text-[--list-active-fg]',
                 !showBorder && isActive && !isFocused && 'bg-[--list-selected-bg]',
                 !showBorder && isActive && isFocused && 'bg-[--list-active-bg] text-[--list-active-fg]',
                 className,

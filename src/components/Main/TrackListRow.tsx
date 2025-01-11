@@ -7,7 +7,7 @@ import { onDoubleClickTrack } from '@app/actions/onDoubleClickTrack'
 import { onDragStartTracks } from '@app/actions/onDragStartTracks'
 import { removeTracksFromPlaylist } from '@app/actions/removeTracksFromPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $focusedView, $playlists, $playlistsById, $tracksLSM, $view } from '@app/state/state'
+import { $focusedView, $playingTrackId, $playlists, $playlistsById, $tracksLSM, $view } from '@app/state/state'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionInGroup'
 import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGroup'
@@ -27,6 +27,7 @@ function Component({ row, idx, colStyles }: {
 }): ReactNode {
     const isEven = idx % 2 === 0
     const isFocused = $focusedView.value === 'MAIN'
+    const isPlayingTrack = useComputed(() => $playingTrackId.value === row.id).value
     const selected = useComputed(() => isSelected($tracksLSM.value, row.id)).value
     const firstSelected = useComputed(() => isFirstSelectionInGroup($tracksLSM.value, row.id)).value
     const lastSelected = useComputed(() => isLastSelectionInGroup($tracksLSM.value, row.id)).value
@@ -45,6 +46,7 @@ function Component({ row, idx, colStyles }: {
             onDoubleClick={() => onDoubleClickTrack(row.id)}
             className={twJoin(
                 'relative flex h-8 items-center text-sm leading-7',
+                isPlayingTrack && 'text-[--list-active-fg]',
                 isEven && !selected && 'bg-[--list-bg]',
                 selected && !isFocused && 'bg-[--list-selected-bg]',
                 selected && isFocused && 'bg-[--list-active-bg] text-[--list-active-fg]',

@@ -11,7 +11,8 @@ import { $dropPlaylistId, $editingPlaylistId, $isDraggingTracks, $playing, $play
 import { useMenu } from '@app/utils/menu'
 import { useComputed } from '@preact/signals-react'
 import { confirm } from '@tauri-apps/plugin-dialog'
-import { LucideListMusic, LucideVolume, LucideVolume2 } from 'lucide-react'
+import { LucideListMusic } from 'lucide-react'
+import { AudioWaveIcon } from '../AudioWaveIcon'
 import { SidebarItem } from './SidebarItem'
 import { SidebarItemIcon } from './SidebarItemIcon'
 
@@ -26,11 +27,13 @@ export function PlaylistItem({ id }: {
     const isDraggingTracks = $isDraggingTracks.value
     const isDropTarget = isDraggingTracks && $dropPlaylistId.value === playlist.id
 
-    const isPlayingPlaylist = useComputed(() => {
+    const isPlaylingPlaylist = useComputed(() => {
         const view = $playingView.value
-        if (view?.name !== 'PLAYLIST') return false
-        return view.value === playlist.id
+        return view?.name === 'PLAYLIST'
+            && view.value === id
     }).value
+
+    const showAudioWaveIcon = isPlaylingPlaylist && $playing.value
 
     const menu = useMenu([
         { text: 'Create Playlist', action: createPlaylist },
@@ -52,6 +55,7 @@ export function PlaylistItem({ id }: {
     return (
         <SidebarItem
             isActive={isActive}
+            isPlaying={isPlaylingPlaylist}
             hasMenu={menu.isOpen}
             isEditing={isEditing}
             isDropTarget={isDropTarget}
@@ -70,7 +74,12 @@ export function PlaylistItem({ id }: {
             }}
             onContextMenu={menu.show}
         >
-            <SidebarItemIcon icon={LucideListMusic} />
+            {showAudioWaveIcon && (
+                <AudioWaveIcon className="w-4 shrink-0" />
+            )}
+            {!showAudioWaveIcon && (
+                <SidebarItemIcon icon={LucideListMusic} />
+            )}
             <div className="flex shrink grow">
                 {!isEditing && (
                     <span className="truncate">
@@ -92,12 +101,6 @@ export function PlaylistItem({ id }: {
                     />
                 )}
             </div>
-            {isPlayingPlaylist && (
-                <SidebarItemIcon icon={$playing.value
-                    ? LucideVolume2
-                    : LucideVolume}
-                />
-            )}
         </SidebarItem>
     )
 }
