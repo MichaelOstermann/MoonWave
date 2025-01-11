@@ -5,6 +5,7 @@ import { syncLibrary } from '@app/actions/syncLibrary'
 import { toggleMode } from '@app/actions/toggleMode'
 import { toggleMute } from '@app/actions/toggleMute'
 import { togglePlayback } from '@app/actions/togglePlayback'
+import { shortcuts } from '@app/config/shortcuts'
 import { $focusedView, $showCommandMenu, $sidebarLSM, $tracksLSM } from '@app/state/state'
 import { createHotkeys, eventToHotkey, getExactBindings, resolveBindings } from '@monstermann/hotkeys'
 import { addShortcuts } from '@monstermann/hotkeys/vscode'
@@ -18,7 +19,6 @@ import { selectNext } from './lsm/utils/selectNext'
 import { selectPrev } from './lsm/utils/selectPrev'
 import { selectToBottom } from './lsm/utils/selectToBottom'
 import { selectToTop } from './lsm/utils/selectToTop'
-import { shortcuts } from './shortcuts'
 
 const h = createHotkeys(config => config
     .bindingContext<{ allowInDialogs?: boolean }>()

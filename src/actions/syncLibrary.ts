@@ -1,6 +1,6 @@
+import { extensions } from '@app/config/extensions'
 import { $showCommandMenu, $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
-import { isAudioPath } from '@app/utils/extensions'
 import { getLibraryPath } from '@app/utils/getLibraryPath'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action } from '@app/utils/signals/action'
@@ -46,7 +46,7 @@ async function getAudioFilePaths(libraryPath: string): Promise<string[]> {
         const dirEntries = await readDir(next).catch(() => [])
         for (const dirEntry of dirEntries) {
             const absPath = `${next}/${dirEntry.name}`
-            if (dirEntry.isFile && isAudioPath(dirEntry.name)) {
+            if (dirEntry.isFile && extensions.test(dirEntry.name)) {
                 paths.push(absPath.replace(`${libraryPath}/`, ''))
             }
             else if (dirEntry.isDirectory) {

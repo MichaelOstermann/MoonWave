@@ -1,4 +1,5 @@
 import type { Track } from '@app/types'
+import { extensions } from '@app/config/extensions'
 import { $tracks } from '@app/state/state'
 import { invoke } from '@tauri-apps/api/core'
 import { Command } from '@tauri-apps/plugin-shell'
@@ -6,7 +7,6 @@ import { nanoid } from 'nanoid'
 import { indexBy } from './data/indexBy'
 import { merge } from './data/merge'
 import { replace } from './data/replace'
-import { extensions } from './extensions'
 
 export async function parseAudioFile(opts: {
     date: string
