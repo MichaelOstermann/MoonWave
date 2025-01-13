@@ -9,11 +9,7 @@ import { removeFile } from '../fs/removeFile'
 import { writeJSON } from '../fs/writeJSON'
 
 export async function loadWaveform(track: Track): Promise<number[]> {
-    return pipeInto(
-        await loadPeaks(track).catch(() => []),
-        toLinearPeaks,
-        normalizePeaks,
-    )
+    return loadPeaks(track).catch(() => [])
 }
 
 async function loadPeaks(track: Track): Promise<number[]> {
@@ -30,32 +26,70 @@ async function loadPeaks(track: Track): Promise<number[]> {
         .then(() => readText(tmpPath))
         .then(parsePeaks)
         .then((peaks) => {
-            removeFile(tmpPath)
-            writeJSON(path, peaks, { baseDir: BaseDirectory.AppData })
+            if (peaks.length)
+                writeJSON(path, peaks, { baseDir: BaseDirectory.AppData })
             return peaks
         })
+        .finally(() => removeFile(tmpPath))
 }
 
 function parsePeaks(value: string): number[] {
-    return value
+    const peaks = value
         .split('\n')
         .filter(line => line.startsWith('lavfi.astats.Overall.Peak_level'))
-        .map(parsePeak)
-}
+        .map(line => line.split('=').at(1)!)
+        .map(line => Number.parseFloat(line) || 0)
 
-function parsePeak(value: string): number {
     return pipeInto(
-        value,
-        v => v.split('=').at(1)!,
-        v => v.endsWith('inf') ? 0 : Number.parseFloat(v),
+        peaks,
+        peaks => downsamplePeaks(peaks),
+        peaks => logToLinearPeaks(peaks),
+        peaks => upscalePeaks(peaks),
+        peaks => reducePrecision(peaks),
     )
 }
 
-function toLinearPeaks(peaks: number[]): number[] {
+// Downsample peaks for large tracks. It not only helps saving disk space,
+// it can also improve the quality of waveforms, making them look less uniform.
+function downsamplePeaks(peaks: number[]): number[] {
+    const targetSize = 8_000
+    const peaksSize = peaks.length
+
+    if (peaksSize <= targetSize) return peaks
+
+    const sampleSize = peaksSize / targetSize
+    const result: number[] = Array.from({ length: targetSize })
+    const clamp = (n: number) => Math.max(0, Math.min(n, peaksSize))
+
+    for (let i = 0; i < targetSize; i++) {
+        let max = 0
+        const start = clamp(Math.floor(i * sampleSize))
+        const end = clamp(Math.floor((i + 1) * sampleSize))
+
+        for (let j = start; j < end; j++) {
+            const n = peaks[j]!
+            if (Math.abs(n) > Math.abs(max)) max = n
+        }
+
+        result[i] = max
+    }
+
+    return result
+}
+
+// Translate peak data to a range between -1 and 1.
+function logToLinearPeaks(peaks: number[]): number[] {
     return peaks.map(peak => peak === 0 ? 0 : 10 ** (peak / 20))
 }
 
-function normalizePeaks(peaks: number[]): number[] {
+// Reduce the precision of peaks to save disk space, without decreasing the quality of the waveform.
+function reducePrecision(peaks: number[]): number[] {
+    const precision = 10_000
+    return peaks.map(peak => Math.round(peak * precision) / precision)
+}
+
+// Apply a virtual gain to make the waveform fill the available height.
+function upscalePeaks(peaks: number[]): number[] {
     const maxPeak = peaks.reduce((maxPeak, peak) => Math.max(maxPeak, Math.abs(peak)), 0)
     const upscale = 1 / maxPeak
     if (!Number.isFinite(upscale)) return peaks
