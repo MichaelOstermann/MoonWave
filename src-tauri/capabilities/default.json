@@ -10,7 +10,7 @@
         "updater:default",
         "process:default",
         "dialog:default",
-        "store:default",
+        "core:window:allow-set-theme",
         "core:window:allow-start-dragging",
         "core:window:allow-set-size",
         "core:window:allow-minimize",
@@ -20,7 +20,7 @@
         "core:window:allow-show",
         "core:window:allow-set-focus",
         "fs:allow-temp-write",
-        "fs:allow-appdata-write",
+        "fs:allow-appdata-write-recursive",
         "fs:allow-audio-read-recursive",
         {
             "identifier": "shell:allow-execute",

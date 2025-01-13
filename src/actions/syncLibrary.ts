@@ -1,10 +1,10 @@
 import { extensions } from '@app/config/extensions'
 import { $showCommandMenu, $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
-import { getLibraryPath } from '@app/utils/getLibraryPath'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action } from '@app/utils/signals/action'
 import { batch } from '@preact/signals-react'
+import { audioDir } from '@tauri-apps/api/path'
 import { readDir } from '@tauri-apps/plugin-fs'
 
 export const syncLibrary = action(async () => {
@@ -16,15 +16,13 @@ export const syncLibrary = action(async () => {
     $syncProgress.set(0)
     $syncGoal.set(0)
 
-    const libraryPath = await getLibraryPath()
-    const relPaths = await getAudioFilePaths(libraryPath)
+    const libraryPath = await audioDir()
+    const paths = await getAudioFilePaths(libraryPath)
 
-    $syncGoal.set(relPaths.length)
+    $syncGoal.set(paths.length)
 
     const trackIdsBefore = new Set($tracks.value.map(t => t.id))
-    const trackIdsAfter = await parseAudioFiles({
-        libraryPath,
-        relPaths,
+    const trackIdsAfter = await parseAudioFiles(paths, {
         onProgress: () => $syncProgress.value += 1,
     })
     const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)
@@ -47,7 +45,7 @@ async function getAudioFilePaths(libraryPath: string): Promise<string[]> {
         for (const dirEntry of dirEntries) {
             const absPath = `${next}/${dirEntry.name}`
             if (dirEntry.isFile && extensions.test(dirEntry.name)) {
-                paths.push(absPath.replace(`${libraryPath}/`, ''))
+                paths.push(absPath)
             }
             else if (dirEntry.isDirectory) {
                 queue.push(absPath)

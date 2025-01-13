@@ -10,7 +10,7 @@ import { toggleMute } from '@app/actions/toggleMute'
 import { togglePlayback } from '@app/actions/togglePlayback'
 import { shortcuts } from '@app/config/shortcuts'
 import { useEnterExitTransition } from '@app/hooks/useEnterExitTransition'
-import { $config, $hasNextTrack, $hasPrevTrack, $hasTrack, $muted, $playing, $showCommandMenu, $themeModeSystem } from '@app/state/state'
+import { $config, $hasNextTrack, $hasPrevTrack, $hasTrack, $muted, $playing, $showCommandMenu } from '@app/state/state'
 import { roundByDPR } from '@app/utils/roundByDPR'
 import { useEventListener, useWindowSize } from '@react-hookz/web'
 import { Command } from 'cmdk'
@@ -27,10 +27,6 @@ export function CommandMenu(): ReactNode {
     const top = roundByDPR((win.height - menu.height) / 2)
 
     useEventListener(window, 'mousedown', () => $showCommandMenu.set(false))
-
-    const canSwitchToLightMode = $themeModeSystem.value !== 'dark' && $config.value.themeMode !== 'light'
-    const canSwitchToDarkMode = $themeModeSystem.value !== 'dark' && $config.value.themeMode !== 'dark'
-    const canSwitchToSystemMode = ($config.value.themeMode || 'system') !== 'system'
 
     return (
         <Command.Dialog
@@ -198,19 +194,19 @@ export function CommandMenu(): ReactNode {
                     <Item
                         icon={LucideSun}
                         title="Light"
-                        enabled={canSwitchToLightMode}
+                        enabled={$config.value.themeMode !== 'light'}
                         onSelect={() => setThemeMode('light')}
                     />
                     <Item
                         icon={LucideMoon}
                         title="Dark"
-                        enabled={canSwitchToDarkMode}
+                        enabled={$config.value.themeMode !== 'dark'}
                         onSelect={() => setThemeMode('dark')}
                     />
                     <Item
                         icon={LucideSunMoon}
                         title="System"
-                        enabled={canSwitchToSystemMode}
+                        enabled={($config.value.themeMode || 'system') !== 'system'}
                         onSelect={() => setThemeMode('system')}
                     />
                 </Group>

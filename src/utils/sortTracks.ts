@@ -1,17 +1,15 @@
-import type { Sort, Track, View } from '@app/types'
-import { $config, $playlistsById } from '@app/state/state'
+import type { Track, View } from '@app/types'
 
 export function sortView(tracks: Track[], view: View): Track[] {
     switch (view.name) {
-        case 'LIBRARY': return sortLibrary(tracks, $config.value.library?.sort)
-        case 'RECENTLY_ADDED': return sortRecentlyAdded(tracks, $config.value.recentlyAdded?.sort)
-        case 'UNSORTED': return sortUnsorted(tracks, $config.value.unsorted?.sort)
-        case 'PLAYLIST': return sortPlaylist(tracks, $playlistsById(view.value).value?.sort)
+        case 'LIBRARY': return sortLibrary(tracks)
+        case 'RECENTLY_ADDED': return sortRecentlyAdded(tracks)
+        case 'UNSORTED': return sortUnsorted(tracks)
+        case 'PLAYLIST': return sortPlaylist(tracks)
     }
 }
 
-function sortLibrary(tracks: Track[], sort: Sort | undefined): Track[] {
-    if (sort) return sortBy(tracks, sort)
+function sortLibrary(tracks: Track[]): Track[] {
     return tracks.toSorted((a, b) => {
         return compareArtists(a, b, 'ASC')
             || compareAlbums(a, b, 'ASC')
@@ -21,8 +19,7 @@ function sortLibrary(tracks: Track[], sort: Sort | undefined): Track[] {
     })
 }
 
-function sortRecentlyAdded(tracks: Track[], sort: Sort | undefined): Track[] {
-    if (sort) return sortBy(tracks, sort)
+function sortRecentlyAdded(tracks: Track[]): Track[] {
     return tracks.toSorted((a, b) => {
         return compareAddedAt(a, b, 'DESC')
             || compareAlbums(a, b, 'ASC')
@@ -33,17 +30,14 @@ function sortRecentlyAdded(tracks: Track[], sort: Sort | undefined): Track[] {
     })
 }
 
-function sortUnsorted(tracks: Track[], sort: Sort | undefined): Track[] {
-    if (sort) return sortBy(tracks, sort)
-    return sortPlaylist(tracks, undefined)
+function sortUnsorted(tracks: Track[]): Track[] {
+    return sortPlaylist(tracks)
 }
 
-function sortPlaylist(tracks: Track[], sort: Sort | undefined): Track[] {
-    if (sort) return sortBy(tracks, sort)
-
+function sortPlaylist(tracks: Track[]): Track[] {
     const groups = new Map<string, {
         name: string
-        date: string
+        year: number
         tracks: Track[]
     }>()
 
@@ -52,12 +46,12 @@ function sortPlaylist(tracks: Track[], sort: Sort | undefined): Track[] {
         if (!group) {
             groups.set(track.album, {
                 name: track.album,
-                date: track.date || '',
+                year: track.year || -1,
                 tracks: [track],
             })
         }
         else {
-            group.date = group.date || track.date || ''
+            group.year = group.year || track.year || -1
             group.tracks.push(track)
         }
     }
@@ -77,8 +71,8 @@ function sortPlaylist(tracks: Track[], sort: Sort | undefined): Track[] {
         .from(groups.values())
         .filter(album => !leftoverAlbums.includes(album))
         .sort((aAlbum, bAlbum) => {
-            if (aAlbum.date < bAlbum.date) return -1
-            if (aAlbum.date > bAlbum.date) return 1
+            if (aAlbum.year < bAlbum.year) return -1
+            if (aAlbum.year > bAlbum.year) return 1
             return aAlbum.name.localeCompare(bAlbum.name)
         })
         .flatMap(album => album.tracks.sort((a, b) => {
@@ -97,27 +91,6 @@ function sortPlaylist(tracks: Track[], sort: Sort | undefined): Track[] {
     return albumTracks
 }
 
-function sortBy(tracks: Track[], sort: Sort): Track[] {
-    switch (sort?.by) {
-        case 'TITLE': return tracks.toSorted((a, b) => compareTitles(a, b, sort.order))
-        case 'DURATION': return tracks.toSorted((a, b) => compareDurations(a, b, sort.order))
-        case 'ARTIST': return tracks.toSorted((a, b) => {
-            return compareArtists(a, b, sort.order)
-                || compareAlbums(a, b, 'ASC')
-                || compareDiskNrs(a, b, 'ASC')
-                || compareTrackNrs(a, b, 'ASC')
-                || compareTitles(a, b, 'ASC')
-        })
-        case 'ALBUM': return tracks.toSorted((a, b) => {
-            return compareAlbums(a, b, sort.order)
-                || compareDiskNrs(a, b, 'ASC')
-                || compareTrackNrs(a, b, 'ASC')
-                || compareArtists(a, b, 'ASC')
-                || compareTitles(a, b, 'ASC')
-        })
-    }
-}
-
 function compareTitles(a: Track, b: Track, order: 'ASC' | 'DESC'): number {
     return applyOrder(a.title.localeCompare(b.title), order)
 }
@@ -132,10 +105,6 @@ function compareArtists(a: Track, b: Track, order: 'ASC' | 'DESC'): number {
 
 function compareAlbums(a: Track, b: Track, order: 'ASC' | 'DESC'): number {
     return applyOrder(a.album.localeCompare(b.album), order)
-}
-
-function compareDurations(a: Track, b: Track, order: 'ASC' | 'DESC'): number {
-    return applyOrder(a.duration < b.duration ? -1 : 1, order)
 }
 
 function compareDiskNrs(a: Track, b: Track, order: 'ASC' | 'DESC'): number {

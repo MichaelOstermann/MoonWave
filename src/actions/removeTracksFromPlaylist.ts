@@ -1,15 +1,14 @@
-import { $playlistsToTracks, $playlistsToTracksByPlaylistId } from '@app/state/state'
-import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
+import { $playlists } from '@app/state/state'
+import { findAndMap } from '@app/utils/data/findAndMap'
+import { removePlaylistTracks } from '@app/utils/playlist/removePlaylistTracks'
 import { action } from '@app/utils/signals/action'
 
 export const removeTracksFromPlaylist = action(({ trackIds, playlistId }: {
     trackIds: string[]
     playlistId: string
 }) => {
-    const currentTrackIds = $playlistsToTracksByPlaylistId(playlistId).value.map(pt => pt.trackId)
-    const trackIdsToRemove = trackIds.filter(trackId => currentTrackIds.includes(trackId))
-
-    $playlistsToTracks.map(findAndRemoveAll(
-        pt => pt.playlistId === playlistId && trackIdsToRemove.includes(pt.trackId),
+    return $playlists.map(findAndMap(
+        p => p.id === playlistId,
+        p => removePlaylistTracks(p, trackIds),
     ))
 })

@@ -1,7 +1,8 @@
-import type { Config, FocusedView, Mode, Playlist, PlaylistToTrack, SidebarItem, ThemeName, Track, View, WaveformTheme } from '@app/types'
+import type { Config, FocusedView, Mode, Playlist, SidebarItem, ThemeName, Track, View, WaveformTheme } from '@app/types'
 import type WaveSurfer from 'wavesurfer.js'
 import { waveformThemes } from '@app/themes/waveforms'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
+import { map } from '@app/utils/data/map'
 import { getTracksForLibrary } from '@app/utils/getTracksForLibrary'
 import { getTracksForPlaylist } from '@app/utils/getTracksForPlaylist'
 import { getTracksForRecentlyAdded } from '@app/utils/getTracksForRecentlyAdded'
@@ -12,13 +13,14 @@ import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { hasSelection } from '@app/utils/lsm/utils/hasSelection'
 import { selectOne } from '@app/utils/lsm/utils/selectOne'
 import { setSelectables } from '@app/utils/lsm/utils/setSelectables'
+import { removePlaylistTracks } from '@app/utils/playlist/removePlaylistTracks'
 import { changeEffect } from '@app/utils/signals/changeEffect'
 import { computed } from '@app/utils/signals/computed'
 import { effect } from '@app/utils/signals/effect'
-import { groupSignalBy } from '@app/utils/signals/groupSignalBy'
 import { indexSignalBy } from '@app/utils/signals/indexSignalBy'
 import { signal } from '@app/utils/signals/signal'
-import { deleteWaveform } from '@app/utils/waveform'
+import { deleteWaveform } from '@app/utils/waveform/deleteWaveform'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { shallowEqualObjects } from 'shallow-equal'
 import { match } from 'ts-pattern'
 
@@ -26,14 +28,12 @@ import { match } from 'ts-pattern'
 export const $config = signal<Config>({})
 export const $tracks = signal<Track[]>([])
 export const $playlists = signal<Playlist[]>([])
-export const $playlistsToTracks = signal<PlaylistToTrack[]>([])
 
 // Indices
 export const $tracksById = indexSignalBy($tracks, t => t.id)
 export const $tracksByFilehash = indexSignalBy($tracks, t => t.filehash)
 export const $tracksByAudiohash = indexSignalBy($tracks, t => t.audiohash)
 export const $playlistsById = indexSignalBy($playlists, p => p.id)
-export const $playlistsToTracksByPlaylistId = groupSignalBy($playlistsToTracks, ptt => ptt.playlistId)
 
 // Audio
 export const audio = new Audio()
@@ -70,6 +70,7 @@ export const $themeModeSystem = signal<'light' | 'dark'>(mediaQuery.matches ? 'd
 mediaQuery.addEventListener('change', event => $themeModeSystem.set(event.matches ? 'dark' : 'light'))
 
 // Client State
+export const $didLoadConfig = signal(false)
 export const $playingView = signal<View | undefined>(undefined, { equals: shallowEqualObjects })
 export const $focusedView = signal<FocusedView>('SIDEBAR')
 export const $playingTrackId = signal<string | undefined>(undefined)
@@ -93,9 +94,9 @@ export const $view = computed<View>(() => {
 export const $playingMode = computed<Mode>(() => {
     const view = $playingView.value ?? $view.value
     switch (view.name) {
-        case 'LIBRARY': return $config.value.modes?.library ?? 'SHUFFLE'
-        case 'RECENTLY_ADDED': return $config.value.modes?.recentlyAdded ?? 'SHUFFLE'
-        case 'UNSORTED': return $config.value.modes?.unsorted ?? 'SHUFFLE'
+        case 'LIBRARY': return $config.value.libraryMode ?? 'SHUFFLE'
+        case 'RECENTLY_ADDED': return $config.value.recentlyAddedMode ?? 'SHUFFLE'
+        case 'UNSORTED': return $config.value.unsortedMode ?? 'SHUFFLE'
         case 'PLAYLIST': return $playlistsById(view.value).value?.mode ?? 'SHUFFLE'
     }
 })
@@ -144,15 +145,16 @@ export const $hasNextTrack = computed<boolean>(() => Boolean($playingTrackId.val
 // Effects
 
 effect((prev: string[] = []) => {
-    const themeModeSystem = $themeModeSystem.value
-    const themeModeUser = $config.value.themeMode
+    if (!$didLoadConfig.value) return prev
 
-    const themeMode = match({ system: themeModeSystem, user: themeModeUser })
-        .returnType<'light' | 'dark'>()
-        .with({ system: 'dark' }, () => 'dark')
-        .with({ user: 'light' }, () => 'light')
-        .with({ user: 'dark' }, () => 'dark')
-        .otherwise(() => themeModeSystem)
+    const themeModeSystem = $themeModeSystem.value
+    const themeModeUser = $config.value.themeMode || 'system'
+
+    const themeMode = themeModeUser === 'system'
+        ? themeModeSystem
+        : themeModeUser
+
+    getCurrentWindow().setTheme(themeMode)
 
     const themeName = match(themeMode)
         .returnType<ThemeName>()
@@ -160,7 +162,7 @@ effect((prev: string[] = []) => {
         .with('dark', () => $config.value.darkThemeName || 'moonwave')
         .exhaustive()
 
-    const next = [`theme-${themeName}-${themeMode}`, `theme-${themeMode}`, `system-${themeModeSystem}`]
+    const next = [`theme-${themeName}-${themeMode}`]
     for (const className of prev) document.body.classList.remove(className)
     for (const className of next) document.body.classList.add(className)
     const style = getComputedStyle(document.body)
@@ -244,10 +246,11 @@ changeEffect(() => $tracks.value, (tracksAfter, tracksBefore) => {
     const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)
     if (removedTrackIds.size === 0) return
 
-    $playlistsToTracks.map(findAndRemoveAll(ptt => removedTrackIds.has(ptt.trackId)))
     $playedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
     $prevPlayedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
     $nextPlayedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
+    $playlists.map(map(p => removePlaylistTracks(p, Array.from(removedTrackIds))))
+
     removedTrackIds.forEach(tid => deleteWaveform(tid))
 
     if ($playingTrackId.value && removedTrackIds.has($playingTrackId.value)) {
@@ -262,8 +265,6 @@ changeEffect(() => $playlists.value, (playlistsAfter, playlistsBefore) => {
     const playlistIdsAfter = new Set(playlistsAfter.map(t => t.id))
     const removedPlaylistIds = playlistIdsBefore.difference(playlistIdsAfter)
     if (removedPlaylistIds.size === 0) return
-
-    $playlistsToTracks.map(findAndRemoveAll(ptt => removedPlaylistIds.has(ptt.playlistId)))
 
     if ($dropPlaylistId.value && removedPlaylistIds.has($dropPlaylistId.value))
         $dropPlaylistId.set(null)

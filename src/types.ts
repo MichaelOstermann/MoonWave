@@ -3,11 +3,6 @@ export type Mode =
     | 'REPEAT'
     | 'SHUFFLE'
 
-export type Sort = {
-    by: 'TITLE' | 'ARTIST' | 'ALBUM' | 'DURATION'
-    order: 'ASC' | 'DESC'
-}
-
 export type FocusedView =
     | 'MAIN'
     | 'SIDEBAR'
@@ -25,7 +20,7 @@ export type SidebarItem =
 export type Track = {
     id: string
     mimetype: string
-    addedAt: string
+    addedAt: number
     path: string
     filehash: string
     audiohash: string
@@ -33,41 +28,27 @@ export type Track = {
     album: string
     artist: string
     duration: number
-    date?: string
+    year?: number
     trackNr?: number
     diskNr?: number
 }
 
 export type Playlist = {
     id: string
-    addedAt: string
     title: string
+    trackIds: string[]
     mode?: Mode
-    sort?: Sort
 }
 
-export type PlaylistToTrack = {
-    addedAt: string
-    trackId: string
-    playlistId: string
+export type Library = {
+    tracks: Track[]
+    playlists: Playlist[]
 }
 
 export type Config = {
-    // TODO
-    libraryPath?: string
-    library?: {
-        mode?: Mode
-        sort?: Sort
-    }
-    recentlyAdded?: {
-        mode?: Mode
-        sort?: Sort
-    }
-    unsorted?: {
-        mode?: Mode
-        sort?: Sort
-    }
-    // TODO
+    libraryMode?: Mode
+    recentlyAddedMode?: Mode
+    unsortedMode?: Mode
     themeMode?: ThemeMode
     darkThemeName?: ThemeName
     lightThemeName?: ThemeName

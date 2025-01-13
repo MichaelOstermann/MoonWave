@@ -9,38 +9,37 @@ import { merge } from './data/merge'
 import { replace } from './data/replace'
 
 export async function parseAudioFile(opts: {
-    date: string
-    relPath: string
-    absPath: string
+    date: number
+    path: string
     tracksByFilehash: Record<string, Track>
     tracksByAudiohash: Record<string, Track>
 }): Promise<Track | null> {
-    const filehash = await getFilehash(opts.absPath)
+    const filehash = await getFilehash(opts.path)
 
     const trackByFilehash = opts.tracksByFilehash[filehash]
     if (trackByFilehash) {
-        const track = merge(trackByFilehash, { path: opts.relPath })
+        const track = merge(trackByFilehash, { path: opts.path })
         $tracks.map(replace(trackByFilehash, track))
         return track
     }
 
     const [audiohash, metadata] = await Promise.all([
-        getAudiohash(opts.absPath),
-        getMetadata(opts.absPath),
+        getAudiohash(opts.path),
+        getMetadata(opts.path),
     ])
 
     const trackByAudioHash = opts.tracksByAudiohash[audiohash]
     if (trackByAudioHash) {
-        const track = merge(trackByAudioHash, { ...metadata, filehash, path: opts.relPath })
+        const track = merge(trackByAudioHash, { ...metadata, filehash, path: opts.path })
         $tracks.map(replace(trackByAudioHash, track))
         return track
     }
 
-    const mimetype = await getMimeType(opts.absPath)
+    const mimetype = await getMimeType(opts.path)
     if (!mimetype.startsWith('audio/')) return null
 
     const track = {
-        path: opts.relPath,
+        path: opts.path,
         id: nanoid(10),
         mimetype,
         filehash,
@@ -53,21 +52,18 @@ export async function parseAudioFile(opts: {
     return track
 }
 
-export async function parseAudioFiles(opts: {
-    libraryPath: string
-    relPaths: string[]
+export async function parseAudioFiles(paths: string[], opts: {
     onProgress: () => void
 }): Promise<Set<string>> {
-    const date = new Date().toISOString()
+    const date = Date.now()
     const tracksByFilehash = indexBy($tracks.value, t => t.filehash)
     const tracksByAudiohash = indexBy($tracks.value, t => t.audiohash)
     const trackIds = new Set<string>()
 
-    for (const relPath of opts.relPaths) {
+    for (const path of paths) {
         const track = await parseAudioFile({
             date,
-            absPath: `${opts.libraryPath}/${relPath}`,
-            relPath,
+            path,
             tracksByFilehash,
             tracksByAudiohash,
         }).catch(() => null)
@@ -78,27 +74,27 @@ export async function parseAudioFiles(opts: {
     return trackIds
 }
 
-export async function getMimeType(absPath: string): Promise<string> {
-    const mimetype = await invoke<string>('get_file_mimetype', { filePath: absPath })
+export async function getMimeType(filePath: string): Promise<string> {
+    const mimetype = await invoke<string>('get_file_mimetype', { filePath })
     if (!mimetype) throw new Error('Invalid mimetype')
     return mimetype
 }
 
-export async function getFilehash(absPath: string): Promise<string> {
-    const { stdout } = await Command.create('openssl', ['sha256', absPath]).execute()
+export async function getFilehash(filePath: string): Promise<string> {
+    const { stdout } = await Command.create('openssl', ['sha256', filePath]).execute()
     const filehash = stdout.trim().split('= ').at(1)
     if (!filehash) throw new Error('Invalid filehash')
     return filehash
 }
 
-async function getAudiohash(absPath: string): Promise<string> {
-    const { stdout } = await Command.sidecar('bin/ffmpeg', ['-i', absPath, '-map', '0:a', '-c', 'copy', '-f', 'md5', '-']).execute()
+async function getAudiohash(filePath: string): Promise<string> {
+    const { stdout } = await Command.sidecar('bin/ffmpeg', ['-i', filePath, '-map', '0:a', '-c', 'copy', '-f', 'md5', '-']).execute()
     const audiohash = stdout.trim().replace('MD5=', '')
     if (!audiohash) throw new Error('Invalid audiohash')
     return audiohash
 }
 
-async function getMetadata(absPath: string): Promise<Omit<Track, 'id' | 'addedAt' | 'path' | 'mimetype' | 'filehash' | 'audiohash'>> {
+async function getMetadata(filePath: string): Promise<Omit<Track, 'id' | 'addedAt' | 'path' | 'mimetype' | 'filehash' | 'audiohash'>> {
     const data = await invoke<{
         title: string | null
         artist: string | null
@@ -107,14 +103,14 @@ async function getMetadata(absPath: string): Promise<Omit<Track, 'id' | 'addedAt
         year: number | null
         track_number: number | null
         disk_number: number | null
-    }>('parse_audio_metadata', { filePath: absPath })
+    }>('parse_audio_metadata', { filePath })
 
     return {
-        title: data.title?.trim() || absPath.split('/').at(-1)!.replace(extensions, '').trim(),
+        title: data.title?.trim() || filePath.split('/').at(-1)!.replace(extensions, '').trim(),
         artist: data.artist?.trim() || '',
         album: data.album?.trim() || '',
         duration: data.duration,
-        date: data.year == null ? undefined : String(data.year),
+        year: data.year == null ? undefined : data.year,
         trackNr: data.track_number == null ? undefined : data.track_number,
         diskNr: data.disk_number == null ? undefined : data.disk_number,
     }

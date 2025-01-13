@@ -13,14 +13,6 @@
     min-height: 0;
 }
 
-.system-light.theme-dark {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.system-dark.theme-dark {
-    background-color: rgba(90, 90, 90, 0.5);
-}
-
 body {
     --accent: var(--main-accent, var(--base-accent));
     --waveform-fg: var(--main-waveform-fg, var(--base-fg-tertiary));

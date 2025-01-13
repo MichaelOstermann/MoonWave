@@ -1,5 +1,5 @@
 import type { Track } from '@app/types'
-import { $playlistsToTracks, $tracks, $tracksFilter } from '@app/state/state'
+import { $playlists, $tracks, $tracksFilter } from '@app/state/state'
 import { pipeInto } from 'ts-functional-pipe'
 import { applyFilterToTracks } from './applyFilterToTracks'
 import { removeUnsupportedTracks } from './removeUnsupportedTracks'
@@ -7,7 +7,9 @@ import { computed } from './signals/computed'
 import { sortView } from './sortTracks'
 
 const $sortedTrackIds = computed(() => {
-    return $playlistsToTracks.value.reduce((acc, ptt) => acc.add(ptt.trackId), new Set<string>())
+    return $playlists.value.reduce((acc, p) => {
+        return p.trackIds.reduce((acc, tid) => acc.add(tid), acc)
+    }, new Set<string>())
 })
 
 export function getTracksForUnsorted(options?: { applyFilter: boolean }): Track[] {

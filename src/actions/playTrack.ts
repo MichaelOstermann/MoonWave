@@ -1,8 +1,7 @@
 import type { Track, View } from '@app/types'
 import { $loadedAudioMetadata, $playingTrackId, $playingView, $tracksById, $view, $waveformPeaks, audio } from '@app/state/state'
-import { getTrackPathAbs } from '@app/utils/getTrackPathAbs'
 import { action } from '@app/utils/signals/action'
-import { loadWaveform } from '@app/utils/waveform'
+import { loadWaveform } from '@app/utils/waveform/loadWaveform'
 import { readFile } from '@tauri-apps/plugin-fs'
 import { onPlaybackSuccess } from './onPlaybackSuccess'
 import { seekTo } from './seekTo'
@@ -43,8 +42,7 @@ export const playTrack = action(async ({ trackId, view }: {
 })
 
 export function playFile(track: Track): Promise<boolean> {
-    return getTrackPathAbs(track.path)
-        .then(path => readFile(path))
+    return readFile(track.path)
         .then(file => new Blob([file], { type: track.mimetype }))
         .then(blob => playBlob(blob))
         .catch(() => false)
