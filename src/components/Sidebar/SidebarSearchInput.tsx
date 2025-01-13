@@ -23,7 +23,7 @@ export function SidebarSearchInput(): ReactNode {
                 <input
                     type="text"
                     placeholder="Search"
-                    className="h-8 w-full rounded-md bg-[--input-bg] px-8 text-sm outline-none placeholder:text-[--input-placeholder-fg]"
+                    className="sidebar-search-input h-8 w-full rounded-md bg-[--input-bg] px-8 text-sm outline-none placeholder:text-[--input-placeholder-fg]"
                     value={$tracksFilter.value}
                     onChange={evt => filterLibrary(evt.target.value)}
                     onContextMenu={evt => evt.stopPropagation()}

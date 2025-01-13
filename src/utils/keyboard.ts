@@ -1,5 +1,6 @@
 import type { FocusedView } from '@app/types'
 import { createPlaylist } from '@app/actions/createPlaylist'
+import { focusSearchInput } from '@app/actions/focusSearchInput'
 import { setVolume } from '@app/actions/setVolume'
 import { syncLibrary } from '@app/actions/syncLibrary'
 import { toggleMode } from '@app/actions/toggleMode'
@@ -56,6 +57,7 @@ addShortcuts(h, shortcuts.setVolume100, () => setVolume(1))
 addShortcuts(h, shortcuts.toggleMode, toggleMode)
 addShortcuts(h, shortcuts.togglePlayback, togglePlayback, { allowInDialogs: false, allowInInputs: false })
 
+addShortcuts(h, shortcuts.focusSearchInput, focusSearchInput)
 addShortcuts(h, shortcuts.switchFocus, () => $focusedView.set('SIDEBAR'), { view: 'MAIN' })
 addShortcuts(h, shortcuts.switchFocus, () => $focusedView.set('MAIN'), { view: 'SIDEBAR' })
 

@@ -7,6 +7,7 @@ export const shortcuts = {
     toggleMode: ['cmd+r'],
     togglePlayback: ['space'],
     switchFocus: ['tab'],
+    focusSearchInput: ['cmd+f'],
     goToPrev: ['up'],
     goToNext: ['down'],
     selectPrev: ['shift+up'],
