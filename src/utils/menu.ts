@@ -1,5 +1,6 @@
 import type { MouseEvent } from 'react'
 import { Menu, type MenuOptions } from '@tauri-apps/api/menu'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { useState } from 'react'
 
 export type MenuItem = Exclude<MenuOptions['items'], undefined>[number] | undefined
@@ -45,6 +46,7 @@ export function useMenu(getItems: (MenuItem | (() => MenuItem))[]): {
         show: (evt) => {
             if (evt) evt.stopPropagation()
             if (evt) evt.preventDefault()
+            getCurrentWindow().setFocus()
             return showMenu(getItems, {
                 onOpen: () => setIsOpen(true),
                 onClose: () => setIsOpen(false),
