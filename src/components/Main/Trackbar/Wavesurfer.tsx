@@ -4,7 +4,7 @@ import { useWavesurfer } from '@wavesurfer/react'
 import { useEffect, useRef } from 'react'
 
 export function Wavesurfer(): ReactNode {
-    const container = useRef<HTMLDivElement | null>(null)
+    const container = useRef<HTMLDivElement>(null)
     const theme = $waveformTheme.value
     const { wavesurfer } = useWavesurfer({
         container,

@@ -21,7 +21,7 @@ export function SidebarItem({
     className,
     ...rest
 }: SidebarItemProps): ReactNode {
-    const ref = useRef<HTMLDivElement | null>(null)
+    const ref = useRef<HTMLDivElement>(null)
     const isFocused = $focusedView.value === 'SIDEBAR'
     const showBorder = hasMenu || isEditing || isDropTarget
 

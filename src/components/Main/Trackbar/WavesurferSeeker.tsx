@@ -9,16 +9,16 @@ export function WavesurferSeeker(): ReactNode {
     const [offsetX, setOffsetX] = useState(0)
     const tracklistHeaderHeight = 32
 
-    const containerRef = useRef<HTMLDivElement | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
     const [containerWidth, setContainerWidth] = useState(0)
-    useResizeObserver(containerRef, (entry) => {
+    useResizeObserver(containerRef as any, (entry) => {
         setContainerWidth(entry.contentRect.width)
     })
 
-    const labelRef = useRef<HTMLDivElement | null>(null)
+    const labelRef = useRef<HTMLDivElement>(null)
     const [labelWidth, setLabelWidth] = useState(0)
     const [labelHeight, setLabelHeight] = useState(0)
-    useResizeObserver(labelRef, (entry) => {
+    useResizeObserver(labelRef as any, (entry) => {
         setLabelWidth(entry.contentRect.width)
         setLabelHeight(entry.contentRect.height)
     })

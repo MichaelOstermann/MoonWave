@@ -13,7 +13,7 @@ const barWidth = 64
 const knobSize = 14
 
 export function VolumeControls(): ReactNode {
-    const ref = useRef<HTMLDivElement | null>(null)
+    const ref = useRef<HTMLDivElement>(null)
     const [barLeft, setBarLeft] = useState(0)
     const [mouseX, setMouseX] = useState(0)
     const [isSeeking, setIsSeeking] = useState(false)

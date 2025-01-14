@@ -45,10 +45,10 @@ const $measurements = computed(() => {
 
 export function TrackList() {
     const rows = $rows.value
-    const ref = useRef<HTMLDivElement | null>(null)
-    const vlistRef = useRef<VListHandle | null>(null)
+    const ref = useRef<HTMLDivElement>(null)
+    const vlistRef = useRef<VListHandle>(null)
     const [availableWidth, setAvailableWidth] = useState(0)
-    useResizeObserver(ref, ({ contentRect }) => setAvailableWidth(contentRect.width))
+    useResizeObserver(ref as any, ({ contentRect }) => setAvailableWidth(contentRect.width))
 
     const gap = 20
     const outerPadding = 10
