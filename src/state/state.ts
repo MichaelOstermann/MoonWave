@@ -46,9 +46,9 @@ export const $currentTrackPosition = signal(0)
 export const $waveformPeaks = signal<number[][]>([])
 
 // Waveform
-export const $wavesurfer = signal<WaveSurfer | null>(null)
-export const $waveformWaveColor = signal<string | undefined>()
-export const $waveformProgressColor = signal<string | undefined>()
+export const $wavesurfer = signal<WaveSurfer>(null)
+export const $waveformWaveColor = signal<string>(undefined)
+export const $waveformProgressColor = signal<string>(undefined)
 
 // Sync
 export const $syncing = signal(false)
@@ -57,7 +57,7 @@ export const $syncProgress = signal(0)
 
 // Drag & Drop
 export const $isDraggingTracks = signal(false)
-export const $dropPlaylistId = signal<string | null>(null)
+export const $dropPlaylistId = signal<string>(null)
 
 // History
 export const $playedTrackIds = signal<string[]>([])
@@ -71,11 +71,11 @@ mediaQuery.addEventListener('change', event => $themeModeSystem.set(event.matche
 
 // Client State
 export const $didLoadConfig = signal(false)
-export const $playingView = signal<View | undefined>(undefined, { equals: shallowEqualObjects })
+export const $playingView = signal<View>(undefined, { equals: shallowEqualObjects })
 export const $focusedView = signal<FocusedView>('SIDEBAR')
-export const $playingTrackId = signal<string | undefined>(undefined)
+export const $playingTrackId = signal<string>(undefined)
 export const $tracksFilter = signal('')
-export const $editingPlaylistId = signal<string | null>(null)
+export const $editingPlaylistId = signal<string>(null)
 export const $showCommandMenu = signal(false)
 export const $tracksLSM = signal(createLSM<string>())
 export const $sidebarLSM = signal(createLSM<View>({

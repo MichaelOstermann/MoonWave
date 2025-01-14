@@ -17,9 +17,10 @@ type SignalOptions<T> = {
     equals?: (after: T, before: T) => boolean
 }
 
-export function signal<T>(value: T, options?: SignalOptions<T>): Signal<T>
-export function signal<T = undefined>(): Signal<T | undefined>
-export function signal<T>(value?: T, options?: SignalOptions<T>): Signal<T> {
+export function signal<T>(value: T, options?: SignalOptions<NoInfer<T>>): Signal<T>
+export function signal<T>(value: T | null, options?: SignalOptions<NoInfer<T> | null>): Signal<T | null>
+export function signal<T>(value: T | undefined, options?: SignalOptions<NoInfer<T> | undefined>): Signal<T | undefined>
+export function signal<T>(value: T, options?: SignalOptions<T>) {
     const signal = createPreactSignal(value) as Signal<T>
     const equals = options?.equals
     const onChange = new Set<OnChange<T>>()
