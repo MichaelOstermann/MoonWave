@@ -1,4 +1,5 @@
 import antfu from '@antfu/eslint-config'
+import reactCompiler from 'eslint-plugin-react-compiler'
 import tailwind from 'eslint-plugin-tailwindcss'
 
 export default antfu(
@@ -24,6 +25,15 @@ export default antfu(
     {
         rules: {
             'tailwindcss/no-custom-classname': 'off',
+        },
+    },
+    {
+        name: 'react-compiler/recommended',
+        plugins: {
+            'react-compiler': reactCompiler,
+        },
+        rules: {
+            'react-compiler/react-compiler': 'error',
         },
     },
 )

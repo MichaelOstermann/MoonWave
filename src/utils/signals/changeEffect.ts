@@ -1,5 +1,5 @@
 import type { Effect } from './effect'
-import { effect as createPreactEffect, untracked } from '@preact/signals-react'
+import { effect as createPreactEffect, untracked } from '@preact/signals-core'
 
 type EffectOptions<T> = {
     id?: string

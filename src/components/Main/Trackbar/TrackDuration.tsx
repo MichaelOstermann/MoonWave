@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react'
 import { $currentTrackDuration, $currentTrackPosition } from '@app/state/state'
 import { formatDuration } from '@app/utils/formatDuration'
+import { useSignal } from '@app/utils/signals/useSignal'
 
 export function TrackDuration(): ReactNode {
-    const position = $currentTrackPosition.value
-    const duration = $currentTrackDuration.value
+    const position = useSignal($currentTrackPosition)
+    const duration = useSignal($currentTrackDuration)
     const leftoverTime = Math.min(Math.max(duration - position, 0), duration)
     const formattedDuration = `-${formatDuration(leftoverTime)}`
 

@@ -1,4 +1,4 @@
-import { effect as createPreactEffect } from '@preact/signals-react'
+import { effect as createPreactEffect } from '@preact/signals-core'
 
 export interface Effect {
     (): void

@@ -1,22 +1,21 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Column, Row } from './types'
 import { $playing, $playingTrackId } from '@app/state/state'
-import { useComputed } from '@preact/signals-react'
-import { memo } from 'react'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { twJoin } from 'tailwind-merge'
 import { AudioWaveIcon } from '../AudioWaveIcon'
 import { iconSize } from './config'
 
-function Component({ col, row, style }: {
+export function TrackListRowColumn({ col, row, style }: {
     col: Column
     row: Row
     style: CSSProperties
 }): ReactNode {
-    const showAudioWaveIcon = useComputed(() => {
+    const showAudioWaveIcon = useSignal(() => {
         return col === 'position'
             && $playing.value
             && $playingTrackId.value === row.id
-    }).value
+    })
 
     return (
         <div
@@ -39,5 +38,3 @@ function Component({ col, row, style }: {
         </div>
     )
 }
-
-export const TrackListRowColumn = memo(Component)

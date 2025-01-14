@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { $currentTrackDuration, $currentTrackPosition } from '@app/state/state'
+import { useSignal } from '@app/utils/signals/useSignal'
 
 export function TrackPosition(): ReactNode {
-    const width = 100 * ($currentTrackPosition.value / $currentTrackDuration.value)
+    const width = useSignal(() => 100 * ($currentTrackPosition.value / $currentTrackDuration.value))
 
     return (
         <div className="absolute inset-0 flex items-end overflow-hidden rounded-b-md">

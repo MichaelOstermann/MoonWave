@@ -1,10 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Column } from './types'
-import { memo } from 'react'
 import { columns } from './config'
 import { TrackListHeaderColumn } from './TrackListHeaderColumn'
 
-function Component({
+export function TrackListHeader({
     style,
     colStyles,
 }: {
@@ -26,5 +25,3 @@ function Component({
         </div>
     )
 }
-
-export const TrackListHeader = memo(Component)

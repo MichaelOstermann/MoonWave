@@ -1,5 +1,5 @@
-import type { ReadonlySignal, Signal } from '@preact/signals-react'
-import { computed, signal } from '@preact/signals-react'
+import type { ReadonlySignal, Signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import { indexBy } from '../data/indexBy'
 
 export function indexSignalBy<T extends object, U extends PropertyKey>(

@@ -7,10 +7,10 @@ import { getLastSelectionPosition } from '@app/utils/lsm/utils/getLastSelectionP
 import { measureText } from '@app/utils/measureText'
 import { useMenu } from '@app/utils/menu'
 import { computed } from '@app/utils/signals/computed'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { trackToRow } from '@app/utils/trackToRow'
-import { useComputed } from '@preact/signals-react'
-import { useResizeObserver } from '@react-hookz/web'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useResizeObserver, useUpdateEffect } from '@react-hookz/web'
+import { useEffect, useRef, useState } from 'react'
 import { VList } from 'virtua'
 import { columns, header, minWidths, reservedColumns } from './config'
 import { TrackDragGhost } from './TrackDragGhost'
@@ -44,7 +44,8 @@ const $measurements = computed(() => {
 })
 
 export function TrackList() {
-    const rows = $rows.value
+    const rows = useSignal($rows)
+    const measurements = useSignal($measurements)
     const ref = useRef<HTMLDivElement>(null)
     const vlistRef = useRef<VListHandle>(null)
     const [availableWidth, setAvailableWidth] = useState(0)
@@ -63,15 +64,15 @@ export function TrackList() {
         availableWidth,
         reservedColumns,
         minWidths,
-        measurements: $measurements.value,
+        measurements,
         gap,
         outerPadding,
         innerPadding,
     })
 
-    const headerGap = useMemo(() => (<div key="header" style={{ height: 0 }} />), [])
-    const footerGap = useMemo(() => (<div key="footer" style={{ height: outerPadding }} />), [outerPadding])
-    const trackList = useMemo(() => rows.map((row, idx) => (
+    const headerGap = <div key="header" style={{ height: 0 }} />
+    const footerGap = <div key="footer" style={{ height: outerPadding }} />
+    const trackList = rows.map((row, idx) => (
         <TrackListRow
             // eslint-disable-next-line react/no-array-index-key
             key={`${row.id}-${idx}`}
@@ -79,18 +80,14 @@ export function TrackList() {
             row={row}
             colStyles={colStyles}
         />
-    )), [rows, colStyles])
+    ))
 
-    const children = useMemo(() => [
-        headerGap,
-        ...trackList,
-        footerGap,
-    ], [headerGap, footerGap, trackList])
+    useUpdateEffect(() => vlistRef.current?.scrollTo(0), [
+        useSignal($tracksFilter),
+        useSignal($view),
+    ])
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => vlistRef.current?.scrollTo(0), [$tracksFilter.value, $view.value])
-
-    const lastSelectedPosition = useComputed(() => getLastSelectionPosition($tracksLSM.value)).value
+    const lastSelectedPosition = useSignal(() => getLastSelectionPosition($tracksLSM.value))
 
     useEffect(() => {
         if (lastSelectedPosition < 0) return
@@ -116,7 +113,11 @@ export function TrackList() {
                 className="flex shrink grow"
                 style={outerStyles}
             >
-                {children}
+                {[
+                    headerGap,
+                    ...trackList,
+                    footerGap,
+                ]}
             </VList>
         </div>
     )

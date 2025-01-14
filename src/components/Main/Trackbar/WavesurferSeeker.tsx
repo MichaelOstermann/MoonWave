@@ -2,6 +2,7 @@ import { seekTo } from '@app/actions/seekTo'
 import { $currentTrackDuration } from '@app/state/state'
 import { formatDuration } from '@app/utils/formatDuration'
 import { roundByDPR } from '@app/utils/roundByDPR'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { useResizeObserver } from '@react-hookz/web'
 import { type ReactNode, useRef, useState } from 'react'
 
@@ -25,7 +26,7 @@ export function WavesurferSeeker(): ReactNode {
 
     const labelY = roundByDPR((tracklistHeaderHeight - labelHeight) / 2)
     const labelX = roundByDPR(offsetX - (labelWidth / 2))
-    const position = $currentTrackDuration.value * (offsetX / containerWidth)
+    const position = useSignal(() => $currentTrackDuration.value * (offsetX / containerWidth))
 
     return (
         <div

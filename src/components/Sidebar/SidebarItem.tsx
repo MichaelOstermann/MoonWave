@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { $focusedView } from '@app/state/state'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -22,7 +23,7 @@ export function SidebarItem({
     ...rest
 }: SidebarItemProps): ReactNode {
     const ref = useRef<HTMLDivElement>(null)
-    const isFocused = $focusedView.value === 'SIDEBAR'
+    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
     const showBorder = hasMenu || isEditing || isDropTarget
 
     useEffect(() => {

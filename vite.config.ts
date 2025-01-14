@@ -13,7 +13,7 @@ export default defineConfig(async () => ({
         react({
             babel: {
                 plugins: [
-                    ['module:@preact/signals-react-transform'],
+                    ['babel-plugin-react-compiler'],
                     ['./src/babel.js'],
                 ],
             },

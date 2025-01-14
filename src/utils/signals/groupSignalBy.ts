@@ -1,4 +1,4 @@
-import { computed, type ReadonlySignal, signal, type Signal } from '@preact/signals-react'
+import { computed, type ReadonlySignal, signal, type Signal } from '@preact/signals-core'
 
 export function groupSignalBy<T extends object, U extends string | number>(
     $target: Signal<T[]>,

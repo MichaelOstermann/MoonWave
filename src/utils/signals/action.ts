@@ -1,4 +1,4 @@
-import { batch, untracked } from '@preact/signals-react'
+import { batch, untracked } from '@preact/signals-core'
 
 export interface Action<T = never, U = void> {
     (...args: ([T] extends [never] ? [] : [payload: T])): U

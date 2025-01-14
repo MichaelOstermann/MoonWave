@@ -9,31 +9,30 @@ import { savePlaylistTitle } from '@app/actions/savePlaylistTitle'
 import { syncLibrary } from '@app/actions/syncLibrary'
 import { $dropPlaylistId, $editingPlaylistId, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
-import { useComputed } from '@preact/signals-react'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { confirm } from '@tauri-apps/plugin-dialog'
 import { LucideListMusic } from 'lucide-react'
 import { AudioWaveIcon } from '../AudioWaveIcon'
 import { SidebarItem } from './SidebarItem'
 import { SidebarItemIcon } from './SidebarItemIcon'
 
-// TODO optimize
 export function PlaylistItem({ id }: {
     id: string
 }): ReactNode {
-    const playlist = $playlistsById(id).value!
-    const view = $view.value
-    const isEditing = $editingPlaylistId.value === playlist.id
-    const isActive = view.name === 'PLAYLIST' && view.value === playlist.id
-    const isDraggingTracks = $isDraggingTracks.value
-    const isDropTarget = isDraggingTracks && $dropPlaylistId.value === playlist.id
+    const playlist = useSignal($playlistsById(id))!
+    const view = useSignal($view)
+    const isEditing = useSignal(() => $editingPlaylistId.value === playlist.id)
+    const isActive = useSignal(() => view.name === 'PLAYLIST' && view.value === playlist.id)
+    const isDraggingTracks = useSignal($isDraggingTracks)
+    const isDropTarget = useSignal(() => isDraggingTracks && $dropPlaylistId.value === playlist.id)
 
-    const isPlaylingPlaylist = useComputed(() => {
+    const isPlaylingPlaylist = useSignal(() => {
         const view = $playingView.value
         return view?.name === 'PLAYLIST'
             && view.value === id
-    }).value
+    })
 
-    const showAudioWaveIcon = isPlaylingPlaylist && $playing.value
+    const showAudioWaveIcon = useSignal(() => isPlaylingPlaylist && $playing.value)
 
     const menu = useMenu([
         { text: 'Create Playlist', action: createPlaylist },

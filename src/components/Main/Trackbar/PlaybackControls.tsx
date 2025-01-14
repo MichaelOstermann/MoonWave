@@ -5,6 +5,7 @@ import { toggleMode } from '@app/actions/toggleMode'
 import { togglePlayback } from '@app/actions/togglePlayback'
 import { Button } from '@app/components/Button'
 import { $hasNextTrack, $hasPrevTrack, $hasTrack, $playing, $playingMode } from '@app/state/state'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideFastForward, LucidePause, LucidePlay, LucideRepeat, LucideRepeat1, LucideRewind, LucideShuffle } from 'lucide-react'
 import { match } from 'ts-pattern'
 
@@ -20,10 +21,12 @@ export function PlaybackControls(): ReactNode {
 }
 
 function PlayPrevButton(): ReactNode {
+    const hasPrevTrack = useSignal($hasPrevTrack)
+
     return (
         <Button
             onClick={playPrev}
-            disabled={!$hasPrevTrack.value}
+            disabled={!hasPrevTrack}
         >
             <LucideRewind className="size-5 fill-current" />
         </Button>
@@ -31,14 +34,15 @@ function PlayPrevButton(): ReactNode {
 }
 
 function PlayPauseButton(): ReactNode {
-    const Icon = $playing.value
+    const hasTrack = useSignal($hasTrack)
+    const Icon = useSignal($playing)
         ? LucidePause
         : LucidePlay
 
     return (
         <Button
             onClick={togglePlayback}
-            disabled={!$hasTrack.value}
+            disabled={!hasTrack}
         >
             <Icon className="size-6 fill-current" />
         </Button>
@@ -46,10 +50,12 @@ function PlayPauseButton(): ReactNode {
 }
 
 function PlayNextButton(): ReactNode {
+    const hasNextTrack = useSignal($hasNextTrack)
+
     return (
         <Button
             onClick={playNext}
-            disabled={!$hasNextTrack.value}
+            disabled={!hasNextTrack}
         >
             <LucideFastForward className="size-5 fill-current" />
         </Button>
@@ -57,7 +63,7 @@ function PlayNextButton(): ReactNode {
 }
 
 function ModeButton(): ReactNode {
-    const mode = $playingMode.value
+    const mode = useSignal($playingMode)
 
     const Icon = match(mode)
         .with('SINGLE', () => LucideRepeat1)

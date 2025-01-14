@@ -13,24 +13,23 @@ import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionIn
 import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGroup'
 import { isSelected } from '@app/utils/lsm/utils/isSelected'
 import { useMenu } from '@app/utils/menu'
-import { useComputed } from '@preact/signals-react'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { confirm } from '@tauri-apps/plugin-dialog'
-import { memo } from 'react'
 import { twJoin } from 'tailwind-merge'
 import { columns } from './config'
 import { TrackListRowColumn } from './TrackListRowColumn'
 
-function Component({ row, idx, colStyles }: {
+export function TrackListRow({ row, idx, colStyles }: {
     row: Row
     idx: number
     colStyles: Record<Column, CSSProperties>
 }): ReactNode {
     const isEven = idx % 2 === 0
-    const isFocused = $focusedView.value === 'MAIN'
-    const isPlayingTrack = useComputed(() => $playingTrackId.value === row.id).value
-    const selected = useComputed(() => isSelected($tracksLSM.value, row.id)).value
-    const firstSelected = useComputed(() => isFirstSelectionInGroup($tracksLSM.value, row.id)).value
-    const lastSelected = useComputed(() => isLastSelectionInGroup($tracksLSM.value, row.id)).value
+    const isFocused = useSignal(() => $focusedView.value === 'MAIN')
+    const isPlayingTrack = useSignal(() => $playingTrackId.value === row.id)
+    const selected = useSignal(() => isSelected($tracksLSM.value, row.id))
+    const firstSelected = useSignal(() => isFirstSelectionInGroup($tracksLSM.value, row.id))
+    const lastSelected = useSignal(() => isLastSelectionInGroup($tracksLSM.value, row.id))
 
     const menu = useMenu([
         addSelectedTracksToPlaylistMenuItem,
@@ -75,8 +74,6 @@ function Component({ row, idx, colStyles }: {
         </div>
     )
 }
-
-export const TrackListRow = memo(Component)
 
 function addSelectedTracksToPlaylistMenuItem(): MenuItem {
     const trackIds = getSelections($tracksLSM.value)

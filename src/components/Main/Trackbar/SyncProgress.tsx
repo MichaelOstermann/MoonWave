@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
 import { $syncGoal, $syncing, $syncProgress } from '@app/state/state'
-import { useComputed } from '@preact/signals-react'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { Gauge } from '@suyalcinkaya/gauge'
 import { twJoin } from 'tailwind-merge'
 
 export function SyncProgress(): ReactNode {
-    const syncing = $syncing.value
-    const percentage = useComputed(() => Math.round(100 * ($syncProgress.value / $syncGoal.value) || 0)).value
+    const syncing = useSignal($syncing)
+    const percentage = useSignal(() => Math.round(100 * ($syncProgress.value / $syncGoal.value) || 0))
 
     return (
         <Gauge

@@ -1,5 +1,5 @@
-import type { ReadonlySignal as PreactReadonlySignal } from '@preact/signals-react'
-import { computed as createPreactComputed } from '@preact/signals-react'
+import type { ReadonlySignal as PreactReadonlySignal } from '@preact/signals-core'
+import { computed as createPreactComputed } from '@preact/signals-core'
 
 export interface ReadonlySignal<T> extends PreactReadonlySignal<T> {
     id: string

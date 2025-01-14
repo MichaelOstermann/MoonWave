@@ -3,6 +3,7 @@ import { setVolume } from '@app/actions/setVolume'
 import { toggleMute } from '@app/actions/toggleMute'
 import { Button } from '@app/components/Button'
 import { $muted, $volume } from '@app/state/state'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { pipeInto } from 'ts-functional-pipe'
@@ -17,8 +18,7 @@ export function VolumeControls(): ReactNode {
     const [barLeft, setBarLeft] = useState(0)
     const [mouseX, setMouseX] = useState(0)
     const [isSeeking, setIsSeeking] = useState(false)
-
-    const volume = $muted.value ? 0 : $volume.value
+    const volume = useSignal(() => $muted.value ? 0 : $volume.value)
 
     const Icon = match(volume)
         .with(1, () => LucideVolume2)

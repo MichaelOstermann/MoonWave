@@ -3,7 +3,7 @@ import { $showCommandMenu, $syncGoal, $syncing, $syncProgress, $tracks } from '@
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action } from '@app/utils/signals/action'
-import { batch } from '@preact/signals-react'
+import { batch } from '@preact/signals-core'
 import { audioDir } from '@tauri-apps/api/path'
 import { readDir } from '@tauri-apps/plugin-fs'
 

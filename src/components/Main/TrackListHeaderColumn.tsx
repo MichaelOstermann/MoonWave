@@ -1,9 +1,9 @@
+import type { CSSProperties, ReactNode } from 'react'
 import type { Column } from './types'
-import { type CSSProperties, memo, type ReactNode } from 'react'
 import { twJoin } from 'tailwind-merge'
 import { header } from './config'
 
-function Component({ col, style }: {
+export function TrackListHeaderColumn({ col, style }: {
     col: Column
     style: CSSProperties
 }): ReactNode {
@@ -23,5 +23,3 @@ function Component({ col, style }: {
         </div>
     )
 }
-
-export const TrackListHeaderColumn = memo(Component)

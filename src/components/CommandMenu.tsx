@@ -9,9 +9,10 @@ import { toggleMode } from '@app/actions/toggleMode'
 import { toggleMute } from '@app/actions/toggleMute'
 import { togglePlayback } from '@app/actions/togglePlayback'
 import { shortcuts } from '@app/config/shortcuts'
-import { useEnterExitTransition } from '@app/hooks/useEnterExitTransition'
 import { $config, $hasNextTrack, $hasPrevTrack, $hasTrack, $muted, $playing, $showCommandMenu } from '@app/state/state'
 import { roundByDPR } from '@app/utils/roundByDPR'
+import { useSignal } from '@app/utils/signals/useSignal'
+import { useFloating, useTransitionStatus } from '@floating-ui/react'
 import { useEventListener, useWindowSize } from '@react-hookz/web'
 import { Command } from 'cmdk'
 import { LucideFastForward, LucideMoon, LucidePause, LucidePlay, LucidePlus, LucideRefreshCw, LucideRepeat, LucideRewind, LucideSearch, LucideSun, LucideSunMoon, LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
@@ -20,8 +21,10 @@ import { twJoin, twMerge } from 'tailwind-merge'
 import { Kbd } from './Kbd'
 
 export function CommandMenu(): ReactNode {
-    const shouldShow = $showCommandMenu.value
-    const [state, props] = useEnterExitTransition(shouldShow)
+    const shouldShow = useSignal($showCommandMenu)
+    const { context, refs } = useFloating({ open: shouldShow })
+    const { isMounted, status } = useTransitionStatus(context, { duration: 300 })
+
     const win = useWindowSize()
     const menu = { height: 400, width: 540 }
     const top = roundByDPR((win.height - menu.height) / 2)
@@ -30,19 +33,19 @@ export function CommandMenu(): ReactNode {
 
     return (
         <Command.Dialog
-            {...props}
             loop
-            open={state.visible}
+            ref={refs.setFloating}
+            open={isMounted}
             onMouseDown={evt => evt.stopPropagation()}
             onOpenChange={open => $showCommandMenu.set(open)}
             style={{ marginTop: top, maxWidth: menu.width, maxHeight: menu.height }}
             className={twMerge(
                 'flex w-full origin-top scale-95 flex-col rounded-md bg-[--bg] text-sm text-[--fg] opacity-0 shadow-2xl backdrop-blur-md transition duration-300',
-                state.enter && 'scale-100 opacity-100',
+                status === 'open' && 'scale-100 opacity-100',
             )}
             contentClassName={twMerge(
                 'dialog fixed inset-0 flex items-start justify-center bg-[--overlay-bg] opacity-0 transition duration-300',
-                state.enter && 'opacity-100',
+                status === 'open' && 'opacity-100',
             )}
         >
             <div className="relative flex shrink-0">
@@ -85,26 +88,26 @@ export function CommandMenu(): ReactNode {
                         icon={LucidePlay}
                         title="Resume"
                         shortcut={shortcuts.togglePlayback[0]}
-                        enabled={$hasTrack.value && !$playing.value}
+                        enabled={useSignal(() => $hasTrack.value && !$playing.value)}
                         onSelect={togglePlayback}
                     />
                     <Item
                         icon={LucidePause}
                         title="Pause"
                         shortcut={shortcuts.togglePlayback[0]}
-                        enabled={$hasTrack.value && $playing.value}
+                        enabled={useSignal(() => $hasTrack.value && $playing.value)}
                         onSelect={togglePlayback}
                     />
                     <Item
                         icon={LucideRewind}
                         title="Play previous"
-                        enabled={$hasPrevTrack.value}
+                        enabled={useSignal($hasPrevTrack)}
                         onSelect={playPrev}
                     />
                     <Item
                         icon={LucideFastForward}
                         title="Play next"
-                        enabled={$hasNextTrack.value}
+                        enabled={useSignal($hasNextTrack)}
                         onSelect={playNext}
                     />
                     <Item
@@ -119,14 +122,14 @@ export function CommandMenu(): ReactNode {
                         icon={LucideVolumeOff}
                         title="Mute"
                         shortcut={shortcuts.toggleMute[0]}
-                        enabled={$muted.value === false}
+                        enabled={useSignal(() => $muted.value === false)}
                         onSelect={toggleMute}
                     />
                     <Item
                         icon={LucideVolume2}
                         title="Unmute"
                         shortcut={shortcuts.toggleMute[0]}
-                        enabled={$muted.value === true}
+                        enabled={useSignal(() => $muted.value === true)}
                         onSelect={toggleMute}
                     />
                     <Item
@@ -194,19 +197,19 @@ export function CommandMenu(): ReactNode {
                     <Item
                         icon={LucideSun}
                         title="Light"
-                        enabled={$config.value.themeMode !== 'light'}
+                        enabled={useSignal(() => $config.value.themeMode !== 'light')}
                         onSelect={() => setThemeMode('light')}
                     />
                     <Item
                         icon={LucideMoon}
                         title="Dark"
-                        enabled={$config.value.themeMode !== 'dark'}
+                        enabled={useSignal(() => $config.value.themeMode !== 'dark')}
                         onSelect={() => setThemeMode('dark')}
                     />
                     <Item
                         icon={LucideSunMoon}
                         title="System"
-                        enabled={($config.value.themeMode || 'system') !== 'system'}
+                        enabled={useSignal(() => ($config.value.themeMode || 'system') !== 'system')}
                         onSelect={() => setThemeMode('system')}
                     />
                 </Group>

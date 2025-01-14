@@ -1,13 +1,12 @@
-import { useMountEffect } from '@react-hookz/web'
 import { bootstrap } from './actions/bootstrap'
 import { CommandMenu } from './components/CommandMenu'
 import { Main } from './components/Main/Main'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import './utils/keyboard'
 
-export function App() {
-    useMountEffect(bootstrap)
+bootstrap()
 
+export function App() {
     return (
         <div
             className="app fixed inset-0 flex overflow-hidden"

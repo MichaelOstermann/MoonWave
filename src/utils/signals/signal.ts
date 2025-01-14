@@ -1,5 +1,5 @@
-import type { Signal as PreactSignal } from '@preact/signals-react'
-import { signal as createPreactSignal } from '@preact/signals-react'
+import type { Signal as PreactSignal } from '@preact/signals-core'
+import { signal as createPreactSignal } from '@preact/signals-core'
 
 type OnChange<T> = (after: T, before: T, signal: Signal<T>) => void
 

@@ -3,6 +3,7 @@ import { createPlaylist } from '@app/actions/createPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
 import { $focusedView, $sidebarItems } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { LibraryItem } from './LibraryItem'
 import { PlaylistItem } from './PlaylistItem'
@@ -10,6 +11,8 @@ import { SidebarSearchInput } from './SidebarSearchInput'
 import { SidebarSectionHeader } from './SidebarSectionHeader'
 
 export function Sidebar(): ReactNode {
+    const sidebarItems = useSignal($sidebarItems)
+
     const menu = useMenu([
         { text: 'Create Playlist', action: createPlaylist },
         { item: 'Separator' },
@@ -32,7 +35,7 @@ export function Sidebar(): ReactNode {
             />
             <SidebarSearchInput />
             <div className="mt-4 flex shrink grow flex-col overflow-auto px-2.5 pb-2.5">
-                {$sidebarItems.value.map((item) => {
+                {sidebarItems.map((item) => {
                     switch (item.name) {
                         case 'SECTION': return (
                             <SidebarSectionHeader key={`section-${item.value}`}>

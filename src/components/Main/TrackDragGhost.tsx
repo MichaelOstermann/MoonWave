@@ -2,12 +2,14 @@ import { onDragEndTracks } from '@app/actions/onDragEndTracks'
 import { $isDraggingTracks, $tracksById, $tracksLSM } from '@app/state/state'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { roundByDPR } from '@app/utils/roundByDPR'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { useEventListener } from '@react-hookz/web'
 import { type ReactNode, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { twJoin } from 'tailwind-merge'
 
 export function TrackDragGhost(): ReactNode {
+    const isDraggingTracks = useSignal($isDraggingTracks)
     const [el, setEl] = useState<HTMLDivElement | null>(null)
     const [width, setWidth] = useState(Number.NaN)
     const [height, setHeight] = useState(Number.NaN)
@@ -15,13 +17,13 @@ export function TrackDragGhost(): ReactNode {
     const [y, setY] = useState(Number.NaN)
 
     useEventListener(document, 'mousemove', (evt: MouseEvent) => {
-        if (!$isDraggingTracks.value) return
+        if (!isDraggingTracks) return
         setX(evt.clientX)
         setY(evt.clientY)
     })
 
     useEventListener(document, 'mouseup', () => {
-        if (!$isDraggingTracks.value) return
+        if (!isDraggingTracks) return
         onDragEndTracks()
     })
 
@@ -38,18 +40,18 @@ export function TrackDragGhost(): ReactNode {
         setHeight(height)
     }, [el])
 
-    if (!$isDraggingTracks.value) return null
-
-    const draggingTrackIds = getSelections($tracksLSM.value)
+    const draggingTrackIds = useSignal(() => getSelections($tracksLSM.value))
     const isDraggingSingle = draggingTrackIds.length === 1
-    const content = isDraggingSingle
+    const content = useSignal(() => isDraggingSingle
         ? $tracksById(draggingTrackIds[0]).value!.title
-        : `${draggingTrackIds.length} tracks`
+        : `${draggingTrackIds.length} tracks`)
 
     const hasMeasurements = Number.isFinite(width)
         && Number.isFinite(height)
         && Number.isFinite(x)
         && Number.isFinite(y)
+
+    if (!isDraggingTracks) return null
 
     return createPortal(
         <div

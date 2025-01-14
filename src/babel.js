@@ -1,4 +1,11 @@
 const identifiers = new Set(['signal', 'computed', 'action', 'effect', 'changeEffect'])
+const arities = {
+    signal: 2,
+    computed: 2,
+    action: 2,
+    effect: 2,
+    changeEffect: 3,
+}
 
 export default function transform({ types: t }, _options) {
     return {
@@ -33,15 +40,14 @@ export default function transform({ types: t }, _options) {
 
                 const props = t.objectExpression([idProp, pathProp].filter(Boolean))
 
-                if (path.node.arguments.length === 0) {
-                    path.node.arguments.push(t.identifier('undefined'))
+                const name = path.node.callee.name
+                const arity = arities[name]
+
+                if (path.node.arguments.length === arity - 1) {
                     path.node.arguments.push(props)
                 }
-                else if (path.node.arguments.length === 1) {
-                    path.node.arguments.push(props)
-                }
-                else if (path.node.arguments.length === 2) {
-                    const arg = path.node.arguments[1]
+                else if (path.node.arguments.length === arity) {
+                    const arg = path.node.arguments.at(-1)
 
                     if (arg.type === 'ObjectExpression') {
                         arg.properties = props.properties.concat(arg.properties)

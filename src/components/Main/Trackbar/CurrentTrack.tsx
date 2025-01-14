@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Logo } from '@app/components/Logo'
 import { $playingTrackId } from '@app/state/state'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { twJoin } from 'tailwind-merge'
 import { TrackDuration } from './TrackDuration'
 import { TrackElapsedTime } from './TrackElapsedTime'
@@ -10,7 +11,7 @@ import { Wavesurfer } from './Wavesurfer'
 import { WavesurferSeeker } from './WavesurferSeeker'
 
 export function CurrentTrack(): ReactNode {
-    const hasTrack = $playingTrackId.value != null
+    const hasTrack = useSignal(() => $playingTrackId.value != null)
 
     return (
         <div className="group relative flex size-full max-w-[1000px] rounded-b-md bg-[--track-bg]">

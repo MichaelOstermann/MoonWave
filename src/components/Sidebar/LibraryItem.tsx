@@ -2,7 +2,7 @@ import type { View } from '@app/types'
 import type { ReactNode } from 'react'
 import { openView } from '@app/actions/openView'
 import { $playing, $playingView, $view } from '@app/state/state'
-import { useComputed } from '@preact/signals-react'
+import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideArchiveX, LucideBook, LucideClock9 } from 'lucide-react'
 import { AudioWaveIcon } from '../AudioWaveIcon'
 import { SidebarItem } from './SidebarItem'
@@ -11,12 +11,9 @@ import { SidebarItemIcon } from './SidebarItemIcon'
 export function LibraryItem({ name }: {
     name: Exclude<View['name'], 'PLAYLIST'>
 }): ReactNode {
-    const isActive = useComputed(() => {
-        return $view.value.name === name
-    }).value
-
-    const isPlaylingPlaylist = useComputed(() => $playingView.value?.name === name).value
-    const showAudioWaveIcon = isPlaylingPlaylist && $playing.value
+    const isActive = useSignal(() => $view.value.name === name)
+    const isPlaylingPlaylist = useSignal(() => $playingView.value?.name === name)
+    const showAudioWaveIcon = useSignal(() => isPlaylingPlaylist && $playing.value)
 
     const title = ({
         LIBRARY: 'Library',
