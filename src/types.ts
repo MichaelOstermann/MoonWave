@@ -46,6 +46,7 @@ export type Library = {
 }
 
 export type Config = {
+    sidebarWidth?: number
     libraryMode?: Mode
     recentlyAddedMode?: Mode
     unsortedMode?: Mode

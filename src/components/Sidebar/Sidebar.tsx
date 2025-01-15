@@ -1,17 +1,20 @@
 import type { ReactNode } from 'react'
 import { createPlaylist } from '@app/actions/createPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $focusedView, $sidebarItems } from '@app/state/state'
+import { $config, $focusedView, $sidebarItems } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
+import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { LibraryItem } from './LibraryItem'
 import { PlaylistItem } from './PlaylistItem'
+import { SidebarResizeHandler } from './SidebarResizeHandler'
 import { SidebarSearchInput } from './SidebarSearchInput'
 import { SidebarSectionHeader } from './SidebarSectionHeader'
 
 export function Sidebar(): ReactNode {
     const sidebarItems = useSignal($sidebarItems)
+    const width = useSignal(() => getSidebarWidth($config.value.sidebarWidth))
 
     const menu = useMenu([
         { text: 'Create Playlist', action: createPlaylist },
@@ -23,7 +26,8 @@ export function Sidebar(): ReactNode {
         <div
             onContextMenu={menu.show}
             onMouseDown={() => $focusedView.set('SIDEBAR')}
-            className="sidebar flex h-full w-72 shrink-0 flex-col bg-[--bg] text-[--fg]"
+            className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
+            style={{ width }}
         >
             <div
                 className="h-11 shrink-0"
@@ -33,6 +37,7 @@ export function Sidebar(): ReactNode {
                     getCurrentWindow().startDragging()
                 }}
             />
+            <SidebarResizeHandler />
             <SidebarSearchInput />
             <div className="mt-4 flex shrink grow flex-col overflow-auto px-2.5 pb-2.5">
                 {sidebarItems.map((item) => {
