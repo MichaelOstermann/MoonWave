@@ -43,7 +43,9 @@ export function LibraryItem({ name }: {
                 <SidebarItemIcon icon={icon} />
             )}
             <div className="flex shrink grow">
-                {title}
+                <span className="truncate">
+                    {title}
+                </span>
             </div>
         </SidebarItem>
     )
