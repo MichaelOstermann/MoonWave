@@ -15,6 +15,7 @@ import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGr
 import { isSelected } from '@app/utils/lsm/utils/isSelected'
 import { useMenu } from '@app/utils/menu'
 import { useSignal } from '@app/utils/signals/useSignal'
+import { formatTrackIds } from '@app/utils/track/formatTrackIds'
 import { confirm } from '@tauri-apps/plugin-dialog'
 import { twJoin } from 'tailwind-merge'
 import { columns } from './config'
@@ -111,10 +112,15 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
     const playlist = $playlistsById(currentPlaylistId).value
     if (!playlist) return
 
+    const prompt = formatTrackIds(trackIds, {
+        one: title => `Are you sure you want to remove "${title}" from the playlist "${playlist.title}"?`,
+        many: count => `Are you sure you want to remove the ${count} selected songs from the playlist "${playlist.title}"?`,
+    })
+
     return {
         text: 'Remove from Playlist',
         action: async () => {
-            const answer = await confirm(`Are you sure you want to remove the selected songs from the playlist "${playlist.title}"?`, {
+            const answer = await confirm(prompt, {
                 title: '',
                 kind: 'warning',
                 okLabel: 'Remove Songs',
@@ -129,10 +135,16 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
 function moveSelectedTracksToTrash(): MenuItem {
     const trackIds = getSelections($tracksLSM.value)
     if (!trackIds.length) return
+
+    const prompt = formatTrackIds(trackIds, {
+        one: title => `Are you sure you want to trash the song "${title}"?`,
+        many: count => `Are you sure you want to trash the ${count} selected songs?`,
+    })
+
     return {
         text: 'Move to Trash',
         action: async () => {
-            const answer = await confirm(`Are you sure you want to trash the selected songs?`, {
+            const answer = await confirm(prompt, {
                 title: '',
                 kind: 'warning',
                 okLabel: 'Move to Trash',
