@@ -7,6 +7,7 @@ import { onDoubleClickTrack } from '@app/actions/onDoubleClickTrack'
 import { onDragStartTracks } from '@app/actions/onDragStartTracks'
 import { removeTracksFromPlaylist } from '@app/actions/removeTracksFromPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
+import { trashTracks } from '@app/actions/trashTracks'
 import { $focusedView, $playingTrackId, $playlists, $playlistsById, $tracksLSM, $view } from '@app/state/state'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionInGroup'
@@ -36,6 +37,8 @@ export function TrackListRow({ row, idx, colStyles }: {
         removeSelectedTracksToPlaylistMenuItem,
         { item: 'Separator' },
         { text: 'Sync Library', action: syncLibrary },
+        { item: 'Separator' },
+        moveSelectedTracksToTrash,
     ])
 
     return (
@@ -119,6 +122,24 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
             })
             if (!answer) return
             removeTracksFromPlaylist({ trackIds, playlistId: playlist.id })
+        },
+    }
+}
+
+function moveSelectedTracksToTrash(): MenuItem {
+    const trackIds = getSelections($tracksLSM.value)
+    if (!trackIds.length) return
+    return {
+        text: 'Move to Trash',
+        action: async () => {
+            const answer = await confirm(`Are you sure you want to trash the selected songs?`, {
+                title: '',
+                kind: 'warning',
+                okLabel: 'Move to Trash',
+                cancelLabel: 'Cancel',
+            })
+            if (!answer) return
+            trashTracks(trackIds)
         },
     }
 }

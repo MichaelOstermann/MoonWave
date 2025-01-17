@@ -1,10 +1,11 @@
-use tauri::Manager;
-use tauri_plugin_window_state::StateFlags;
-use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::Accessor;
-use serde::Serialize;
 use new_mime_guess::from_path;
+use serde::Serialize;
+use tauri::Manager;
+use tauri_plugin_window_state::StateFlags;
+use trash;
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 #[derive(Serialize)]
 pub struct AudioMetadata {
@@ -33,7 +34,7 @@ fn parse_audio_metadata(file_path: String) -> Option<AudioMetadata> {
                 track_number: tag.track(),
                 disk_number: tag.disk(),
             })
-        },
+        }
         Err(_) => None,
     }
 }
@@ -42,6 +43,11 @@ fn parse_audio_metadata(file_path: String) -> Option<AudioMetadata> {
 fn get_file_mimetype(file_path: String) -> String {
     let mime = from_path(file_path).first_or_octet_stream();
     mime.to_string()
+}
+
+#[tauri::command]
+fn trash_files(file_paths: Vec<String>) -> bool {
+    trash::delete_all(file_paths).is_ok()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -63,12 +69,21 @@ pub fn run() {
             let window = app.get_webview_window("main").unwrap();
 
             #[cfg(target_os = "macos")]
-            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, Some(NSVisualEffectState::Active), Some(10.0))
-                .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+            apply_vibrancy(
+                &window,
+                NSVisualEffectMaterial::HudWindow,
+                Some(NSVisualEffectState::Active),
+                Some(10.0),
+            )
+            .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![parse_audio_metadata, get_file_mimetype])
+        .invoke_handler(tauri::generate_handler![
+            parse_audio_metadata,
+            get_file_mimetype,
+            trash_files
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
