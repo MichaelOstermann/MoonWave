@@ -1,53 +1,19 @@
-import { seekTo } from '@app/actions/seekTo'
+import type { ReactNode } from 'react'
 import { $currentTrackDuration } from '@app/state/state'
 import { formatDuration } from '@app/utils/formatDuration'
-import { roundByDPR } from '@app/utils/roundByDPR'
 import { useSignal } from '@app/utils/signals/useSignal'
-import { useResizeObserver } from '@react-hookz/web'
-import { type ReactNode, useRef, useState } from 'react'
 
-export function WavesurferSeeker(): ReactNode {
-    const [offsetX, setOffsetX] = useState(0)
-    const tracklistHeaderHeight = 32
-
-    const containerRef = useRef<HTMLDivElement>(null)
-    const [containerWidth, setContainerWidth] = useState(0)
-    useResizeObserver(containerRef as any, (entry) => {
-        setContainerWidth(entry.contentRect.width)
-    })
-
-    const labelRef = useRef<HTMLDivElement>(null)
-    const [labelWidth, setLabelWidth] = useState(0)
-    const [labelHeight, setLabelHeight] = useState(0)
-    useResizeObserver(labelRef as any, (entry) => {
-        setLabelWidth(entry.contentRect.width)
-        setLabelHeight(entry.contentRect.height)
-    })
-
-    const labelY = roundByDPR((tracklistHeaderHeight - labelHeight) / 2)
-    const labelX = roundByDPR(offsetX - (labelWidth / 2))
-    const position = useSignal(() => $currentTrackDuration.value * (offsetX / containerWidth))
+export function WavesurferSeeker({ position }: { position: number }): ReactNode {
+    const trackPosition = useSignal(() => formatDuration($currentTrackDuration.value * position))
 
     return (
         <div
-            ref={containerRef}
-            className="absolute inset-0 z-20 flex cursor-crosshair opacity-0 group-hover:opacity-100"
-            onMouseMove={evt => setOffsetX(Math.max(0, evt.nativeEvent.offsetX))}
-            onClick={() => seekTo(position)}
+            className="tooltip pointer-events-none absolute top-full z-20 flex h-8 items-center justify-center"
+            style={{ left: `${position * 100}%` }}
         >
-            <div
-                className="pointer-events-none absolute inset-y-0 left-0 flex w-px"
-                style={{ transform: `translateX(${offsetX}px)` }}
-            />
-            <div
-                ref={labelRef}
-                className="tooltip pointer-events-none absolute top-full flex rounded bg-[--bg] text-xxs font-semibold text-[--fg] backdrop-blur"
-                style={{ transform: `translate(${labelX}px, ${labelY}px)` }}
-            >
-                <span className="px-2 py-1">
-                    {formatDuration(position)}
-                </span>
-            </div>
+            <span className="absolute rounded bg-[--bg] px-2 py-1 text-xxs font-semibold text-[--fg] backdrop-blur">
+                {trackPosition}
+            </span>
         </div>
     )
 }

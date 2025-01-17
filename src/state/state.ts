@@ -20,6 +20,7 @@ import { effect } from '@app/utils/signals/effect'
 import { indexSignalBy } from '@app/utils/signals/indexSignalBy'
 import { signal } from '@app/utils/signals/signal'
 import { deleteWaveform } from '@app/utils/waveform/deleteWaveform'
+import { batch } from '@preact/signals-core'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { shallowEqualObjects } from 'shallow-equal'
 import { match } from 'ts-pattern'
@@ -77,6 +78,8 @@ export const $playingTrackId = signal<string>(undefined)
 export const $tracksFilter = signal('')
 export const $editingPlaylistId = signal<string>(null)
 export const $showCommandMenu = signal(false)
+export const $mouseX = signal(0)
+export const $mouseY = signal(0)
 export const $tracksLSM = signal(createLSM<string>())
 export const $sidebarLSM = signal(createLSM<View>({
     muliselection: false,
@@ -143,6 +146,11 @@ export const $hasPrevTrack = computed<boolean>(() => Boolean($playingTrackId.val
 export const $hasNextTrack = computed<boolean>(() => Boolean($playingTrackId.value && $playingTracks.value.length > 0))
 
 // Effects
+
+document.addEventListener('mousemove', evt => batch(() => {
+    $mouseX.set(evt.clientX)
+    $mouseY.set(evt.clientY)
+}), { passive: true })
 
 effect((prev: string[] = []) => {
     if (!$didLoadConfig.value) return prev

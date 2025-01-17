@@ -14,6 +14,7 @@
 }
 
 body {
+    cursor: default;
     --accent: var(--main-accent, var(--base-accent));
     --waveform-fg: var(--main-waveform-fg, var(--base-fg-tertiary));
 }

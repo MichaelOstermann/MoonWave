@@ -34,7 +34,7 @@ export function Wavesurfer(): ReactNode {
     return (
         <div
             ref={container}
-            className="absolute inset-0 overflow-hidden rounded-b-md opacity-0 group-hover:opacity-100"
+            className="absolute inset-0 overflow-hidden rounded-b-md"
         />
     )
 }

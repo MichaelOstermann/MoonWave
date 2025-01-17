@@ -8,6 +8,7 @@ export const onDragEndTracks = action(() => {
     const trackIds = getSelections($tracksLSM.value)
 
     $isDraggingTracks.set(false)
+    document.body.classList.remove('!cursor-default')
 
     if (targetPlaylistId)
         addTracksToPlaylist({ trackIds, playlistId: targetPlaylistId })
