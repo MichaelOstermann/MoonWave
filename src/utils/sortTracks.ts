@@ -31,7 +31,7 @@ function sortRecentlyAdded(tracks: Track[]): Track[] {
 }
 
 function sortUnsorted(tracks: Track[]): Track[] {
-    return sortPlaylist(tracks)
+    return sortLibrary(tracks)
 }
 
 function sortPlaylist(tracks: Track[]): Track[] {
