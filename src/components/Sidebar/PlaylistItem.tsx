@@ -58,7 +58,7 @@ export function PlaylistItem({ id }: {
             hasMenu={menu.isOpen}
             isEditing={isEditing}
             isDropTarget={isDropTarget}
-            onMouseDown={(evt) => {
+            onPointerDown={(evt) => {
                 if (evt.button !== 0) return
                 onClickPlaylist(playlist.id)
             }}

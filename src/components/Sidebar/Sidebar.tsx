@@ -25,13 +25,13 @@ export function Sidebar(): ReactNode {
     return (
         <div
             onContextMenu={menu.show}
-            onMouseDown={() => $focusedView.set('SIDEBAR')}
+            onPointerDown={() => $focusedView.set('SIDEBAR')}
             className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
             style={{ width }}
         >
             <div
                 className="h-11 shrink-0"
-                onMouseDown={(evt) => {
+                onPointerDown={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()
                     getCurrentWindow().startDragging()

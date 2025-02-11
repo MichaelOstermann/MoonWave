@@ -31,7 +31,7 @@ export function LibraryItem({ name }: {
         <SidebarItem
             isActive={isActive}
             isPlaying={isPlaylingPlaylist}
-            onMouseDown={(evt) => {
+            onPointerDown={(evt) => {
                 if (evt.button !== 0) return
                 openView({ name })
             }}

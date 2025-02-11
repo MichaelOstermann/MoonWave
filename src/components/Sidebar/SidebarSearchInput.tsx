@@ -9,8 +9,8 @@ export function SidebarSearchInput(): ReactNode {
 
     return (
         <div
-            onMouseDown={evt => evt.stopPropagation()}
             className="group flex shrink-0 px-2"
+            onPointerDown={evt => evt.stopPropagation()}
         >
             <div className="relative flex shrink grow">
                 <div className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center">
@@ -19,7 +19,7 @@ export function SidebarSearchInput(): ReactNode {
                 <div
                     className="absolute inset-y-0 right-0 flex items-center px-2.5 group-has-[input:placeholder-shown]:hidden"
                     onClick={() => filterLibrary('')}
-                    onMouseDown={evt => evt.preventDefault()}
+                    onPointerDown={evt => evt.preventDefault()}
                 >
                     <LucideX className="size-4" />
                 </div>

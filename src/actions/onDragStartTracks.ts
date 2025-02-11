@@ -14,9 +14,9 @@ export const onDragStartTracks = action((trackId: string) => {
     document.body.classList.add('!cursor-default')
 
     const onMouseUp = function () {
-        document.removeEventListener('mouseup', onMouseUp)
+        document.removeEventListener('pointerup', onMouseUp)
         onDragEndTracks()
     }
 
-    document.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('pointerup', onMouseUp)
 })

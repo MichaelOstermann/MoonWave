@@ -147,7 +147,7 @@ export const $hasNextTrack = computed<boolean>(() => Boolean($playingTrackId.val
 
 // Effects
 
-document.addEventListener('mousemove', evt => batch(() => {
+document.addEventListener('pointermove', evt => batch(() => {
     $mouseX.set(evt.clientX)
     $mouseY.set(evt.clientY)
 }), { passive: true })

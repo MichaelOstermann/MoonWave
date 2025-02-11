@@ -79,31 +79,31 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     }
 
     effect(() => {
-        $element.value?.removeEventListener('mousedown', onElementMouseDown)
+        $element.value?.removeEventListener('pointerdown', onElementMouseDown)
 
         if ($enabled.value && $element.value)
-            $element.value?.addEventListener('mousedown', onElementMouseDown)
+            $element.value?.addEventListener('pointerdown', onElementMouseDown)
         else
             $dragging.set(false)
     })
 
     effect(() => {
-        document.removeEventListener('mousemove', onDocumentMouseMove)
-        document.removeEventListener('mouseup', onDocumentMouseUp)
+        document.removeEventListener('pointermove', onDocumentMouseMove)
+        document.removeEventListener('pointerup', onDocumentMouseUp)
 
         if ($dragging.value) {
-            document.addEventListener('mousemove', onDocumentMouseMove, { passive: true })
-            document.addEventListener('mouseup', onDocumentMouseUp)
+            document.addEventListener('pointermove', onDocumentMouseMove, { passive: true })
+            document.addEventListener('pointerup', onDocumentMouseUp)
         }
     })
 
     effect(() => {
-        $element.value?.removeEventListener('mouseenter', onElementMouseEnter)
-        $element.value?.removeEventListener('mouseleave', onElementMouseLeave)
+        $element.value?.removeEventListener('pointerenter', onElementMouseEnter)
+        $element.value?.removeEventListener('pointerleave', onElementMouseLeave)
 
         if (opts.useHoverPreview && $enabled.value && $element.value) {
-            $element.value?.addEventListener('mouseenter', onElementMouseEnter)
-            $element.value?.addEventListener('mouseleave', onElementMouseLeave)
+            $element.value?.addEventListener('pointerenter', onElementMouseEnter)
+            $element.value?.addEventListener('pointerleave', onElementMouseLeave)
         }
         else {
             $hovering.set(false)
