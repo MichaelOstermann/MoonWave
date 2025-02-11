@@ -15,7 +15,7 @@ export function SyncProgress(): ReactNode {
             gapPercent={0}
             variant="ascending"
             primary="var(--accent)"
-            secondary="var(--list-active-bg)"
+            secondary="var(--bg-active)"
             className={twJoin(
                 'pointer-events-none transition duration-300',
                 !syncing && 'scale-0 opacity-0',

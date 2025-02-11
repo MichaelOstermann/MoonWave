@@ -40,16 +40,20 @@ export function SidebarItem({
         <div
             {...rest}
             ref={ref}
-            className={twMerge(
-                'flex h-8 shrink-0 items-center gap-x-1.5 rounded-md px-2.5 text-sm',
-                showBorder && 'shadow-[inset_0_0_0_2px_var(--accent)]',
-                !isEditing && isPlaying && 'text-[--list-active-fg]',
-                !showBorder && isActive && !isFocused && 'bg-[--list-selected-bg]',
-                !showBorder && isActive && isFocused && 'bg-[--list-active-bg] text-[--list-active-fg]',
-                className,
-            )}
+            className="flex shrink-0 py-px"
         >
-            {children}
+            <div
+                className={twMerge(
+                    'flex h-8 shrink grow items-center gap-x-2.5 rounded-md px-2.5 text-sm',
+                    showBorder && 'shadow-[0_0_0_2px_var(--accent)]',
+                    !isEditing && isPlaying && 'text-[--fg-active]',
+                    !showBorder && isActive && !isFocused && 'bg-[--bg-selected]',
+                    !showBorder && isActive && isFocused && 'bg-[--bg-active] text-[--fg-active]',
+                    className,
+                )}
+            >
+                {children}
+            </div>
         </div>
     )
 }

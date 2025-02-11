@@ -39,7 +39,7 @@ export function VolumeControls(): ReactNode {
                 <div
                     ref={el => void seeker.$element.set(el)}
                     data-seeking={isSeeking}
-                    className="group relative flex h-[--bar-height] items-center justify-end rounded-full bg-[--volume-bar-bg]"
+                    className="group relative flex h-[--bar-height] items-center justify-end rounded-full bg-[--bg-hover]"
                     style={{
                         'width': barWidth,
                         '--bar-height': `${barHeight}px`,
@@ -48,7 +48,7 @@ export function VolumeControls(): ReactNode {
                     }}
                 >
                     <div className="absolute left-0 flex translate-x-[--knob-position] items-center justify-center rounded-full">
-                        <div className="absolute size-[--bar-height] rounded-full bg-[--volume-knob-bg] transition-all group-hover:size-[--knob-size] group-data-[seeking='true']:size-[--knob-size]" />
+                        <div className="absolute size-[--bar-height] rounded-full bg-[--fg] transition-all group-hover:size-[--knob-size] group-data-[seeking='true']:size-[--knob-size]" />
                     </div>
                 </div>
             </div>

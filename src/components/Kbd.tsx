@@ -8,7 +8,7 @@ export function Kbd({ value, className }: { value: string, className?: string })
     return (
         <kbd
             className={twMerge(
-                'flex items-center gap-x-0.5 text-[--kbd-fg]',
+                'flex items-center gap-x-0.5 text-[--fg-soft]',
                 className,
             )}
         >

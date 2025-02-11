@@ -11,7 +11,7 @@ import { match } from 'ts-pattern'
 
 export function PlaybackControls(): ReactNode {
     return (
-        <div className="flex gap-x-2">
+        <div className="flex gap-x-1">
             <PlayPrevButton />
             <PlayPauseButton />
             <PlayNextButton />

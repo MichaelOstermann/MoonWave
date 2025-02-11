@@ -49,10 +49,10 @@ export function TrackListRow({ row, idx, colStyles }: {
             onDoubleClick={() => onDoubleClickTrack(row.id)}
             className={twJoin(
                 'relative flex h-8 items-center text-sm leading-7',
-                isPlayingTrack && 'text-[--list-active-fg]',
-                isEven && !selected && 'bg-[--list-bg]',
-                selected && !isFocused && 'bg-[--list-selected-bg]',
-                selected && isFocused && 'bg-[--list-active-bg] text-[--list-active-fg]',
+                isPlayingTrack && 'text-[--fg-active]',
+                isEven && !selected && 'bg-[--bg-soft]',
+                selected && !isFocused && 'bg-[--bg-selected]',
+                selected && isFocused && 'bg-[--bg-active] text-[--fg-active]',
                 !selected && 'rounded-md',
                 firstSelected && lastSelected && 'rounded-md',
                 firstSelected && !lastSelected && 'rounded-t-md',

@@ -17,7 +17,7 @@ export function SidebarResizeHandler(): ReactNode {
     return (
         <div
             ref={el => void resizer.$element.set(el)}
-            className="absolute -right-px z-20 h-full w-[5px] cursor-col-resize"
+            className="absolute right-[-2px] z-20 h-full w-[5px] cursor-col-resize"
         />
     )
 }

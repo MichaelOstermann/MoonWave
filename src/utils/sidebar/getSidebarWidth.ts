@@ -1,6 +1,6 @@
 import { pipeInto } from 'ts-functional-pipe'
 
-const defaultWidth = 280
+const defaultWidth = 290
 const minWidth = 200
 const maxWidth = 400
 

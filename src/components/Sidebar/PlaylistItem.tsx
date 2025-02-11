@@ -91,7 +91,7 @@ export function PlaylistItem({ id }: {
                         type="text"
                         defaultValue={playlist.title}
                         placeholder="New Playlist"
-                        className="shrink grow border-0 bg-transparent outline-none placeholder:text-[--input-placeholder-fg]"
+                        className="shrink grow border-0 bg-transparent outline-none placeholder:text-[--fg-soft]"
                         onBlur={evt => savePlaylistTitle(evt.target.value || 'New Playlist')}
                         onKeyDown={(evt) => {
                             if (evt.key === 'Escape' || evt.key === 'Enter')

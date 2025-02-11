@@ -1,14 +1,48 @@
 .theme-moonwave-light {
-    --base-accent: oklch(64% 0.2 262);
-    --base-accent-bg: oklch(70% 0.2 262 / 24%);
-    --base-accent-fg: oklch(54% 0.2 262);
-    --base-bg-primary: oklch(97% 0.004 90);
-    --base-bg-secondary: oklch(95% 0.004 90);
-    --base-bg-tertiary: oklch(90% 0.004 90);
-    --base-bg-quaternary: oklch(86% 0.004 90 / 50%);
-    --base-fg-primary: oklch(20% 0.005 286);
-    --base-fg-secondary: oklch(65% 0.005 286);
-    --base-fg-tertiary: oklch(82% 0.005 286);
-    --dialog-overlay-bg: oklch(92% 0.004 90 / 50%);
-    --sidebar-input-bg: oklch(92% 0.004 90);
+    --accent: oklch(64% 0.2 262);
+    --waveform: oklch(82% 0.005 286);
+    --fg: oklch(20% 0.005 286);
+    --bg-active: oklch(70% 0.2 262 / 20%);
+    --fg-active: oklch(54% 0.2 262);
+}
+
+.theme-moonwave-light .main {
+    --bg: oklch(99% 0.004 90);
+    --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
+    --bg-soft: color-mix(in oklab, var(--fg) 2%, var(--bg));
+    --bg-selected: color-mix(in oklab, var(--fg) 8%, var(--bg));
+    --bg-hover: color-mix(in oklab, var(--fg) 8%, var(--bg));
+}
+
+.theme-moonwave-light .sidebar {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    --bg: oklch(96% 0.004 90 / 90%);
+    --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
+    --bg-soft: rgba(0, 0, 0, 0.04);
+    --bg-selected: rgba(0, 0, 0, 0.08);
+}
+
+.theme-moonwave-light [data-modal] {
+    --bg: oklch(99% 0.004 90);
+    --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
+    --bg-soft: color-mix(in oklab, var(--fg) 3%, var(--bg));
+    --bg-selected: color-mix(in oklab, var(--fg) 6%, var(--bg));
+    --bg-hover: color-mix(in oklab, var(--fg) 6%, var(--bg));
+}
+
+.theme-moonwave-light [data-modal="dialog"] {
+    --overlay: oklch(96% 0.004 90 / 50%);
+}
+
+.theme-moonwave-light [data-modal="popover"] {
+    --border: rgba(0, 0, 0, 0.1);
+}
+
+.theme-moonwave-light ::selection {
+    color: var(--fg-active);
+    background: var(--bg-active);
+}
+
+.tooltip {
+    --bg: oklch(90% 0.004 90 / 50%);
 }

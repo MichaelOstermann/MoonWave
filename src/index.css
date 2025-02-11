@@ -4,64 +4,6 @@
 @import "./themes/moonwave-light.css";
 @import "./themes/moonwave-dark.css";
 
-* {
-    user-select: none;
-}
-
-.flex {
-    min-width: 0;
-    min-height: 0;
-}
-
-body {
-    cursor: default;
-    --accent: var(--main-accent, var(--base-accent));
-    --waveform-fg: var(--main-waveform-fg, var(--base-fg-tertiary));
-}
-
-.main {
-    --bg: var(--main-bg, var(--base-bg-primary));
-    --btn-disabled-fg: var(--main-btn-disabled-fg, var(--base-fg-tertiary));
-    --btn-fg: var(--main-btn-fg, var(--fg));
-    --btn-hover-bg: var(--main-btn-hover-bg, var(--base-bg-quaternary));
-    --fg: var(--main-fg, var(--base-fg-primary));
-    --list-active-bg: var(--main-list-active-bg, var(--base-accent-bg));
-    --list-active-fg: var(--main-list-active-fg, var(--base-accent-fg));
-    --list-bg: var(--main-list-bg, var(--base-bg-secondary));
-    --list-selected-bg: var(--main-list-selected-bg, var(--base-bg-tertiary));
-    --track-bg: var(--main-track-bg, var(--list-bg));
-    --volume-bar-bg: var(--main-volume-bar-bg, var(--base-bg-quaternary));
-    --volume-knob-bg: var(--main-volume-knob-bg, var(--base-fg-primary));
-}
-
-.sidebar {
-    --accent: var(--sidebar-accent, var(--base-accent));
-    --bg: var(--sidebar-bg, var(--base-bg-secondary));
-    --fg: var(--sidebar-fg, var(--base-fg-primary));
-    --input-bg: var(--sidebar-input-bg, var(--bg));
-    --input-placeholder-fg: var(--sidebar-input-placeholder-fg, var(--base-fg-secondary));
-    --list-active-bg: var(--sidebar-list-active-bg, var(--base-accent-bg));
-    --list-active-fg: var(--sidebar-list-active-fg, var(--base-accent-fg));
-    --list-selected-bg: var(--sidebar-list-selected-bg, var(--base-bg-tertiary));
-    --section-fg: var(--sidebar-section-fg, var(--base-fg-secondary));
-}
-
-.dialog {
-    --bg: var(--dialog-bg, var(--sidebar-bg, var(--base-bg-primary)));
-    --fg: var(--dialog-fg, var(--sidebar-fg, var(--base-fg-primary)));
-    --input-placeholder-fg: var(--dialog-input-placeholder-fg, var(--sidebar-input-placeholder-fg, var(--base-fg-secondary)));
-    --kbd-fg: var(--dialog-kbd-fg, var(--section-fg));
-    --list-selected-bg: var(--dialog-list-selected-bg, var(--sidebar-list-selected-bg, var(--base-bg-tertiary)));
-    --overlay-bg: var(--dialog-overlay-bg);
-    --section-fg: var(--dialog-section-fg, var(--sidebar-section-fg, var(--base-fg-secondary)));
-}
-
-.tooltip {
-    --bg: var(--tooltip-bg, var(--base-bg-quaternary));
-    --fg: var(--tooltip-fg, var(--base-fg-primary));
-}
-
-::selection {
-    color: var(--base-accent-fg);
-    background: var(--base-accent-bg);
-}
+* { user-select: none; outline: none; }
+body { cursor: default; }
+.flex { min-width: 0; min-height: 0; }

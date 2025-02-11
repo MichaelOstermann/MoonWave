@@ -30,7 +30,7 @@ export function CurrentTrack(): ReactNode {
             data-show-logo={!hasTrack}
             data-show-track={hasTrack && !iSeeking}
             data-show-waveform={hasTrack && iSeeking}
-            className="group relative flex size-full max-w-[1000px] rounded-b-md bg-[--track-bg]"
+            className="group relative flex size-full max-w-[1000px] rounded-b-md bg-[--bg-soft]"
         >
             <div className='absolute inset-0 flex items-center justify-center group-data-[show-logo="false"]:opacity-0'>
                 <Logo className="size-6" />
