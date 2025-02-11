@@ -14,6 +14,8 @@ export default antfu(
             'antfu/if-newline': 'off',
             'ts/consistent-type-definitions': 'off',
             'style/comma-dangle': ['error', 'always-multiline'],
+            'react/no-array-index-key': 'off',
+            'eslint-comments/no-unlimited-disable': 'off',
         },
         settings: {
             tailwindcss: {

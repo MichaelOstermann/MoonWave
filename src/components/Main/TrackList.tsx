@@ -74,7 +74,6 @@ export function TrackList() {
     const footerGap = <div key="footer" style={{ height: outerPadding }} />
     const trackList = rows.map((row, idx) => (
         <TrackListRow
-            // eslint-disable-next-line react/no-array-index-key
             key={`${row.id}-${idx}`}
             idx={idx}
             row={row}
