@@ -1,25 +1,37 @@
 import { effect as createPreactEffect } from '@preact/signals-core'
+import { createCleanups } from './cleanups'
 
 export interface Effect {
     (): void
-    id: string
-    path: string
 }
 
 type EffectOptions = {
     id?: string
     path?: string
+    abort?: AbortSignal
 }
 
-export function effect<T>(computation: (value: T | undefined) => T, options?: EffectOptions): Effect {
+export function effect<T>(
+    computation: (value: T | undefined) => T | undefined,
+    options?: EffectOptions,
+): Effect {
     let value: T | undefined
+    const cleanups = createCleanups()
 
     const effect = createPreactEffect(() => {
-        value = computation(value)
+        cleanups.mount(() => {
+            value = computation(value)
+        })
     }) as Effect
 
-    effect.id = options?.id || 'Anonymous'
-    effect.path = options?.path || ''
+    const dispose = function () {
+        cleanups.run()
+        effect()
+    }
 
-    return effect
+    // effect.id = options?.id || 'Anonymous'
+    // effect.path = options?.path || ''
+    options?.abort?.addEventListener('abort', dispose)
+
+    return dispose
 }

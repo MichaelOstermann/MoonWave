@@ -174,8 +174,8 @@ effect((prev: string[] = []) => {
     for (const className of prev) document.body.classList.remove(className)
     for (const className of next) document.body.classList.add(className)
     const style = getComputedStyle(document.body)
-    $waveformWaveColor.value = style.getPropertyValue('--waveform-fg')
-    $waveformProgressColor.value = style.getPropertyValue('--accent')
+    $waveformWaveColor.set(style.getPropertyValue('--waveform'))
+    $waveformProgressColor.set(style.getPropertyValue('--accent'))
     return next
 })
 

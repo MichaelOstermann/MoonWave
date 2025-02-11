@@ -1,4 +1,5 @@
-import type { Signal } from '@preact/signals-core'
+import type { Signal } from './signal'
+import { effect } from '@preact/signals-core'
 import { useSyncExternalStore } from 'react'
 import { computed } from './computed'
 
@@ -10,7 +11,14 @@ export function useSignal<T>(signalOrFn: Signal<T> | (() => T)): T {
         : signalOrFn
 
     return useSyncExternalStore(
-        signal.subscribe.bind(signal),
-        signal.peek.bind(signal),
+        (cb) => {
+            let isFirst = true
+            return effect(() => {
+                signal()
+                if (!isFirst) cb()
+                isFirst = false
+            })
+        },
+        () => signal.peek(),
     )
 }

@@ -1,12 +1,11 @@
-import type { Signal as PreactSignal } from '@preact/signals-core'
 import { signal as createPreactSignal } from '@preact/signals-core'
 
-type OnChange<T> = (after: T, before: T, signal: Signal<T>) => void
-
-export interface Signal<T> extends PreactSignal<T> {
+export interface Signal<T> {
+    (): T
     id: string
     path: string
-    onChange: (callback: OnChange<T>) => () => void
+    get value(): T
+    peek: () => T
     set: (value: T) => Signal<T>
     map: (transform: (value: T) => T) => Signal<T>
 }
@@ -21,30 +20,28 @@ export function signal<T>(value: T, options?: SignalOptions<NoInfer<T>>): Signal
 export function signal<T>(value: T | null, options?: SignalOptions<NoInfer<T> | null>): Signal<T | null>
 export function signal<T>(value: T | undefined, options?: SignalOptions<NoInfer<T> | undefined>): Signal<T | undefined>
 export function signal<T>(value: T, options?: SignalOptions<T>) {
-    const signal = createPreactSignal(value) as Signal<T>
+    const $ = createPreactSignal(value)
     const equals = options?.equals
-    const onChange = new Set<OnChange<T>>()
+
+    const signal = (() => $.value) as Signal<T>
 
     signal.id = options?.id || 'Anonymous'
     signal.path = options?.path || ''
+    signal.peek = () => $.peek()
 
-    signal.set = function (next) {
+    signal.set = function (next: T) {
         const prev = signal.peek()
         if (prev === next) return signal
         if (equals?.(next, prev)) return signal
-        for (const cb of onChange) cb(next, prev, signal)
-        signal.value = next
+        $.value = next
         return signal
     }
 
-    signal.map = function (transform) {
+    signal.map = function (transform: (value: T) => T) {
         return signal.set(transform(signal.peek()))
     }
 
-    signal.onChange = function (callback) {
-        onChange.add(callback)
-        return () => void onChange.delete(callback)
-    }
+    Object.defineProperty(signal, 'value', { get: signal })
 
     return signal
 }

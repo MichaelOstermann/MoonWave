@@ -1,9 +1,11 @@
-import type { ReadonlySignal as PreactReadonlySignal } from '@preact/signals-core'
 import { computed as createPreactComputed } from '@preact/signals-core'
 
-export interface ReadonlySignal<T> extends PreactReadonlySignal<T> {
+export interface ReadonlySignal<T> {
+    (): T
     id: string
     path: string
+    get value(): T
+    peek: () => T
 }
 
 type ComputedOptions<T> = {
@@ -16,7 +18,7 @@ export function computed<T>(computation: (prev: T | undefined) => T, options?: C
     let prev: undefined | { value: T }
     const equals = options?.equals
 
-    const computed = createPreactComputed(() => {
+    const $ = createPreactComputed(() => {
         const next = computation(prev?.value)
 
         if (prev) {
@@ -29,10 +31,16 @@ export function computed<T>(computation: (prev: T | undefined) => T, options?: C
         }
 
         return next
-    }) as ReadonlySignal<T>
+    })
+
+    const computed = function () {
+        return $.value
+    } as ReadonlySignal<T>
 
     computed.id = options?.id || 'Anonymous'
     computed.path = options?.path || ''
+    computed.peek = () => $.peek()
+    Object.defineProperty(computed, 'value', { get: computed })
 
     return computed
 }

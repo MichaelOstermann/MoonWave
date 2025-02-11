@@ -1,6 +1,8 @@
-import type { ReadonlySignal, Signal } from '@preact/signals-core'
-import { computed, signal } from '@preact/signals-core'
+import type { ReadonlySignal } from './computed'
+import type { Signal } from './signal'
 import { indexBy } from '../data/indexBy'
+import { computed } from './computed'
+import { signal } from './signal'
 
 export function indexSignalBy<T extends object, U extends PropertyKey>(
     $target: Signal<T[]>,

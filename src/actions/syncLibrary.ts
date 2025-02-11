@@ -23,7 +23,7 @@ export const syncLibrary = action(async () => {
 
     const trackIdsBefore = new Set($tracks.value.map(t => t.id))
     const trackIdsAfter = await parseAudioFiles(paths, {
-        onProgress: () => $syncProgress.value += 1,
+        onProgress: () => $syncProgress.map(v => v + 1),
     })
     const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)
 
