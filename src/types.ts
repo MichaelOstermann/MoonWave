@@ -1,3 +1,5 @@
+import type { IconName } from 'lucide-react/dynamic'
+
 export type Mode =
     | 'SINGLE'
     | 'REPEAT'
@@ -16,6 +18,9 @@ export type View =
 export type SidebarItem =
     | View
     | { name: 'SECTION', value: string }
+
+export type PlaylistIcon =
+    | { type: 'LUCIDE', value: IconName }
 
 export type Track = {
     id: string
@@ -38,6 +43,7 @@ export type Playlist = {
     title: string
     trackIds: string[]
     mode?: Mode
+    icon?: PlaylistIcon
 }
 
 export type Library = {

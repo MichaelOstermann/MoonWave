@@ -1,0 +1,19 @@
+body[has-popover="true"] #root {
+    * {
+        pointer-events: none;
+    }
+
+    input,
+    textarea,
+    [contenteditable="true"],
+    [data-modal-trigger] {
+        pointer-events: auto;
+    }
+}
+
+[data-modal][data-modal-status="closing"],
+[data-modal][data-modal-status="closed"],
+[data-modal][data-modal-status="closing"] *,
+[data-modal][data-modal-status="closed"] * {
+    pointer-events: none;
+}

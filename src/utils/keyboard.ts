@@ -6,8 +6,9 @@ import { syncLibrary } from '@app/actions/syncLibrary'
 import { toggleMode } from '@app/actions/toggleMode'
 import { toggleMute } from '@app/actions/toggleMute'
 import { togglePlayback } from '@app/actions/togglePlayback'
+import { CommandMenu } from '@app/components/CommandMenu'
 import { shortcuts } from '@app/config/shortcuts'
-import { $focusedView, $showCommandMenu, $sidebarLSM, $tracksLSM } from '@app/state/state'
+import { $focusedView, $sidebarLSM, $tracksLSM } from '@app/state/state'
 import { createHotkeys, eventToHotkey, getExactBindings, resolveBindings } from '@monstermann/hotkeys'
 import { addShortcuts } from '@monstermann/hotkeys/vscode'
 import { pipeInto } from 'ts-functional-pipe'
@@ -27,7 +28,7 @@ const h = createHotkeys(config => config
     .bindingContext<{ view?: FocusedView }>()
     .resolveBindings(bindings => bindings.filter((binding) => {
         return binding.context.allowInDialogs !== false
-            || $showCommandMenu.value === false
+            || !CommandMenu.isOpen()
     }))
     .resolveBindings(bindings => bindings.filter((binding) => {
         return binding.context.allowInInputs !== false
@@ -35,12 +36,12 @@ const h = createHotkeys(config => config
     }))
     .resolveBindings(bindings => bindings.filter((binding) => {
         return binding.context.view === undefined
-            || ($focusedView.value === binding.context.view && $showCommandMenu.value === false)
+            || ($focusedView.value === binding.context.view && !CommandMenu.isOpen())
     })))
 
 addShortcuts(h, ['cmd+shift+r'], () => window.location.reload())
 
-addShortcuts(h, shortcuts.showCmdMenu, () => $showCommandMenu.map(v => !v))
+addShortcuts(h, shortcuts.showCmdMenu, CommandMenu.open)
 addShortcuts(h, shortcuts.createPlaylist, createPlaylist)
 addShortcuts(h, shortcuts.syncLibrary, syncLibrary)
 addShortcuts(h, shortcuts.toggleMute, toggleMute)

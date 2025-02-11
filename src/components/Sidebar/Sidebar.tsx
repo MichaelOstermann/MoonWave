@@ -18,7 +18,6 @@ export function Sidebar(): ReactNode {
 
     const menu = useMenu([
         { text: 'Create Playlist', action: createPlaylist },
-        { item: 'Separator' },
         { text: 'Sync Library', action: syncLibrary },
     ])
 

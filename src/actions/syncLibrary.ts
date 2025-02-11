@@ -1,5 +1,5 @@
 import { extensions } from '@app/config/extensions'
-import { $showCommandMenu, $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
+import { $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action } from '@app/utils/signals/action'
@@ -8,8 +8,6 @@ import { audioDir } from '@tauri-apps/api/path'
 import { readDir } from '@tauri-apps/plugin-fs'
 
 export const syncLibrary = action(async () => {
-    $showCommandMenu.set(false)
-
     if ($syncing.value) return
 
     $syncing.set(true)

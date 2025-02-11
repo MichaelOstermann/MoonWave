@@ -1,12 +1,10 @@
-import type { View } from '@app/types'
+import type { PlaylistIcon, View } from '@app/types'
 import type { ReactNode } from 'react'
 import { openView } from '@app/actions/openView'
 import { $playing, $playingView, $view } from '@app/state/state'
 import { useSignal } from '@app/utils/signals/useSignal'
-import { LucideArchiveX, LucideBook, LucideClock9 } from 'lucide-react'
-import { AudioWaveIcon } from '../AudioWaveIcon'
+import { PlaylistItemIcon } from './PlaylistItemIcon'
 import { SidebarItem } from './SidebarItem'
-import { SidebarItemIcon } from './SidebarItemIcon'
 
 export function LibraryItem({ name }: {
     name: Exclude<View['name'], 'PLAYLIST'>
@@ -21,11 +19,11 @@ export function LibraryItem({ name }: {
         UNSORTED: 'Unsorted',
     })[name]
 
-    const icon = ({
-        LIBRARY: LucideBook,
-        RECENTLY_ADDED: LucideClock9,
-        UNSORTED: LucideArchiveX,
-    })[name]
+    const icon: PlaylistIcon = ({
+        LIBRARY: { type: 'LUCIDE', value: 'book' },
+        RECENTLY_ADDED: { type: 'LUCIDE', value: 'clock-9' },
+        UNSORTED: { type: 'LUCIDE', value: 'archive' },
+    } as const)[name]
 
     return (
         <SidebarItem
@@ -36,12 +34,10 @@ export function LibraryItem({ name }: {
                 openView({ name })
             }}
         >
-            {showAudioWaveIcon && (
-                <AudioWaveIcon className="w-4 shrink-0" />
-            )}
-            {!showAudioWaveIcon && (
-                <SidebarItemIcon icon={icon} />
-            )}
+            <PlaylistItemIcon
+                wave={showAudioWaveIcon}
+                icon={icon}
+            />
             <div className="flex shrink grow">
                 <span className="truncate">
                     {title}
