@@ -1,8 +1,8 @@
 import { dfdl } from './dfdl'
 
 export const findAndRemoveAll: {
-    <T>(target: T[], find: (item: T) => boolean): T[]
     <T>(find: (item: T) => boolean): (target: T[]) => T[]
+    <T>(target: T[], find: (item: T) => boolean): T[]
 } = dfdl((target, find) => {
     let clone
     let i = target.length

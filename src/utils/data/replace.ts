@@ -1,8 +1,8 @@
 import { dfdl } from './dfdl'
 
 export const replace: {
-    <T>(target: T[], before: T, after: T): T[]
     <T>(before: T, after: T): (target: T[]) => T[]
+    <T>(target: T[], before: T, after: T): T[]
 } = dfdl((target, before, after) => {
     if (before === after) return target
     const idx = target.indexOf(before)

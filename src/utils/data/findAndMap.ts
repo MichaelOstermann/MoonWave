@@ -1,8 +1,8 @@
 import { dfdl } from './dfdl'
 
 export const findAndMap: {
-    <T>(target: T[], find: (item: T) => boolean, transform: (item: T) => T): T[]
     <T>(find: (item: T) => boolean, transform: (item: T) => T): (target: T[]) => T[]
+    <T>(target: T[], find: (item: T) => boolean, transform: (item: T) => T): T[]
 } = dfdl((target, find, transform) => {
     const idx = target.findIndex(find)
     if (idx === -1) return target
