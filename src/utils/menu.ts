@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react'
 import { Menu, type MenuOptions } from '@tauri-apps/api/menu'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { nanoid } from 'nanoid'
 import { useState } from 'react'
 
 export type MenuItem = Exclude<MenuOptions['items'], undefined>[number] | undefined
@@ -27,6 +28,11 @@ export async function showMenu(
             if (idx === 0) return false
             if (idx === items.length - 1) return false
             return !isSeparator(items[idx - 1])
+        })
+        .map((item) => {
+            return 'text' in item && 'action' in item
+                ? { ...item, id: nanoid(5) }
+                : item
         })
 
     options?.onOpen()
