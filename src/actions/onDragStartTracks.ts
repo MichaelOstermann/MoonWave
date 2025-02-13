@@ -11,12 +11,12 @@ export const onDragStartTracks = action((trackId: string) => {
         $tracksLSM.map(lsm => selectOne(lsm, trackId))
 
     $isDraggingTracks.set(true)
+
+    const ac = new AbortController()
     document.body.classList.add('!cursor-default')
-
-    const onMouseUp = function () {
-        document.removeEventListener('pointerup', onMouseUp)
+    document.addEventListener('pointerup', () => {
+        ac.abort()
+        document.body.classList.remove('!cursor-default')
         onDragEndTracks()
-    }
-
-    document.addEventListener('pointerup', onMouseUp)
+    }, { signal: ac.signal })
 })

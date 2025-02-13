@@ -5,10 +5,11 @@ import { editPlaylistTitle } from '@app/actions/editPlaylistTitle'
 import { onClickPlaylist } from '@app/actions/onClickPlaylist'
 import { onDragEnterPlaylist } from '@app/actions/onDragEnterPlaylist'
 import { onDragLeavePlaylist } from '@app/actions/onDragLeavePlaylist'
+import { onDragStartPlaylists } from '@app/actions/onDragStartPlaylists'
 import { savePlaylistTitle } from '@app/actions/savePlaylistTitle'
 import { setPlaylistIcon } from '@app/actions/setPlaylistIcon'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $dropPlaylistId, $editingPlaylistId, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
+import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $editingPlaylistId, $isDraggingPlaylists, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
 import { PopoverRoot } from '@app/utils/modals/components/PopoverRoot'
 import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
@@ -26,13 +27,16 @@ export function PlaylistItem({ id }: {
     const playlist = useSignal($playlistsById(id))!
     const [previewIcon, setPreviewIcon] = useState<PlaylistIcon | undefined>(undefined)
     const view = useSignal($view)
-    const isEditing = useSignal(() => $editingPlaylistId.value === playlist.id)
-    const isActive = useSignal(() => view.name === 'PLAYLIST' && view.value === playlist.id)
-    const isDraggingTracks = useSignal($isDraggingTracks)
-    const isDropTarget = useSignal(() => isDraggingTracks && $dropPlaylistId.value === playlist.id)
+    const isEditing = useSignal(() => $editingPlaylistId() === id)
+    const isActive = view.name === 'PLAYLIST' && view.value === id
+    const isDraggingAnyTrack = useSignal($isDraggingTracks)
+    const isDraggingPlaylist = useSignal(() => $draggingPlaylistIds().includes(id))
+    const isDraggingAnyPlaylist = useSignal($isDraggingPlaylists)
+    const isDropTarget = useSignal(() => $dropPlaylistId() === id)
+    const dropTarget = useSignal(() => isDropTarget && isDraggingAnyPlaylist ? $dropPlaylistSide() : isDropTarget)
     const isPlaying = useSignal($playing)
     const isPlaylingPlaylist = useSignal(() => {
-        const view = $playingView.value
+        const view = $playingView()
         return view?.name === 'PLAYLIST'
             && view.value === id
     })
@@ -61,29 +65,36 @@ export function PlaylistItem({ id }: {
             deletePlaylist(id)
         } },
         { item: 'Separator' },
-        { text: 'Create Playlist', action: createPlaylist },
+        { text: 'Create Playlist', action: () => createPlaylist(id) },
         { text: 'Sync Library', action: syncLibrary },
     ])
 
     return (
         <SidebarItem
+            draggable
             isActive={isActive}
             isPlaying={isPlaylingPlaylist}
             hasMenu={menu.isOpen}
             isEditing={isEditing}
-            isDropTarget={isDropTarget}
-            onPointerDown={(evt) => {
+            isDragging={isDraggingPlaylist}
+            dropTarget={dropTarget}
+            data-playlist-id={id}
+            onClick={(evt) => {
                 if (evt.button !== 0) return
-                onClickPlaylist(playlist.id)
+                onClickPlaylist(id)
+            }}
+            onDragStart={function (evt) {
+                evt.preventDefault()
+                onDragStartPlaylists(id)
             }}
             onMouseOver={function () {
-                if (!isDraggingTracks) return
+                if (!isDraggingAnyTrack && !isDraggingAnyPlaylist) return
                 if (isDropTarget) return
-                onDragEnterPlaylist(playlist.id)
+                onDragEnterPlaylist(id)
             }}
             onMouseLeave={function () {
                 if (!isDropTarget) return
-                onDragLeavePlaylist(playlist.id)
+                onDragLeavePlaylist(id)
             }}
             onContextMenu={menu.show}
         >

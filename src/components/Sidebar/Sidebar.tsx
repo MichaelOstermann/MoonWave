@@ -7,6 +7,7 @@ import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { LibraryItem } from './LibraryItem'
+import { PlaylistDragGhost } from './PlaylistDragGhost'
 import { PlaylistItem } from './PlaylistItem'
 import { SidebarResizeHandler } from './SidebarResizeHandler'
 import { SidebarSearchInput } from './SidebarSearchInput'
@@ -28,6 +29,7 @@ export function Sidebar(): ReactNode {
             className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
             style={{ width }}
         >
+            <PlaylistDragGhost />
             <div
                 className="h-11 shrink-0"
                 onPointerDown={(evt) => {

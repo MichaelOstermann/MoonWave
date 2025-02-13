@@ -1,6 +1,7 @@
 import type { PlaylistIcon } from '@app/types'
 import type { ReactNode } from 'react'
 import { icons } from '@app/config/icons'
+import { clamp } from '@app/utils/data/clamp'
 import fuzzysort from 'fuzzysort'
 import { LucideSearch, LucideX } from 'lucide-react'
 import { DynamicIcon } from 'lucide-react/dynamic'
@@ -66,7 +67,7 @@ export function IconPicker({
         return acc
     }, [] as PlaylistIcon[][])
 
-    const minHeight = (Math.min(rows.length, minRows) * rowHeight) + (rowHeight - iconSize) / 2
+    const minHeight = (clamp(rows.length, 1, minRows) * rowHeight) + (rowHeight - iconSize) / 2
     const [initialHeight] = useState(() => minHeight)
     const height = side === 'above' ? initialHeight : minHeight
 

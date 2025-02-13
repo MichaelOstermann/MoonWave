@@ -56,10 +56,6 @@ export const $syncing = signal(false)
 export const $syncGoal = signal(0)
 export const $syncProgress = signal(0)
 
-// Drag & Drop
-export const $isDraggingTracks = signal(false)
-export const $dropPlaylistId = signal<string>(null)
-
 // History
 export const $playedTrackIds = signal<string[]>([])
 export const $prevPlayedTrackIds = signal<string[]>([])
@@ -87,6 +83,20 @@ export const $sidebarLSM = signal(createLSM<View>({
         : view.name,
 }))
 
+// Drag & Drop
+export const $isDraggingTracks = signal(false)
+export const $draggingPlaylistIds = signal<string[]>([])
+export const $isDraggingPlaylists = computed(() => $draggingPlaylistIds().length > 0)
+export const $dropPlaylistId = signal<string>(null)
+export const $dropPlaylistElement = signal<HTMLElement>(null)
+export const $dropPlaylistBounds = computed(() => $dropPlaylistElement()?.getBoundingClientRect())
+export const $dropPlaylistSide = computed<'above' | 'below'>(() => {
+    const bounds = $dropPlaylistBounds()
+    if (!bounds) return 'below'
+    const mouseY = $mouseY()
+    return mouseY < bounds.top + bounds.height / 2 ? 'above' : 'below'
+})
+
 // Computeds
 
 export const $view = computed<View>(() => {
@@ -110,9 +120,7 @@ export const $sidebarItems = computed<SidebarItem[]>(() => {
         { name: 'RECENTLY_ADDED' },
         { name: 'UNSORTED' },
         { name: 'SECTION', value: 'Playlists' },
-        ...$playlists.value
-            .toSorted((a, b) => a.title.localeCompare(b.title))
-            .map<View>(p => ({ name: 'PLAYLIST', value: p.id })),
+        ...$playlists.value.map<View>(p => ({ name: 'PLAYLIST', value: p.id })),
     ]
 })
 
@@ -187,8 +195,14 @@ effect(() => {
 })
 
 effect(() => {
-    if ($isDraggingTracks.value) return
+    if ($isDraggingTracks()) return
+    if ($isDraggingPlaylists()) return
     $dropPlaylistId.set(null)
+})
+
+effect(() => {
+    if ($dropPlaylistId()) return
+    $dropPlaylistElement.set(null)
 })
 
 effect(() => {
