@@ -1,5 +1,16 @@
 import type { IconName } from 'lucide-react/dynamic'
 
+export type Color =
+    | 'red'
+    | 'orange'
+    | 'yellow'
+    | 'green'
+    | 'teal'
+    | 'blue'
+    | 'cyan'
+    | 'purple'
+    | 'pink'
+
 export type Mode =
     | 'SINGLE'
     | 'REPEAT'
@@ -21,6 +32,9 @@ export type SidebarItem =
 
 export type PlaylistIcon =
     | { type: 'LUCIDE', value: IconName }
+
+export type PlaylistColor =
+    | { type: 'PRESET', value: Color }
 
 export type Track = {
     id: string
@@ -44,6 +58,7 @@ export type Playlist = {
     trackIds: string[]
     mode?: Mode
     icon?: PlaylistIcon
+    color?: PlaylistColor
 }
 
 export type Library = {

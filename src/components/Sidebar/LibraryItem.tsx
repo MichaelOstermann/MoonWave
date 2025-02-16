@@ -1,17 +1,23 @@
 import type { PlaylistIcon, View } from '@app/types'
 import type { ReactNode } from 'react'
 import { openView } from '@app/actions/openView'
-import { $playing, $playingView, $view } from '@app/state/state'
+import { $focusedView, $playing, $playingView, $view } from '@app/state/state'
 import { useSignal } from '@app/utils/signals/useSignal'
-import { PlaylistItemIcon } from './PlaylistItemIcon'
+import { LibraryItemIcon } from './LibraryItemIcon'
+import { LibraryItemTitle } from './LibraryItemTitle'
 import { SidebarItem } from './SidebarItem'
 
 export function LibraryItem({ name }: {
     name: Exclude<View['name'], 'PLAYLIST'>
 }): ReactNode {
-    const isActive = useSignal(() => $view.value.name === name)
-    const isPlaylingPlaylist = useSignal(() => $playingView.value?.name === name)
-    const showAudioWaveIcon = useSignal(() => isPlaylingPlaylist && $playing.value)
+    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
+    const isSelected = useSignal(() => $view.value.name === name)
+    const isActive = isFocused && isSelected
+    const isPlaying = useSignal(() => {
+        if (!$playing()) return false
+        const view = $playingView()
+        return view?.name === name
+    })
 
     const title = ({
         LIBRARY: 'Library',
@@ -27,21 +33,26 @@ export function LibraryItem({ name }: {
 
     return (
         <SidebarItem
+            color={undefined}
+            isEditing={false}
+            isDragging={false}
+            showBorder={false}
+            dropTarget={false}
+            isPlaying={isPlaying}
+            isSelected={isSelected}
             isActive={isActive}
-            isPlaying={isPlaylingPlaylist}
-            onPointerDown={(evt) => {
+            onClick={(evt) => {
                 if (evt.button !== 0) return
                 openView({ name })
             }}
         >
-            <PlaylistItemIcon
-                wave={showAudioWaveIcon}
+            <LibraryItemIcon
+                color={undefined}
+                wave={isPlaying}
                 icon={icon}
             />
             <div className="flex shrink grow">
-                <span className="truncate">
-                    {title}
-                </span>
+                <LibraryItemTitle title={title} />
             </div>
         </SidebarItem>
     )

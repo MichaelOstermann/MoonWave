@@ -36,12 +36,12 @@ export function createPopover(
 
     const offset = signal(options.offset ?? 4)
     const borderWidth = signal(options.borderWidth ?? 1)
-    const arrowWidth = signal(options.arrowWidth ?? 18)
-    const arrowHeight = signal(options.arrowHeight ?? 10)
+    const arrowWidth = signal(options.arrowWidth ?? 20)
+    const arrowHeight = signal(options.arrowHeight ?? 12)
     const arrowRadius = signal(options.arrowRadius ?? 3)
     const paddingTop = signal(options.paddingTop ?? 10)
-    const paddingLeft = signal(options.paddingLeft ?? 10)
-    const paddingRight = signal(options.paddingRight ?? 10)
+    const paddingLeft = signal(options.paddingLeft ?? 6)
+    const paddingRight = signal(options.paddingRight ?? 6)
     const paddingBottom = signal(options.paddingBottom ?? 10)
 
     const anchorElement = signal<HTMLElement>(null)

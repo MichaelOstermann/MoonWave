@@ -1,4 +1,4 @@
-import type { PlaylistIcon } from '@app/types'
+import type { ReactNode } from 'react'
 import { createPlaylist } from '@app/actions/createPlaylist'
 import { deletePlaylist } from '@app/actions/deletePlaylist'
 import { editPlaylistTitle } from '@app/actions/editPlaylistTitle'
@@ -6,54 +6,58 @@ import { onClickPlaylist } from '@app/actions/onClickPlaylist'
 import { onDragEnterPlaylist } from '@app/actions/onDragEnterPlaylist'
 import { onDragLeavePlaylist } from '@app/actions/onDragLeavePlaylist'
 import { onDragStartPlaylists } from '@app/actions/onDragStartPlaylists'
+import { resetPlaylistIcon } from '@app/actions/resetPlaylistIcon'
 import { savePlaylistTitle } from '@app/actions/savePlaylistTitle'
+import { setPlaylistColor } from '@app/actions/setPlaylistColor'
 import { setPlaylistIcon } from '@app/actions/setPlaylistIcon'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $editingPlaylistId, $isDraggingPlaylists, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
+import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $editingPlaylistId, $focusedView, $isDraggingPlaylists, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
 import { PopoverRoot } from '@app/utils/modals/components/PopoverRoot'
 import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
 import { usePopover } from '@app/utils/modals/usePopover'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { confirm } from '@tauri-apps/plugin-dialog'
-import { type ReactNode, useState } from 'react'
 import { IconPicker } from './IconPicker'
-import { PlaylistItemIcon } from './PlaylistItemIcon'
+import { LibraryItemIcon } from './LibraryItemIcon'
+import { LibraryItemTitle } from './LibraryItemTitle'
 import { SidebarItem } from './SidebarItem'
 
-export function PlaylistItem({ id }: {
-    id: string
-}): ReactNode {
+export function PlaylistItem({ id }: { id: string }): ReactNode {
     const playlist = useSignal($playlistsById(id))!
-    const [previewIcon, setPreviewIcon] = useState<PlaylistIcon | undefined>(undefined)
-    const view = useSignal($view)
     const isEditing = useSignal(() => $editingPlaylistId() === id)
-    const isActive = view.name === 'PLAYLIST' && view.value === id
-    const isDraggingAnyTrack = useSignal($isDraggingTracks)
-    const isDraggingPlaylist = useSignal(() => $draggingPlaylistIds().includes(id))
-    const isDraggingAnyPlaylist = useSignal($isDraggingPlaylists)
+    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
+    const isSelected = useSignal(() => {
+        const view = $view()
+        return view.name === 'PLAYLIST'
+            && view.value === id
+    })
+    const isActive = isFocused && isSelected
+    const isDragging = useSignal(() => $draggingPlaylistIds().includes(id))
     const isDropTarget = useSignal(() => $dropPlaylistId() === id)
-    const dropTarget = useSignal(() => isDropTarget && isDraggingAnyPlaylist ? $dropPlaylistSide() : isDropTarget)
-    const isPlaying = useSignal($playing)
-    const isPlaylingPlaylist = useSignal(() => {
+    const dropTarget = useSignal(() => isDropTarget && $isDraggingPlaylists() ? $dropPlaylistSide() : isDropTarget)
+
+    const isPlaying = useSignal(() => {
+        if (!$playing()) return false
         const view = $playingView()
         return view?.name === 'PLAYLIST'
             && view.value === id
     })
 
-    const popover = usePopover(id, {
-        onClose: () => setPreviewIcon(undefined),
-    })
-
+    const popover = usePopover(id)
     const isPopoverOpen = useSignal(popover.isOpen)
     const popoverSide = useSignal(popover.placement)
 
-    const showAudioWaveIcon = !isPopoverOpen && isPlaylingPlaylist && isPlaying
-    const icon = isPopoverOpen ? previewIcon ?? playlist.icon : playlist.icon
-
     const menu = useMenu([
-        { text: 'Edit Playlist', action: () => editPlaylistTitle(id) },
+        { text: 'Edit Title', action: () => editPlaylistTitle(id) },
         { text: 'Edit Icon', action: popover.open },
+        () => playlist.icon || playlist.color
+            ? { text: 'Reset Icon', action: () => resetPlaylistIcon(id) }
+            : undefined,
+        { item: 'Separator' },
+        { text: 'New Playlist', action: () => createPlaylist(id) },
+        { text: 'Sync Library', action: syncLibrary },
+        { item: 'Separator' },
         { text: 'Delete Playlist', action: async () => {
             const answer = await confirm(`Are you sure you want to delete the playlist "${playlist.title}"?`, {
                 title: '',
@@ -64,31 +68,31 @@ export function PlaylistItem({ id }: {
             if (!answer) return
             deletePlaylist(id)
         } },
-        { item: 'Separator' },
-        { text: 'Create Playlist', action: () => createPlaylist(id) },
-        { text: 'Sync Library', action: syncLibrary },
     ])
+
+    const showAudioWaveIcon = !isPopoverOpen && isPlaying
+    const showBorder = menu.isOpen || isPopoverOpen || isEditing || dropTarget === true
 
     return (
         <SidebarItem
             draggable
+            color={playlist.color}
+            isSelected={isSelected}
             isActive={isActive}
-            isPlaying={isPlaylingPlaylist}
-            hasMenu={menu.isOpen}
+            isPlaying={isPlaying}
             isEditing={isEditing}
-            isDragging={isDraggingPlaylist}
+            isDragging={isDragging}
+            showBorder={showBorder}
             dropTarget={dropTarget}
             data-playlist-id={id}
-            onClick={(evt) => {
-                if (evt.button !== 0) return
-                onClickPlaylist(id)
-            }}
+            onClick={() => onClickPlaylist(id)}
             onDragStart={function (evt) {
                 evt.preventDefault()
+                if (isEditing) return
                 onDragStartPlaylists(id)
             }}
             onMouseOver={function () {
-                if (!isDraggingAnyTrack && !isDraggingAnyPlaylist) return
+                if (!$isDraggingTracks() && !$isDraggingPlaylists()) return
                 if (isDropTarget) return
                 onDragEnterPlaylist(id)
             }}
@@ -98,13 +102,10 @@ export function PlaylistItem({ id }: {
             }}
             onContextMenu={menu.show}
         >
-            <PopoverTarget
-                popover={popover}
-                className="flex shrink-0"
-            >
-                <PlaylistItemIcon
+            <PopoverTarget asChild popover={popover}>
+                <LibraryItemIcon
                     wave={showAudioWaveIcon}
-                    icon={icon}
+                    icon={playlist.icon}
                 />
             </PopoverTarget>
             <PopoverRoot
@@ -113,19 +114,15 @@ export function PlaylistItem({ id }: {
                     <IconPicker
                         side={popoverSide}
                         activeIcon={playlist.icon}
-                        onHoverIcon={setPreviewIcon}
-                        onSelectIcon={(icon) => {
-                            popover.close()
-                            setPlaylistIcon({ playlistId: id, icon })
-                        }}
+                        activeColor={playlist.color}
+                        onSelectIcon={icon => setPlaylistIcon({ playlistId: id, icon })}
+                        onSelectColor={color => setPlaylistColor({ playlistId: id, color })}
                     />
                 )}
             />
             <div className="flex shrink grow">
                 {!isEditing && (
-                    <span className="truncate">
-                        {playlist.title}
-                    </span>
+                    <LibraryItemTitle title={playlist.title} />
                 )}
                 {isEditing && (
                     <input

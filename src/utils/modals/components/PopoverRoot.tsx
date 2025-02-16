@@ -50,6 +50,7 @@ export function PopoverRoot({
                 data-modal="popover"
                 data-modal-status={status}
                 data-modal-placement={placement}
+                onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
                 onContextMenu={evt => evt.stopPropagation()}
                 style={{ top: y, left: x }}

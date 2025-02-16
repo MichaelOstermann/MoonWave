@@ -17,7 +17,7 @@ import { useMenu } from '@app/utils/menu'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { formatTrackIds } from '@app/utils/track/formatTrackIds'
 import { confirm } from '@tauri-apps/plugin-dialog'
-import { twJoin } from 'tailwind-merge'
+import { twMerge } from 'tailwind-merge'
 import { columns } from './config'
 import { TrackListRowColumn } from './TrackListRowColumn'
 
@@ -27,11 +27,12 @@ export function TrackListRow({ row, idx, colStyles }: {
     colStyles: Record<Column, CSSProperties>
 }): ReactNode {
     const isEven = idx % 2 === 0
-    const isFocused = useSignal(() => $focusedView.value === 'MAIN')
-    const isPlayingTrack = useSignal(() => $playingTrackId.value === row.id)
-    const selected = useSignal(() => isSelected($tracksLSM.value, row.id))
-    const firstSelected = useSignal(() => isFirstSelectionInGroup($tracksLSM.value, row.id))
-    const lastSelected = useSignal(() => isLastSelectionInGroup($tracksLSM.value, row.id))
+    const isFocused = useSignal(() => $focusedView() === 'MAIN')
+    const isPlaying = useSignal(() => $playingTrackId() === row.id)
+    const selected = useSignal(() => isSelected($tracksLSM(), row.id))
+    const isActive = isFocused && selected
+    const firstSelected = useSignal(() => isFirstSelectionInGroup($tracksLSM(), row.id))
+    const lastSelected = useSignal(() => isLastSelectionInGroup($tracksLSM(), row.id))
 
     const menu = useMenu([
         addSelectedTracksToPlaylistMenuItem,
@@ -47,12 +48,12 @@ export function TrackListRow({ row, idx, colStyles }: {
             draggable
             onClick={evt => onClickTrack({ evt, trackId: row.id })}
             onDoubleClick={() => onDoubleClickTrack(row.id)}
-            className={twJoin(
+            className={twMerge(
                 'relative flex h-8 items-center text-sm leading-7',
-                isPlayingTrack && 'text-[--fg-active]',
                 isEven && !selected && 'bg-[--bg-soft]',
-                selected && !isFocused && 'bg-[--bg-selected]',
-                selected && isFocused && 'bg-[--bg-active] text-[--fg-active]',
+                isPlaying && 'text-[--fg-active]',
+                selected && 'bg-[--bg-selected]',
+                isActive && 'bg-[--bg-active] text-[--fg-active]',
                 !selected && 'rounded-md',
                 firstSelected && lastSelected && 'rounded-md',
                 firstSelected && !lastSelected && 'rounded-t-md',

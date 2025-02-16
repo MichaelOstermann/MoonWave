@@ -96,10 +96,10 @@ export function TrackList() {
     return (
         <div
             ref={ref}
-            style={varStyles}
             onContextMenu={menu.show}
             onClick={() => $focusedView.set('MAIN')}
             className="flex w-full shrink grow flex-col"
+            style={varStyles}
         >
             <TrackDragGhost />
             <TrackListHeader

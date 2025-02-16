@@ -13,8 +13,10 @@ export function SidebarSearchInput(): ReactNode {
             onPointerDown={evt => evt.stopPropagation()}
         >
             <div className="relative flex shrink grow">
-                <div className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center">
-                    <LucideSearch className="size-4" />
+                <div className="pointer-events-none absolute inset-y-0 left-1.5 flex items-center">
+                    <div className="flex size-[22px] items-center justify-center">
+                        <LucideSearch className="size-4" />
+                    </div>
                 </div>
                 <div
                     className="absolute inset-y-0 right-0 flex items-center px-2.5 group-has-[input:placeholder-shown]:hidden"
@@ -26,7 +28,7 @@ export function SidebarSearchInput(): ReactNode {
                 <input
                     type="text"
                     placeholder="Search"
-                    className="sidebar-search-input h-8 w-full rounded-md bg-[--bg-soft] px-9 text-sm outline-none placeholder:text-[--fg-soft]"
+                    className="sidebar-search-input h-8 w-full rounded-md bg-[--bg-soft] px-8 text-sm outline-none placeholder:text-[--fg-soft]"
                     value={value}
                     onChange={evt => filterLibrary(evt.target.value)}
                     onContextMenu={evt => evt.stopPropagation()}

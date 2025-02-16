@@ -32,16 +32,16 @@ export function CurrentTrack(): ReactNode {
             data-show-waveform={hasTrack && iSeeking}
             className="group relative flex size-full max-w-[1000px] rounded-b-md bg-[--bg-soft]"
         >
-            <div className='absolute inset-0 flex items-center justify-center group-data-[show-logo="false"]:opacity-0'>
+            <div className="absolute inset-0 flex items-center justify-center group-data-[show-logo=false]:opacity-0">
                 <Logo className="size-6" />
             </div>
-            <div className='absolute inset-0 flex size-full group-data-[show-track="false"]:opacity-0'>
+            <div className="absolute inset-0 flex size-full group-data-[show-track=false]:opacity-0">
                 <TrackElapsedTime />
                 <TrackInfo />
                 <TrackDuration />
                 <TrackPosition />
             </div>
-            <div className='absolute inset-0 flex size-full group-data-[show-waveform="true"]:cursor-crosshair group-data-[show-waveform="false"]:opacity-0'>
+            <div className="absolute inset-0 flex size-full group-data-[show-waveform=true]:cursor-crosshair group-data-[show-waveform=false]:opacity-0">
                 <WavesurferSeeker position={position} />
                 <Wavesurfer />
             </div>

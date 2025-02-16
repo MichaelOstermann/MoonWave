@@ -18,25 +18,24 @@ export function Sidebar(): ReactNode {
     const width = useSignal(() => getSidebarWidth($config.value.sidebarWidth))
 
     const menu = useMenu([
-        { text: 'Create Playlist', action: createPlaylist },
+        { text: 'New Playlist', action: createPlaylist },
         { text: 'Sync Library', action: syncLibrary },
     ])
 
     return (
         <div
             onContextMenu={menu.show}
-            onPointerDown={() => $focusedView.set('SIDEBAR')}
-            className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
             style={{ width }}
+            className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
+            onClick={(evt) => {
+                if ((evt.target as Element).hasAttribute('data-tauri-drag-region')) return
+                $focusedView.set('SIDEBAR')
+            }}
         >
             <PlaylistDragGhost />
             <div
+                data-tauri-drag-region
                 className="h-11 shrink-0"
-                onPointerDown={(evt) => {
-                    evt.preventDefault()
-                    evt.stopPropagation()
-                    getCurrentWindow().startDragging()
-                }}
             />
             <SidebarResizeHandler />
             <SidebarSearchInput />

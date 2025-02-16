@@ -51,7 +51,7 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                     <Group heading="Library">
                         <Item
                             icon={LucidePlus}
-                            title="Create Playlist"
+                            title="New Playlist"
                             shortcut={shortcuts.createPlaylist[0]}
                             onSelect={createPlaylist}
                         />
@@ -236,7 +236,7 @@ function Item({ icon, title, shortcut, enabled, onSelect }: {
             value={title}
             className={twJoin(
                 'flex h-9 items-center gap-x-2 rounded-md px-2.5',
-                'data-[selected="true"]:bg-[--bg-selected]',
+                'data-[selected=true]:bg-[--bg-selected]',
             )}
             onSelect={() => {
                 CommandMenu.close()

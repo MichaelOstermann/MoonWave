@@ -1,5 +1,6 @@
-import type { PlaylistIcon } from '@app/types'
-import type { ReactNode } from 'react'
+import type { PlaylistColor, PlaylistIcon } from '@app/types'
+import type { ComponentProps, ReactNode } from 'react'
+import { colors } from '@app/config/colors'
 import { icons } from '@app/config/icons'
 import { clamp } from '@app/utils/data/clamp'
 import fuzzysort from 'fuzzysort'
@@ -12,11 +13,12 @@ import { VList } from 'virtua'
 interface IconPickerProps {
     side: 'above' | 'below'
     activeIcon?: PlaylistIcon
-    onHoverIcon?: (name: PlaylistIcon | undefined) => void
+    activeColor?: PlaylistColor
     onSelectIcon?: (name: PlaylistIcon) => void
+    onSelectColor?: (name: PlaylistColor | undefined) => void
 }
 
-const colCount = 10
+const colCount = 12
 const minRows = 10
 const rowHeight = 34
 const iconSize = 16
@@ -48,8 +50,9 @@ function searchIcons(filter: string): PlaylistIcon[] {
 export function IconPicker({
     side,
     activeIcon,
-    onHoverIcon,
     onSelectIcon,
+    activeColor,
+    onSelectColor,
 }: IconPickerProps): ReactNode {
     const [filter, setFilter] = useState('')
 
@@ -73,13 +76,30 @@ export function IconPicker({
 
     return (
         <div
-            className="flex flex-col text-sm"
+            className="flex flex-col gap-y-3 text-sm"
             style={{
                 '--row-padding': `${padding}px`,
                 '--row-height': `${rowHeight}px`,
+                '--fg-active': activeColor ? `var(--fg-${activeColor.value})` : undefined,
+                '--bg-active': activeColor ? `var(--bg-${activeColor.value})` : undefined,
             }}
         >
-            <div className="group flex shrink-0 px-2.5 py-3">
+            <div className="flex shrink-0 items-center justify-between px-3 pt-3">
+                <IconColor
+                    color={undefined}
+                    isActive={activeColor === undefined}
+                    onClick={() => onSelectColor?.(undefined)}
+                />
+                {colors.map(color => (
+                    <IconColor
+                        key={color}
+                        color={{ type: 'PRESET', value: color }}
+                        isActive={activeColor?.type === 'PRESET' && activeColor.value === color}
+                        onClick={() => onSelectColor?.({ type: 'PRESET', value: color })}
+                    />
+                ))}
+            </div>
+            <div className="group flex shrink-0 px-2.5">
                 <div className="relative flex shrink grow">
                     <div className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center">
                         <LucideSearch className="size-4" />
@@ -97,10 +117,7 @@ export function IconPicker({
                         placeholder="Search"
                         className="sidebar-search-input h-8 w-full rounded-md bg-[--bg-soft] px-8 text-sm outline-none placeholder:text-[--fg-soft]"
                         value={filter}
-                        onChange={(evt) => {
-                            setFilter(evt.target.value)
-                            onHoverIcon?.(undefined)
-                        }}
+                        onChange={evt => setFilter(evt.target.value)}
                     />
                 </div>
             </div>
@@ -126,13 +143,10 @@ export function IconPicker({
                                 return (
                                     <div
                                         key={icon.value}
-                                        onPointerEnter={() => onHoverIcon?.(icon)}
-                                        onPointerLeave={() => onHoverIcon?.(undefined)}
                                         onClick={() => onSelectIcon?.(icon)}
                                         className={twJoin(
                                             'flex size-[--row-height] items-center justify-center rounded',
                                             isActive && 'bg-[--bg-active] text-[--fg-active]',
-                                            !isActive && 'hover:bg-[--bg-hover]',
                                         )}
                                     >
                                         <DynamicIcon
@@ -147,6 +161,29 @@ export function IconPicker({
                 })}
                 <div style={{ height: padding }} />
             </VList>
+        </div>
+    )
+}
+
+interface IconColorProps extends Omit<ComponentProps<'div'>, 'color'> {
+    color: PlaylistColor | undefined
+    isActive: boolean
+}
+
+function IconColor({ color, isActive, ...rest }: IconColorProps): ReactNode {
+    return (
+        <div
+            {...rest}
+            className="relative flex size-6 items-center justify-center rounded-full bg-[--outer]"
+            style={{
+                '--inner': color ? `var(--fg-${color.value})` : 'var(--fg)',
+                '--outer': color ? `var(--bg-${color.value})` : 'var(--bg-hover)',
+            }}
+        >
+            <div
+                data-active={isActive}
+                className="absolute size-full scale-[0.3] rounded-full bg-[--inner] data-[active=true]:scale-100"
+            />
         </div>
     )
 }

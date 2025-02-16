@@ -103,6 +103,12 @@ export const $view = computed<View>(() => {
     return getSelections($sidebarLSM.value).at(0) ?? { name: 'LIBRARY' }
 }, { equals: shallowEqualObjects })
 
+export const $playlistColor = computed(() => {
+    const view = $view()
+    if (view.name !== 'PLAYLIST') return undefined
+    return $playlistsById(view.value)()?.color
+})
+
 export const $playingMode = computed<Mode>(() => {
     const view = $playingView.value ?? $view.value
     switch (view.name) {
@@ -181,8 +187,13 @@ effect((prev: string[] = []) => {
     for (const className of prev) document.body.classList.remove(className)
     for (const className of next) document.body.classList.add(className)
     const style = getComputedStyle(document.body)
+
     $waveformWaveColor.set(style.getPropertyValue('--waveform'))
-    $waveformProgressColor.set(style.getPropertyValue('--accent'))
+
+    const playlistColor = $playlistColor()?.value
+    const progressProperty = playlistColor ? `--accent-${playlistColor}` : '--accent'
+    $waveformProgressColor.set(style.getPropertyValue(progressProperty))
+
     return next
 })
 
