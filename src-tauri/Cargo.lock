@@ -2042,7 +2042,7 @@ dependencies = [
 
 [[package]]
 name = "moonwave"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "lofty",
  "new_mime_guess",
