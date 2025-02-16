@@ -1,4 +1,4 @@
-import { $dropPlaylistElement, $dropPlaylistId, $view } from '@app/state/state'
+import { $dropPlaylistElement, $dropPlaylistId } from '@app/state/state'
 import { action } from '@app/utils/signals/action'
 
 export const onDragEnterPlaylist = action((playlistId: string) => {

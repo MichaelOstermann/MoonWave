@@ -42,7 +42,7 @@ const h = createHotkeys(config => config
 addShortcuts(h, ['cmd+shift+r'], () => window.location.reload())
 
 addShortcuts(h, shortcuts.showCmdMenu, CommandMenu.open)
-addShortcuts(h, shortcuts.createPlaylist, createPlaylist)
+addShortcuts(h, shortcuts.createPlaylist, () => createPlaylist())
 addShortcuts(h, shortcuts.syncLibrary, syncLibrary)
 addShortcuts(h, shortcuts.toggleMute, toggleMute)
 addShortcuts(h, shortcuts.setVolume10, () => setVolume(0.1))

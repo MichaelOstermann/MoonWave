@@ -53,7 +53,7 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                             icon={LucidePlus}
                             title="New Playlist"
                             shortcut={shortcuts.createPlaylist[0]}
-                            onSelect={createPlaylist}
+                            onSelect={() => createPlaylist()}
                         />
                         <Item
                             icon={LucideRefreshCw}
