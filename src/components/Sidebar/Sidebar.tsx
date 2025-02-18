@@ -26,15 +26,13 @@ export function Sidebar(): ReactNode {
             onContextMenu={menu.show}
             style={{ width }}
             className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
-            onClick={(evt) => {
-                if ((evt.target as Element).hasAttribute('data-tauri-drag-region')) return
-                $focusedView.set('SIDEBAR')
-            }}
+            onClick={() => $focusedView.set('SIDEBAR')}
         >
             <PlaylistDragGhost />
             <div
                 data-tauri-drag-region
                 className="h-11 shrink-0"
+                onClick={evt => evt.stopPropagation()}
             />
             <SidebarResizeHandler />
             <SidebarSearchInput />
@@ -64,6 +62,7 @@ export function Sidebar(): ReactNode {
                 <div
                     data-tauri-drag-region
                     className="flex shrink grow"
+                    onClick={evt => evt.stopPropagation()}
                 />
             </div>
         </div>

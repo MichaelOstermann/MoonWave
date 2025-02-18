@@ -138,7 +138,7 @@ effect(() => {
         const shouldSkip = (targetElement.nodeName === 'INPUT' && (targetElement as HTMLInputElement).value)
             || (targetElement.nodeName === 'TEXTAREA' && (targetElement as HTMLTextAreaElement).value)
         if (!shouldSkip) lastModal?.close()
-    }, { signal: ac.signal })
+    }, { capture: true, signal: ac.signal })
 
     withCleanup(() => ac.abort())
 })

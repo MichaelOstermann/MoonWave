@@ -15,11 +15,13 @@ import { createDialog } from '@app/utils/modals/createDialog'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { Command } from 'cmdk'
 import { LucideFastForward, LucideMoon, LucidePause, LucidePlay, LucidePlus, LucideRefreshCw, LucideRepeat, LucideRewind, LucideSearch, LucideSun, LucideSunMoon, LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
-import { createElement, type ReactNode } from 'react'
+import { createElement, type ReactNode, useState } from 'react'
 import { twJoin } from 'tailwind-merge'
 import { Kbd } from './Kbd'
 
 export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
+    const [filter, setFilter] = useState('')
+
     return (
         <DialogRoot
             dialog={dialog}
@@ -32,9 +34,14 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                     </div>
                     <Command.Input
                         autoFocus
+                        value={filter}
+                        onValueChange={setFilter}
                         placeholder="Search"
                         className="h-12 w-full bg-transparent pl-11 pr-4 text-sm outline-none placeholder:text-[--fg-soft]"
                         onContextMenu={evt => evt.stopPropagation()}
+                        onKeyDown={(evt) => {
+                            if (evt.key === 'Escape') setFilter('')
+                        }}
                     />
                 </div>
                 <Command.List

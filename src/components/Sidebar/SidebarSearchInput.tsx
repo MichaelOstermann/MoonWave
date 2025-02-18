@@ -10,7 +10,7 @@ export function SidebarSearchInput(): ReactNode {
     return (
         <div
             className="group flex shrink-0 px-2"
-            onPointerDown={evt => evt.stopPropagation()}
+            onClick={evt => evt.stopPropagation()}
         >
             <div className="relative flex shrink grow">
                 <div className="pointer-events-none absolute inset-y-0 left-1.5 flex items-center">
@@ -32,6 +32,9 @@ export function SidebarSearchInput(): ReactNode {
                     value={value}
                     onChange={evt => filterLibrary(evt.target.value)}
                     onContextMenu={evt => evt.stopPropagation()}
+                    onKeyDown={(evt) => {
+                        if (evt.key === 'Escape') filterLibrary('')
+                    }}
                 />
             </div>
         </div>

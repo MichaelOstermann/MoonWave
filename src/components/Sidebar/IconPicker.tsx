@@ -118,6 +118,9 @@ export function IconPicker({
                         className="sidebar-search-input h-8 w-full rounded-md bg-[--bg-soft] px-8 text-sm outline-none placeholder:text-[--fg-soft]"
                         value={filter}
                         onChange={evt => setFilter(evt.target.value)}
+                        onKeyDown={(evt) => {
+                            if (evt.key === 'Escape') setFilter('')
+                        }}
                     />
                 </div>
             </div>

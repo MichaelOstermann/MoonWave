@@ -120,25 +120,11 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
                     />
                 )}
             />
-            <div className="flex shrink grow">
-                {!isEditing && (
-                    <LibraryItemTitle title={playlist.title} />
-                )}
-                {isEditing && (
-                    <input
-                        autoFocus
-                        type="text"
-                        defaultValue={playlist.title}
-                        placeholder="New Playlist"
-                        className="shrink grow border-0 bg-transparent outline-none placeholder:text-[--fg-soft]"
-                        onBlur={evt => savePlaylistTitle(evt.target.value || 'New Playlist')}
-                        onKeyDown={(evt) => {
-                            if (evt.key === 'Escape' || evt.key === 'Enter')
-                                (evt.target as HTMLInputElement).blur()
-                        }}
-                    />
-                )}
-            </div>
+            <LibraryItemTitle
+                title={playlist.title}
+                isEditing={isEditing}
+                onSubmit={savePlaylistTitle}
+            />
         </SidebarItem>
     )
 }

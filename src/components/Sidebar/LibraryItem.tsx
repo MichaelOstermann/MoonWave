@@ -51,9 +51,7 @@ export function LibraryItem({ name }: {
                 wave={isPlaying}
                 icon={icon}
             />
-            <div className="flex shrink grow">
-                <LibraryItemTitle title={title} />
-            </div>
+            <LibraryItemTitle title={title} />
         </SidebarItem>
     )
 }
