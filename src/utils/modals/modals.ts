@@ -1,4 +1,4 @@
-import type { Dialog, Modal, Popover } from './types'
+import type { Dialog, Modal, Popover, Tooltip } from './types'
 import { shallowEqualArrays } from 'shallow-equal'
 import { isParentElementOf } from '../dom/isParentElementOf'
 import { withCleanup } from '../signals/cleanups'
@@ -28,6 +28,13 @@ export const onOpenedPopover = onOpenedModal.filter(m => m.type === 'popover')
 export const onClosingPopover = onClosingModal.filter(m => m.type === 'popover')
 export const onClosedPopover = onClosedModal.filter(m => m.type === 'popover')
 
+export const onOpenTooltip = onOpenModal.filter(m => m.type === 'tooltip')
+export const onCloseTooltip = onCloseModal.filter(m => m.type === 'tooltip')
+export const onOpeningTooltip = onOpeningModal.filter(m => m.type === 'tooltip')
+export const onOpenedTooltip = onOpenedModal.filter(m => m.type === 'tooltip')
+export const onClosingTooltip = onClosingModal.filter(m => m.type === 'tooltip')
+export const onClosedTooltip = onClosedModal.filter(m => m.type === 'tooltip')
+
 export const modals = signal(new Map<string, Modal>())
 
 export const openModals = computed(() => {
@@ -44,9 +51,14 @@ export const openPopovers = computed(() => {
     return openModals().filter(m => m.type === 'popover')
 }, { equals: shallowEqualArrays })
 
+export const openTooltips = computed(() => {
+    return openModals().filter(m => m.type === 'tooltip')
+}, { equals: shallowEqualArrays })
+
 export const hasOpenModals = computed(() => openModals().length > 0)
 export const hasOpenDialogs = computed(() => openDialogs().length > 0)
 export const hasOpenPopovers = computed(() => openPopovers().length > 0)
+export const hasOpenTooltips = computed(() => openTooltips().length > 0)
 
 export function getModal(id: string): Modal | undefined {
     return modals().get(id)
@@ -60,6 +72,11 @@ export function getDialog(id: string): Dialog | undefined {
 export function getPopover(id: string): Popover | undefined {
     const modal = getModal(id)
     return modal?.type === 'popover' ? modal : undefined
+}
+
+export function getTooltip(id: string): Tooltip | undefined {
+    const modal = getModal(id)
+    return modal?.type === 'tooltip' ? modal : undefined
 }
 
 export function openModal(id: string): void {
@@ -107,7 +124,20 @@ export function closeAllPopoversExcept(popover: Popover): void {
     }
 }
 
-onOpenModal(closeAllModalsExcept)
+export function closeAllTooltips(): void {
+    openTooltips.peek().forEach(m => m.close())
+}
+
+export function closeAllTooltipsExcept(tooltip: Tooltip): void {
+    for (const openTooltip of openTooltips()) {
+        if (openTooltip === tooltip) continue
+        openTooltip.close()
+    }
+}
+
+onOpenDialog(closeAllModalsExcept)
+onOpenPopover(closeAllModalsExcept)
+onOpenTooltip(closeAllTooltipsExcept)
 
 effect(() => {
     if (hasOpenPopovers()) document.body.setAttribute('has-popover', 'true')

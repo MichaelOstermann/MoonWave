@@ -1,4 +1,4 @@
-import type { ModalStatus, Popover, PopoverOptions } from './types'
+import type { ModalStatus, Tooltip, TooltipOptions } from './types'
 import { batch } from '@preact/signals-core'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
@@ -6,14 +6,16 @@ import { removeEntry } from '../data/removeEntry'
 import { setEntry } from '../data/setEntry'
 import { observeDimensions } from '../dom/observeDimensions'
 import { observePosition } from '../dom/observePosition'
+import { onAncestorScroll } from '../dom/onAncestorScroll'
 import { changeEffect } from '../signals/changeEffect'
 import { withCleanup } from '../signals/cleanups'
 import { computed } from '../signals/computed'
 import { effect } from '../signals/effect'
 import { event } from '../signals/event'
 import { signal } from '../signals/signal'
-import { getPopover, modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
+import { getTooltip, modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
 
+// TODO
 const windowWidth = signal(window.innerWidth)
 const windowHeight = signal(window.innerHeight)
 window.addEventListener('resize', () => batch(() => {
@@ -21,11 +23,11 @@ window.addEventListener('resize', () => batch(() => {
     windowHeight.set(window.innerHeight)
 }))
 
-export function createPopover(
+export function createTooltip(
     id: string,
-    options: Partial<PopoverOptions> = {},
-): Popover {
-    const existing = getPopover(id)
+    options: Partial<TooltipOptions> = {},
+): Tooltip {
+    const existing = getTooltip(id)
     if (existing) return existing
 
     let dependents = 0
@@ -36,10 +38,6 @@ export function createPopover(
     const status = signal<ModalStatus>('closed')
 
     const offset = signal(options.offset ?? 4)
-    const borderWidth = signal(options.borderWidth ?? 1)
-    const arrowWidth = signal(options.arrowWidth ?? 20)
-    const arrowHeight = signal(options.arrowHeight ?? 12)
-    const arrowRadius = signal(options.arrowRadius ?? 3)
     const paddingTop = signal(options.paddingTop ?? 10)
     const paddingLeft = signal(options.paddingLeft ?? 6)
     const paddingRight = signal(options.paddingRight ?? 6)
@@ -61,11 +59,15 @@ export function createPopover(
     const floatingWidth = computed(() => floatingRect()?.width ?? 0)
     const floatingHeight = computed(() => floatingRect()?.height ?? 0)
 
-    const maxHeightAbove = computed(() => anchorTop() - offset() - arrowHeight() - paddingTop())
-    const maxHeightBelow = computed(() => windowHeight() - anchorBottom() - offset() - arrowHeight() - paddingBottom())
-    const maxHeight = computed(() => Math.max(maxHeightAbove(), maxHeightBelow()))
-    const placement = computed(() => maxHeightAbove() > maxHeightBelow() ? 'above' : 'below')
+    const maxHeightAbove = computed(() => anchorTop() - offset() - paddingTop())
+    const maxHeightBelow = computed(() => windowHeight() - anchorBottom() - offset() - paddingBottom())
+    const placement = computed(() => maxHeightBelow() >= floatingHeight() ? 'below' : 'above')
     const matchPlacement = (placements: { above: number, below: number }): number => placements[placement()]
+
+    const maxHeight = computed(() => matchPlacement({
+        above: maxHeightAbove(),
+        below: maxHeightBelow(),
+    }))
 
     const x = computed(() => clamp(
         anchorCenter() - floatingWidth() / 2,
@@ -73,37 +75,27 @@ export function createPopover(
         windowWidth() - floatingWidth() - paddingRight(),
     ))
     const y = computed(() => matchPlacement({
-        above: anchorTop() - floatingHeight() - arrowHeight() - offset(),
-        below: anchorBottom() + arrowHeight() + offset(),
+        above: anchorTop() - floatingHeight() - offset(),
+        below: anchorBottom() + offset(),
     }))
 
-    const arrowX = computed(() => anchorCenter() - (arrowWidth() / 2) - x() - (borderWidth() * 2))
-    const arrowY = computed(() => matchPlacement({
-        above: floatingHeight() - borderWidth() * 2,
-        below: -arrowHeight(),
-    }))
-
-    const originX = computed(() => arrowX() + arrowWidth() / 2)
+    const originX = computed(() => floatingWidth() / 2)
     const originY = computed(() => matchPlacement({
-        above: floatingHeight() + arrowHeight(),
-        below: -arrowHeight(),
+        above: floatingHeight(),
+        below: 0,
     }))
 
-    const popover: Popover = {
-        type: 'popover',
+    const tooltip: Tooltip = {
+        type: 'tooltip',
         id,
         isOpen,
         isEnabled,
         status,
         offset,
-        borderWidth,
         paddingTop,
         paddingLeft,
         paddingRight,
         paddingBottom,
-        arrowWidth,
-        arrowHeight,
-        arrowRadius,
         anchorElement,
         floatingElement,
         hasMeasurements,
@@ -111,8 +103,6 @@ export function createPopover(
         placement,
         x,
         y,
-        arrowX,
-        arrowY,
         originX,
         originY,
         open,
@@ -134,7 +124,7 @@ export function createPopover(
 
     function register() {
         dependents++
-        modals.map(setEntry(id, popover))
+        modals.map(setEntry(id, tooltip))
         return () => {
             dependents--
             dispose()
@@ -166,37 +156,38 @@ export function createPopover(
 
         withCleanup(observePosition(anchor, anchorRect.set))
         withCleanup(observeDimensions(floating, floatingRect.set))
+        withCleanup(onAncestorScroll(anchor, close))
     }, { abort: ac.signal })
 
     changeEffect(isOpen, (isOpen) => {
         if (isOpen) {
-            popover.onOpen.emit(popover)
-            onOpenModal.emit(popover)
+            tooltip.onOpen.emit(tooltip)
+            onOpenModal.emit(tooltip)
         }
         else {
-            popover.onClose.emit(popover)
-            onCloseModal.emit(popover)
+            tooltip.onClose.emit(tooltip)
+            onCloseModal.emit(tooltip)
         }
     }, { abort: ac.signal })
 
     changeEffect(status, (status) => {
         if (status === 'opening') {
-            popover.onOpening.emit(popover)
-            onOpeningModal.emit(popover)
+            tooltip.onOpening.emit(tooltip)
+            onOpeningModal.emit(tooltip)
         }
         else if (status === 'opened') {
-            popover.onOpened.emit(popover)
-            onOpenedModal.emit(popover)
+            tooltip.onOpened.emit(tooltip)
+            onOpenedModal.emit(tooltip)
         }
         else if (status === 'closing') {
-            popover.onClosing.emit(popover)
-            onClosingModal.emit(popover)
+            tooltip.onClosing.emit(tooltip)
+            onClosingModal.emit(tooltip)
         }
         else if (status === 'closed') {
-            popover.onClosed.emit(popover)
-            onClosedModal.emit(popover)
+            tooltip.onClosed.emit(tooltip)
+            onClosedModal.emit(tooltip)
         }
     }, { abort: ac.signal })
 
-    return popover
+    return tooltip
 }

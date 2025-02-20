@@ -13,6 +13,7 @@ export type PopoverPlacement =
     | 'below'
 
 export type PopoverOptions = {
+    enabled: boolean
     offset: number
     borderWidth: number
     paddingTop: number
@@ -28,6 +29,7 @@ export type Popover = {
     type: 'popover'
     id: string
     isOpen: Signal<boolean>
+    isEnabled: Signal<boolean>
     status: Signal<ModalStatus>
     offset: Signal<number>
     borderWidth: Signal<number>
@@ -60,6 +62,46 @@ export type Popover = {
     onClosed: Event<Popover>
 }
 
+export type TooltipOptions = {
+    enabled: boolean
+    offset: number
+    paddingTop: number
+    paddingLeft: number
+    paddingRight: number
+    paddingBottom: number
+}
+
+export type Tooltip = {
+    type: 'tooltip'
+    id: string
+    isOpen: Signal<boolean>
+    isEnabled: Signal<boolean>
+    status: Signal<ModalStatus>
+    offset: Signal<number>
+    paddingTop: Signal<number>
+    paddingLeft: Signal<number>
+    paddingRight: Signal<number>
+    paddingBottom: Signal<number>
+    anchorElement: Signal<HTMLElement | null>
+    floatingElement: Signal<HTMLElement | null>
+    hasMeasurements: ReadonlySignal<boolean>
+    maxHeight: ReadonlySignal<number>
+    placement: ReadonlySignal<PopoverPlacement>
+    x: ReadonlySignal<number>
+    y: ReadonlySignal<number>
+    originX: ReadonlySignal<number>
+    originY: ReadonlySignal<number>
+    open: () => void
+    close: () => void
+    register: () => () => void
+    onOpen: Event<Tooltip>
+    onClose: Event<Tooltip>
+    onOpening: Event<Tooltip>
+    onOpened: Event<Tooltip>
+    onClosing: Event<Tooltip>
+    onClosed: Event<Tooltip>
+}
+
 export type Dialog = {
     type: 'dialog'
     id: string
@@ -79,3 +121,4 @@ export type Dialog = {
 export type Modal =
     | Popover
     | Dialog
+    | Tooltip

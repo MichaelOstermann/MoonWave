@@ -8,10 +8,13 @@ export function WavesurferSeeker({ position }: { position: number }): ReactNode 
 
     return (
         <div
-            className="tooltip pointer-events-none absolute top-full z-20 flex h-8 items-center justify-center"
+            className="pointer-events-none absolute top-full z-20 flex h-8 items-center justify-center"
             style={{ left: `${position * 100}%` }}
         >
-            <span className="absolute rounded bg-[--bg] px-2 py-1 text-xxs font-semibold text-[--fg] backdrop-blur">
+            <span
+                data-modal="tooltip"
+                className="absolute rounded bg-[--bg] px-2 py-1 text-xxs font-semibold text-[--fg] backdrop-blur-xl"
+            >
                 {trackPosition}
             </span>
         </div>

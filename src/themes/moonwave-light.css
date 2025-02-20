@@ -76,11 +76,11 @@
     --border: rgba(0, 0, 0, 0.1);
 }
 
+.theme-moonwave-light [data-modal="tooltip"] {
+    --bg: oklch(92% 0.004 90 / 50%);
+}
+
 .theme-moonwave-light ::selection {
     color: var(--fg-active);
     background: var(--bg-active);
-}
-
-.theme-moonwave-light .tooltip {
-    --bg: oklch(86% 0.004 90 / 50%);
 }

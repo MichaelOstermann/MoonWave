@@ -3,6 +3,8 @@ import type { ComponentProps, ReactNode } from 'react'
 import { colors } from '@app/config/colors'
 import { icons } from '@app/config/icons'
 import { clamp } from '@app/utils/data/clamp'
+import { Tooltip } from '@app/utils/modals/components/Tooltip'
+import { useTooltip } from '@app/utils/modals/useTooltip'
 import fuzzysort from 'fuzzysort'
 import { LucideSearch, LucideX } from 'lucide-react'
 import { DynamicIcon } from 'lucide-react/dynamic'
@@ -136,29 +138,15 @@ export function IconPicker({
                 )}
                 {rows.map((icons, idx) => {
                     return (
-                        <div
-                            key={idx}
-                            className="flex shrink-0"
-                        >
-                            {icons.map((icon) => {
-                                const isActive = icon.type === activeIcon?.type
-                                    && icon.value === activeIcon.value
-                                return (
-                                    <div
-                                        key={icon.value}
-                                        onClick={() => onSelectIcon?.(icon)}
-                                        className={twJoin(
-                                            'flex size-[--row-height] items-center justify-center rounded',
-                                            isActive && 'bg-[--bg-active] text-[--fg-active]',
-                                        )}
-                                    >
-                                        <DynamicIcon
-                                            name={icon.value}
-                                            size={iconSize}
-                                        />
-                                    </div>
-                                )
-                            })}
+                        <div key={idx} className="flex shrink-0">
+                            {icons.map(icon => (
+                                <Icon
+                                    key={icon.value}
+                                    icon={icon}
+                                    activeIcon={activeIcon}
+                                    onSelectIcon={() => onSelectIcon?.(icon)}
+                                />
+                            ))}
                         </div>
                     )
                 })}
@@ -189,4 +177,47 @@ function IconColor({ color, isActive, ...rest }: IconColorProps): ReactNode {
             />
         </div>
     )
+}
+
+interface IconProps {
+    icon: PlaylistIcon
+    activeIcon?: PlaylistIcon
+    onSelectIcon?: (name: PlaylistIcon) => void
+}
+
+function Icon({ icon, activeIcon, onSelectIcon }: IconProps): ReactNode {
+    const isActive = icon.type === activeIcon?.type
+        && icon.value === activeIcon.value
+
+    const tooltip = useTooltip(`iconpicker-${icon.value}`)
+
+    return (
+        <Tooltip
+            asChild
+            tooltip={tooltip}
+            render={() => formatIconName(icon.value)}
+        >
+            <div
+                key={icon.value}
+                onClick={() => onSelectIcon?.(icon)}
+                className={twJoin(
+                    'flex size-[--row-height] items-center justify-center rounded',
+                    isActive && 'bg-[--bg-active] text-[--fg-active]',
+                )}
+            >
+                <DynamicIcon
+                    name={icon.value}
+                    size={iconSize}
+                />
+            </div>
+        </Tooltip>
+    )
+}
+
+function formatIconName(name: string): string {
+    return name
+        .replace(/-\d+$/, '')
+        .split('-')
+        .map(v => v.slice(0, 1).toUpperCase() + v.slice(1))
+        .join(' ')
 }
