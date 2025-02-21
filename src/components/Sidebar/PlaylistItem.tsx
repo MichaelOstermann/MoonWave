@@ -47,7 +47,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
             && view.value === id
     })
 
-    const popover = usePopover(id)
+    const popover = usePopover(id, { paddingTop: 25 })
     const isPopoverOpen = useSignal(popover.isOpen)
     const popoverSide = useSignal(popover.placement)
 
