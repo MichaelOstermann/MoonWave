@@ -2,7 +2,7 @@ import type { Track } from '@app/types'
 import { join, tempDir } from '@tauri-apps/api/path'
 import { BaseDirectory } from '@tauri-apps/plugin-fs'
 import { Command } from '@tauri-apps/plugin-shell'
-import { pipeInto } from 'ts-functional-pipe'
+import { pipe } from '../data/pipe'
 import { readJSON } from '../fs/readJSON'
 import { readText } from '../fs/readText'
 import { removeFile } from '../fs/removeFile'
@@ -40,7 +40,7 @@ function parsePeaks(value: string): number[] {
         .map(line => line.split('=').at(1)!)
         .map(line => Number.parseFloat(line) || 0)
 
-    return pipeInto(
+    return pipe(
         peaks,
         peaks => downsamplePeaks(peaks),
         peaks => logToLinearPeaks(peaks),

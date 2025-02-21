@@ -1,7 +1,7 @@
-import { pipeInto } from 'ts-functional-pipe'
+import { pipe } from './data/pipe'
 
 export function formatDuration(seconds: number): string {
-    return pipeInto(
+    return pipe(
         seconds,
         v => Math.max(v, 0),
         v => Number.isFinite(v) ? v : 0,

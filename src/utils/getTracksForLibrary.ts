@@ -1,12 +1,12 @@
 import type { Track } from '@app/types'
 import { $tracks, $tracksFilter } from '@app/state/state'
-import { pipeInto } from 'ts-functional-pipe'
 import { applyFilterToTracks } from './applyFilterToTracks'
+import { pipe } from './data/pipe'
 import { removeUnsupportedTracks } from './removeUnsupportedTracks'
 import { sortView } from './sortTracks'
 
 export function getTracksForLibrary(options?: { applyFilter: boolean }): Track[] {
-    return pipeInto(
+    return pipe(
         $tracks.value,
         tracks => removeUnsupportedTracks(tracks),
         tracks => options?.applyFilter && $tracksFilter.value

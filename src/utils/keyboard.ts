@@ -11,7 +11,7 @@ import { shortcuts } from '@app/config/shortcuts'
 import { $focusedView, $sidebarLSM, $tracksLSM } from '@app/state/state'
 import { createHotkeys, eventToHotkey, getExactBindings, resolveBindings } from '@monstermann/hotkeys'
 import { addShortcuts } from '@monstermann/hotkeys/vscode'
-import { pipeInto } from 'ts-functional-pipe'
+import { pipe } from './data/pipe'
 import { goToBottom } from './lsm/utils/goToBottom'
 import { goToNext } from './lsm/utils/goToNext'
 import { goToPrev } from './lsm/utils/goToPrev'
@@ -87,7 +87,7 @@ document.addEventListener('keydown', (event) => {
 
     if (hotkey.key === ' ') hotkey.key = 'Space'
 
-    const bindings = pipeInto(
+    const bindings = pipe(
         getExactBindings(h, [hotkey]),
         bindings => resolveBindings(h, bindings),
     )

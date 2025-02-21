@@ -1,7 +1,7 @@
 import type { ReadonlySignal } from './signals/computed'
 import type { Signal } from './signals/signal'
 import { $mouseX } from '@app/state/state'
-import { pipeInto } from 'ts-functional-pipe'
+import { pipe } from './data/pipe'
 import { computed } from './signals/computed'
 import { effect } from './signals/effect'
 import { signal } from './signals/signal'
@@ -42,7 +42,7 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     const $width = computed(() => $bounds.value?.width ?? 0)
 
     const $absX = computed(() => $seeking.value ? $mouseX.value : 0)
-    const $relX = computed(() => pipeInto(
+    const $relX = computed(() => pipe(
         $absX.value,
         x => x - $left.value,
         x => x / $width.value,
