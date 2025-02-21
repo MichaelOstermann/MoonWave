@@ -7,8 +7,9 @@ import { LibraryItemIcon } from './LibraryItemIcon'
 import { LibraryItemTitle } from './LibraryItemTitle'
 import { SidebarItem } from './SidebarItem'
 
-export function LibraryItem({ name }: {
+export function LibraryItem({ name, children }: {
     name: Exclude<View['name'], 'PLAYLIST'>
+    children?: ReactNode
 }): ReactNode {
     const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
     const isSelected = useSignal(() => $view.value.name === name)
@@ -52,6 +53,7 @@ export function LibraryItem({ name }: {
                 icon={icon}
             />
             <LibraryItemTitle title={title} />
+            {children}
         </SidebarItem>
     )
 }

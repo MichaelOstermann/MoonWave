@@ -59,7 +59,7 @@ export function SidebarItem({
                 data-dragging={isDragging}
                 data-color={!!color}
                 className={twJoin(
-                    'group flex h-8 shrink grow items-center gap-x-1.5 rounded-md pl-1.5 pr-2.5 text-sm',
+                    'group flex h-8 shrink grow items-center gap-x-1.5 rounded-md px-1.5 text-sm',
                     'data-[dragging=true]:opacity-60',
                     'data-[active=false]:data-[selected=true]:data-[border=false]:bg-[--bg-selected]',
                     'data-[active=true]:data-[border=false]:bg-[--bg-active]',

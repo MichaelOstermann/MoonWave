@@ -42,13 +42,13 @@
     --accent: var(--accent-blue);
     --bg-active: var(--bg-blue);
     --fg-active: var(--fg-blue);
+    --bg-selected: oklch(40.65% 0.034 276 / 40%);
 }
 
 .theme-moonwave-dark .main {
     --bg: oklch(24.65% 0.017 280 / 98%);
     --bg-soft: rgba(0, 0, 0, 0.1);
     --fg-soft: color-mix(in oklab, var(--fg) 50%, var(--bg));
-    --bg-selected: color-mix(in oklab, var(--fg) 14%, var(--bg));
     --bg-hover: color-mix(in oklab, var(--fg) 20%, var(--bg));
 }
 
@@ -57,14 +57,12 @@
     --bg: oklch(21.65% 0.014 280 / 96%);
     --bg-soft: rgba(0, 0, 0, 0.2);
     --fg-soft: color-mix(in oklab, var(--fg) 60%, var(--bg));
-    --bg-selected: color-mix(in oklab, var(--fg) 14%, var(--bg));
 }
 
 .theme-moonwave-dark [data-modal] {
     --bg: oklch(26.65% 0.022 280);
     --bg-soft: rgba(0, 0, 0, 0.2);
     --fg-soft: color-mix(in oklab, var(--fg) 60%, var(--bg));
-    --bg-selected: color-mix(in oklab, var(--fg) 14%, var(--bg));
     --bg-hover: color-mix(in oklab, var(--fg) 20%, var(--bg));
 }
 

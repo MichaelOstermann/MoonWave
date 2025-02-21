@@ -11,6 +11,7 @@ import { PlaylistItem } from './PlaylistItem'
 import { SidebarResizeHandler } from './SidebarResizeHandler'
 import { SidebarSearchInput } from './SidebarSearchInput'
 import { SidebarSectionHeader } from './SidebarSectionHeader'
+import { UnsortedItem } from './UnsortedItem'
 
 export function Sidebar(): ReactNode {
     const sidebarItems = useSignal($sidebarItems)
@@ -51,7 +52,7 @@ export function Sidebar(): ReactNode {
                             <LibraryItem name={item.name} key={item.name} />
                         )
                         case 'UNSORTED': return (
-                            <LibraryItem name={item.name} key={item.name} />
+                            <UnsortedItem key={item.name} />
                         )
                         case 'PLAYLIST': return (
                             <PlaylistItem id={item.value} key={`playlist-${item.value}`} />

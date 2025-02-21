@@ -1,6 +1,7 @@
 import type { Config, FocusedView, Mode, Playlist, SidebarItem, ThemeName, Track, View, WaveformTheme } from '@app/types'
 import type WaveSurfer from 'wavesurfer.js'
 import { waveformThemes } from '@app/themes/waveforms'
+import { entriesEqual } from '@app/utils/data/entriesEqual'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
 import { map } from '@app/utils/data/map'
 import { getTracksForLibrary } from '@app/utils/getTracksForLibrary'
@@ -102,6 +103,22 @@ export const $dropPlaylistSide = computed<'above' | 'below'>(() => {
 export const $view = computed<View>(() => {
     return getSelections($sidebarLSM.value).at(0) ?? { name: 'LIBRARY' }
 }, { equals: shallowEqualObjects })
+
+export const $sortedTrackIds = computed(() => {
+    return $playlists().reduce((acc, p) => {
+        return p.trackIds.reduce((acc, tid) => acc.add(tid), acc)
+    }, new Set<string>())
+}, { equals: entriesEqual })
+
+export const $unsortedTrackIds = computed(() => {
+    const sortedTrackIds = $sortedTrackIds()
+    return $tracks().reduce((acc, t) => {
+        if (!sortedTrackIds.has(t.id)) acc.add(t.id)
+        return acc
+    }, new Set<string>())
+}, { equals: entriesEqual })
+
+export const $unsortedTracksCount = computed(() => $unsortedTrackIds().size)
 
 export const $playlistColor = computed(() => {
     const view = $view()
