@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { CurrentTrack } from './CurrentTrack'
 import { PlaybackControls } from './PlaybackControls'
-import { SyncProgress } from './SyncProgress'
 import { VolumeControls } from './VolumeControls'
 
 export function Trackbar(): ReactNode {
@@ -24,9 +23,6 @@ export function Trackbar(): ReactNode {
                 className="flex h-full w-1/4 justify-center"
             >
                 <VolumeControls />
-            </div>
-            <div className="flex h-full shrink-0 items-center">
-                <SyncProgress />
             </div>
         </div>
     )

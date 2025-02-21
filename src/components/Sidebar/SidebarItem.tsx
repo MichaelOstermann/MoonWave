@@ -6,14 +6,14 @@ import { twJoin } from 'tailwind-merge'
 type DropTarget = 'above' | 'below' | boolean | undefined
 
 interface SidebarItemProps extends Omit<ComponentProps<'div'>, 'color'> {
-    color: PlaylistColor | undefined
     isSelected: boolean
     isActive: boolean
     isPlaying: boolean
-    isEditing: boolean
-    isDragging: boolean
-    showBorder: boolean
-    dropTarget: DropTarget
+    color?: PlaylistColor
+    isEditing?: boolean
+    isDragging?: boolean
+    showBorder?: boolean
+    dropTarget?: DropTarget
 }
 
 export function SidebarItem({
@@ -21,10 +21,10 @@ export function SidebarItem({
     isSelected,
     isActive,
     isPlaying,
-    isEditing,
-    isDragging,
-    showBorder,
-    dropTarget,
+    isEditing = false,
+    isDragging = false,
+    showBorder = false,
+    dropTarget = false,
     children,
     style,
     className,

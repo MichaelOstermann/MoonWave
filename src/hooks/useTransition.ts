@@ -1,16 +1,25 @@
 import { usePrevious } from '@react-hookz/web'
 import { useEffect, useState } from 'react'
 
-type Status = 'closed' | 'opening' | 'closing' | 'opened'
+export type TransitionStatus = 'closed' | 'opening' | 'closing' | 'opened'
 
-export function useTransition(options: {
+export function useTransition({
+    isOpen,
+    animateInitial = true,
+    openDuration,
+    closeDuration,
+    closingDelay = 0,
+    onChange,
+}: {
     isOpen: boolean
+    animateInitial?: boolean
     openDuration: number
     closeDuration: number
-    onChange?: (status: Status) => void
+    closingDelay?: number
+    onChange?: (status: TransitionStatus) => void
 }): {
         mounted: boolean
-        status: Status
+        status: TransitionStatus
         isClosed: boolean
         isClosing: boolean
         isOpening: boolean
@@ -18,43 +27,47 @@ export function useTransition(options: {
         isClosedOrClosing: boolean
         isOpenedOrOpening: boolean
     } {
-    const [status, setStatus] = useState<Status>('closed')
+    const [status, setStatus] = useState<TransitionStatus>(isOpen && !animateInitial ? 'opened' : 'closed')
     const prevStatus = usePrevious(status)
 
     useEffect(() => {
-        if (options.isOpen && (status === 'closed' || status === 'closing')) {
+        if (isOpen && (status === 'closed' || status === 'closing')) {
             const raf = requestAnimationFrame(() => setStatus('opening'))
             return () => cancelAnimationFrame(raf)
         }
 
-        if (!options.isOpen && (status === 'opened' || status === 'opening')) {
-            return setStatus('closing')
+        if (!isOpen && (status === 'opened' || status === 'opening')) {
+            const timeout = setTimeout(() => setStatus('closing'), closingDelay)
+            return () => clearTimeout(timeout)
         }
 
         if (status === 'opening') {
-            const timeout = setTimeout(() => setStatus('opened'), options.openDuration)
+            const timeout = setTimeout(() => setStatus('opened'), openDuration)
             return () => clearTimeout(timeout)
         }
 
         if (status === 'closing') {
-            const timeout = setTimeout(() => setStatus('closed'), options.closeDuration)
+            const timeout = setTimeout(() => setStatus('closed'), closeDuration)
             return () => clearTimeout(timeout)
         }
+
+        return undefined
     }, [
         status,
-        options.isOpen,
-        options.openDuration,
-        options.closeDuration,
+        isOpen,
+        openDuration,
+        closeDuration,
+        closingDelay,
     ])
 
     useEffect(() => {
         if (!prevStatus) return
         if (prevStatus === status) return
-        options.onChange?.(status)
-    }, [options, prevStatus, status])
+        onChange?.(status)
+    }, [onChange, prevStatus, status])
 
     return {
-        mounted: options.isOpen || status !== 'closed',
+        mounted: isOpen || status !== 'closed',
         status,
         isClosed: status === 'closed',
         isClosing: status === 'closing',

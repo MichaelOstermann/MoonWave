@@ -5,13 +5,14 @@ import { $config, $focusedView, $sidebarItems } from '@app/state/state'
 import { useMenu } from '@app/utils/menu'
 import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'
 import { useSignal } from '@app/utils/signals/useSignal'
-import { LibraryItem } from './LibraryItem'
+import { Library } from './Home/Library'
+import { RecentlyAdded } from './Home/RecentlyAdded'
+import { Unsorted } from './Home/Unsorted'
 import { PlaylistDragGhost } from './PlaylistDragGhost'
 import { PlaylistItem } from './PlaylistItem'
 import { SidebarResizeHandler } from './SidebarResizeHandler'
 import { SidebarSearchInput } from './SidebarSearchInput'
 import { SidebarSectionHeader } from './SidebarSectionHeader'
-import { UnsortedItem } from './UnsortedItem'
 
 export function Sidebar(): ReactNode {
     const sidebarItems = useSignal($sidebarItems)
@@ -45,18 +46,10 @@ export function Sidebar(): ReactNode {
                                 {item.value}
                             </SidebarSectionHeader>
                         )
-                        case 'LIBRARY': return (
-                            <LibraryItem name={item.name} key={item.name} />
-                        )
-                        case 'RECENTLY_ADDED': return (
-                            <LibraryItem name={item.name} key={item.name} />
-                        )
-                        case 'UNSORTED': return (
-                            <UnsortedItem key={item.name} />
-                        )
-                        case 'PLAYLIST': return (
-                            <PlaylistItem id={item.value} key={`playlist-${item.value}`} />
-                        )
+                        case 'LIBRARY': return <Library key={item.name} />
+                        case 'RECENTLY_ADDED': return <RecentlyAdded key={item.name} />
+                        case 'UNSORTED': return <Unsorted key={item.name} />
+                        case 'PLAYLIST': return <PlaylistItem id={item.value} key={`playlist-${item.value}`} />
                     }
                     return null
                 })}

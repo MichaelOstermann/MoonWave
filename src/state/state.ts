@@ -140,8 +140,8 @@ export const $sidebarItems = computed<SidebarItem[]>(() => {
     return [
         { name: 'SECTION', value: 'Home' },
         { name: 'LIBRARY' },
-        { name: 'RECENTLY_ADDED' },
         { name: 'UNSORTED' },
+        { name: 'RECENTLY_ADDED' },
         { name: 'SECTION', value: 'Playlists' },
         ...$playlists.value.map<View>(p => ({ name: 'PLAYLIST', value: p.id })),
     ]

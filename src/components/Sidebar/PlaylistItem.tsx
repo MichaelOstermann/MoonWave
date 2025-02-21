@@ -18,6 +18,9 @@ import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
 import { usePopover } from '@app/utils/modals/usePopover'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { confirm } from '@tauri-apps/plugin-dialog'
+import { DynamicIcon } from 'lucide-react/dynamic'
+import { AudioWaveIcon } from '../AudioWaveIcon'
+import { FadeInOut } from '../FadeInOut'
 import { IconPicker } from './IconPicker'
 import { LibraryItemIcon } from './LibraryItemIcon'
 import { LibraryItemTitle } from './LibraryItemTitle'
@@ -103,10 +106,14 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
             onContextMenu={menu.show}
         >
             <PopoverTarget asChild popover={popover}>
-                <LibraryItemIcon
-                    wave={showAudioWaveIcon}
-                    icon={playlist.icon}
-                />
+                <LibraryItemIcon>
+                    <FadeInOut animateInitial={false} show={showAudioWaveIcon} className="absolute">
+                        <AudioWaveIcon className="mb-1 size-4" />
+                    </FadeInOut>
+                    <FadeInOut animateInitial={false} show={!showAudioWaveIcon} className="absolute">
+                        <DynamicIcon name={playlist.icon ? playlist.icon.value : 'list-music'} className="size-4" />
+                    </FadeInOut>
+                </LibraryItemIcon>
             </PopoverTarget>
             <PopoverRoot
                 popover={popover}
