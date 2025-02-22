@@ -20,7 +20,7 @@ import { computed } from '@app/utils/signals/computed'
 import { effect } from '@app/utils/signals/effect'
 import { indexSignalBy } from '@app/utils/signals/indexSignalBy'
 import { signal } from '@app/utils/signals/signal'
-import { deleteWaveform } from '@app/utils/waveform/deleteWaveform'
+import { deleteWaveforms } from '@app/utils/waveform/deleteWaveforms'
 import { batch } from '@preact/signals-core'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { shallowEqualObjects } from 'shallow-equal'
@@ -295,13 +295,14 @@ changeEffect(() => $tracks.value, (tracksAfter, tracksBefore) => {
     const trackIdsAfter = new Set(tracksAfter.map(t => t.id))
     const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)
     if (removedTrackIds.size === 0) return
+    const removedTrackIdsArr = Array.from(removedTrackIds)
 
     $playedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
     $prevPlayedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
     $nextPlayedTrackIds.map(findAndRemoveAll(tid => removedTrackIds.has(tid)))
-    $playlists.map(map(p => removePlaylistTracks(p, Array.from(removedTrackIds))))
+    $playlists.map(map(p => removePlaylistTracks(p, removedTrackIdsArr)))
 
-    removedTrackIds.forEach(tid => deleteWaveform(tid))
+    deleteWaveforms(removedTrackIdsArr)
 
     if ($playingTrackId.value && removedTrackIds.has($playingTrackId.value)) {
         $playingTrackId.set(undefined)
