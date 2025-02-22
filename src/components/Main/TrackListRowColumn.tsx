@@ -4,6 +4,7 @@ import { $playing, $playingTrackId } from '@app/state/state'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { twJoin } from 'tailwind-merge'
 import { AudioWaveIcon } from '../AudioWaveIcon'
+import { FadeInOut } from '../FadeInOut'
 import { iconSize } from './config'
 
 export function TrackListRowColumn({ col, row, style }: {
@@ -23,18 +24,37 @@ export function TrackListRowColumn({ col, row, style }: {
             style={style}
             className={twJoin(
                 'flex h-full items-center',
-                col === 'position' && 'justify-end',
+                col === 'position' && 'relative justify-end',
                 col === 'duration' && 'justify-end',
             )}
         >
-            {!showAudioWaveIcon && (
+            {col === 'position' && (
+                <Position
+                    position={row[col]}
+                    showAudioWaveIcon={showAudioWaveIcon}
+                />
+            )}
+            {col !== 'position' && (
                 <span className="truncate">
                     {row[col]}
                 </span>
             )}
-            {showAudioWaveIcon && (
-                <AudioWaveIcon style={{ width: iconSize }} />
-            )}
         </div>
+    )
+}
+
+function Position({ position, showAudioWaveIcon }: {
+    position: string
+    showAudioWaveIcon: boolean
+}): ReactNode {
+    return (
+        <>
+            <FadeInOut animateInitial={false} show={!showAudioWaveIcon} className="absolute">
+                {position}
+            </FadeInOut>
+            <FadeInOut show={showAudioWaveIcon} className="absolute">
+                <AudioWaveIcon style={{ width: iconSize }} />
+            </FadeInOut>
+        </>
     )
 }
