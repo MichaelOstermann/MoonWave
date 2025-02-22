@@ -1,5 +1,8 @@
+import type { Track } from '@app/types'
 import { extensions } from '@app/config/extensions'
-import { $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
+import { $preparingSync, $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
+import { append } from '@app/utils/data/append'
+import { findAndMapOr } from '@app/utils/data/findAndMapOr'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action } from '@app/utils/signals/action'
@@ -7,55 +10,94 @@ import { batch } from '@preact/signals-core'
 import { audioDir } from '@tauri-apps/api/path'
 import { readDir } from '@tauri-apps/plugin-fs'
 
-export const syncLibrary = action(async () => {
-    if ($syncing.value) return
+// Chunk updates together to not thrash the UI/disk.
+const debounce = 500
 
-    $syncing.set(true)
+export const syncLibrary = action(async () => {
+    if ($preparingSync() || $syncing()) return
+
+    $preparingSync.set(true)
     $syncProgress.set(0)
     $syncGoal.set(0)
 
     const libraryPath = await audioDir()
     const paths = await getAudioFilePaths(libraryPath)
 
-    $syncGoal.set(paths.length)
-
-    const trackIdsBefore = new Set($tracks.value.map(t => t.id))
-    const trackIdsAfter = await parseAudioFiles(paths, {
-        onProgress: () => $syncProgress.map(v => v + 1),
+    batch(() => {
+        $syncing.set(true)
+        $preparingSync.set(false)
+        $syncGoal.set(paths.length)
     })
-    const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)
+
+    const trackIds = new Set<string>()
+    const buffer = new Set<Track>()
+    let progress = 0
+    let timer: Timer | undefined
+
+    await parseAudioFiles(paths, {
+        onProgress: () => progress++,
+        onTrack(track) {
+            trackIds.add(track.id)
+            buffer.add(track)
+            timer ??= setTimeout(() => {
+                timer = undefined
+                $syncProgress.set(progress)
+                $tracks.map(ts => applyUpdates(ts, buffer))
+            }, debounce)
+        },
+    })
 
     batch(() => {
-        $syncing.set(false)
-        $tracks.map(findAndRemoveAll(t => removedTrackIds.has(t.id)))
+        clearTimeout(timer)
+        $syncProgress.set(progress)
+        $tracks.map(ts => applyUpdates(ts, buffer))
+        $tracks.map(findAndRemoveAll(t => !trackIds.has(t.id)))
     })
+
+    // Give the sidebar animations room to settle.
+    setTimeout(() => {
+        $syncing.set(false)
+    }, 1000)
 })
 
 async function getAudioFilePaths(libraryPath: string): Promise<string[]> {
     const queue: string[] = [libraryPath]
-
     const knownPaths = $tracks.peek().reduce((acc, t) => acc.add(t.path), new Set<string>())
-    const paths: string[] = []
+
+    const newPaths: string[] = []
+    const oldPaths: string[] = []
 
     while (queue.length) {
         const next = queue.shift()!
         const dirEntries = await readDir(next).catch(() => [])
         for (const dirEntry of dirEntries) {
             const absPath = `${next}/${dirEntry.name}`
-            if (dirEntry.isFile && extensions.test(dirEntry.name)) {
-                paths.push(absPath)
-            }
-            else if (dirEntry.isDirectory) {
-                queue.push(absPath)
-            }
+
+            const isDirectory = dirEntry.isDirectory
+            const isFile = dirEntry.isFile && extensions.test(dirEntry.name)
+            const isOldFile = isFile && knownPaths.has(absPath)
+            const isNewFile = isFile && !isOldFile
+
+            if (isDirectory) queue.push(absPath)
+            else if (isNewFile) newPaths.push(absPath)
+            else if (isOldFile) oldPaths.push(absPath)
         }
     }
 
-    return paths.sort((a, b) => {
-        const aNew = !knownPaths.has(a)
-        const bNew = !knownPaths.has(b)
-        if (aNew && !bNew) return -1
-        if (!aNew && bNew) return 1
-        return a < b ? -1 : 1
-    })
+    // Prefer to parse new tracks first, so we can play them immediately.
+    return newPaths.sort()
+        .concat(oldPaths.sort())
+}
+
+function applyUpdates(oldTracks: Track[], newTracks: Set<Track>): Track[] {
+    for (const newTrack of newTracks) {
+        oldTracks = findAndMapOr(
+            oldTracks,
+            oldTrack => oldTrack.id === newTrack.id,
+            _oldTrack => newTrack,
+            append(newTrack),
+        )
+    }
+    newTracks.clear()
+    return oldTracks
 }

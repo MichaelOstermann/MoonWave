@@ -6,7 +6,6 @@ import { Command } from '@tauri-apps/plugin-shell'
 import { nanoid } from 'nanoid'
 import { indexBy } from './data/indexBy'
 import { merge } from './data/merge'
-import { replace } from './data/replace'
 
 export async function parseAudioFile(opts: {
     date: number
@@ -17,11 +16,7 @@ export async function parseAudioFile(opts: {
     const filehash = await getFilehash(opts.path)
 
     const trackByFilehash = opts.tracksByFilehash[filehash]
-    if (trackByFilehash) {
-        const track = merge(trackByFilehash, { path: opts.path })
-        $tracks.map(replace(trackByFilehash, track))
-        return track
-    }
+    if (trackByFilehash) return merge(trackByFilehash, { path: opts.path })
 
     const [audiohash, metadata] = await Promise.all([
         getAudiohash(opts.path),
@@ -29,16 +24,12 @@ export async function parseAudioFile(opts: {
     ])
 
     const trackByAudioHash = opts.tracksByAudiohash[audiohash]
-    if (trackByAudioHash) {
-        const track = merge(trackByAudioHash, { ...metadata, filehash, path: opts.path })
-        $tracks.map(replace(trackByAudioHash, track))
-        return track
-    }
+    if (trackByAudioHash) return merge(trackByAudioHash, { ...metadata, filehash, path: opts.path })
 
     const mimetype = await getMimeType(opts.path)
     if (!mimetype.startsWith('audio/')) return null
 
-    const track = {
+    return {
         path: opts.path,
         id: nanoid(10),
         mimetype,
@@ -47,18 +38,15 @@ export async function parseAudioFile(opts: {
         addedAt: opts.date,
         ...metadata,
     }
-
-    $tracks.map(t => [...t, track])
-    return track
 }
 
 export async function parseAudioFiles(paths: string[], opts: {
     onProgress: () => void
-}): Promise<Set<string>> {
+    onTrack: (track: Track) => void
+}): Promise<void> {
     const date = Date.now()
-    const tracksByFilehash = indexBy($tracks.value, t => t.filehash)
-    const tracksByAudiohash = indexBy($tracks.value, t => t.audiohash)
-    const trackIds = new Set<string>()
+    const tracksByFilehash = indexBy($tracks(), t => t.filehash)
+    const tracksByAudiohash = indexBy($tracks(), t => t.audiohash)
 
     for (const path of paths) {
         const track = await parseAudioFile({
@@ -67,11 +55,11 @@ export async function parseAudioFiles(paths: string[], opts: {
             tracksByFilehash,
             tracksByAudiohash,
         }).catch(() => null)
-        if (track) trackIds.add(track.id)
-        opts.onProgress()
-    }
 
-    return trackIds
+        opts.onProgress()
+        if (!track) continue
+        opts.onTrack(track)
+    }
 }
 
 export async function getMimeType(filePath: string): Promise<string> {

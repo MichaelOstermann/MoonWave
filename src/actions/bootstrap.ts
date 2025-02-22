@@ -51,7 +51,7 @@ export const bootstrap = action(async () => {
     const saveConfig = pDebounce((config: Config) => writeJSON('config.json', config, { baseDir: BaseDirectory.AppData }), 100)
 
     const library = await readJSON<Library>('library.json', { baseDir: BaseDirectory.AppData })
-    const saveLibrary = pDebounce((library: Library) => writeJSON('library.json', library, { baseDir: BaseDirectory.AppData }), 1000)
+    const saveLibrary = pDebounce((library: Library) => writeJSON('library.json', library, { baseDir: BaseDirectory.AppData }), 100)
 
     batch(() => {
         $config.set(config ?? {})

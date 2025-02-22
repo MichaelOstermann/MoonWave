@@ -53,6 +53,7 @@ export const $waveformWaveColor = signal<string>(undefined)
 export const $waveformProgressColor = signal<string>(undefined)
 
 // Sync
+export const $preparingSync = signal(false)
 export const $syncing = signal(false)
 export const $syncGoal = signal(0)
 export const $syncProgress = signal(0)
