@@ -13,7 +13,7 @@ export function WavesurferSeeker({ position }: { position: number }): ReactNode 
         >
             <span
                 data-modal="tooltip"
-                className="absolute rounded bg-[--bg] px-2 py-1 text-xxs font-semibold text-[--fg] backdrop-blur-xl"
+                className="absolute rounded bg-[--bg] px-2 py-1 text-xxs font-medium text-[--fg] backdrop-blur-xl"
             >
                 {trackPosition}
             </span>

@@ -219,7 +219,7 @@ function Group({ heading, children }: {
                 '[&>[cmdk-group-heading]]:flex',
                 '[&>[cmdk-group-heading]]:h-9',
                 '[&>[cmdk-group-heading]]:text-xs',
-                '[&>[cmdk-group-heading]]:font-semibold',
+                '[&>[cmdk-group-heading]]:font-medium',
                 '[&>[cmdk-group-heading]]:px-2.5',
                 '[&>[cmdk-group-heading]]:items-center',
             )}
