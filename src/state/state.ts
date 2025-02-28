@@ -8,6 +8,7 @@ import { getTracksForLibrary } from '@app/utils/getTracksForLibrary'
 import { getTracksForPlaylist } from '@app/utils/getTracksForPlaylist'
 import { getTracksForRecentlyAdded } from '@app/utils/getTracksForRecentlyAdded'
 import { getTracksForUnsorted } from '@app/utils/getTracksForUnsorted'
+import { invalidateWindowShadows } from '@app/utils/invalidateWindowShadows'
 import { clearSelection } from '@app/utils/lsm/utils/clearSelection'
 import { createLSM } from '@app/utils/lsm/utils/createLSM'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
@@ -325,4 +326,15 @@ changeEffect(() => $playlists.value, (playlistsAfter, playlistsBefore) => {
 
     if ($playingView.value?.name === 'PLAYLIST' && removedPlaylistIds.has($playingView.value.value))
         $playingView.set(undefined)
+})
+
+const $isAppMinimized = signal(false)
+getCurrentWindow().isMinimized().then(value => $isAppMinimized.set(value))
+getCurrentWindow().onFocusChanged(() => {
+    const wasMinimized = $isAppMinimized()
+    getCurrentWindow().isMinimized().then((isMinimized) => {
+        $isAppMinimized.set(isMinimized)
+        if (wasMinimized && !isMinimized)
+            invalidateWindowShadows()
+    })
 })

@@ -1,7 +1,6 @@
 import type { Config, Library } from '@app/types'
 import { readJSON } from '@app/utils/fs/readJSON'
 import { writeJSON } from '@app/utils/fs/writeJSON'
-import { invalidateWindowShadows } from '@app/utils/invalidateWindowShadows'
 import { action } from '@app/utils/signals/action'
 import { changeEffect } from '@app/utils/signals/changeEffect'
 import { checkForUpdates, periodicallyCheckForUpdates } from '@app/utils/updater'
@@ -41,11 +40,6 @@ export const bootstrap = action(async () => {
     navigator.mediaSession.setActionHandler('stop', stopPlayback)
     navigator.mediaSession.setActionHandler('previoustrack', playPrev)
     navigator.mediaSession.setActionHandler('nexttrack', playNext)
-
-    getCurrentWindow().onFocusChanged((event) => {
-        if (!event.payload) return
-        invalidateWindowShadows()
-    })
 
     const config = await readJSON<Config>('config.json', { baseDir: BaseDirectory.AppData })
     const saveConfig = pDebounce((config: Config) => writeJSON('config.json', config, { baseDir: BaseDirectory.AppData }), 100)
