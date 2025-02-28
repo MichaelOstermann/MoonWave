@@ -30,6 +30,7 @@ const $measurements = computed(() => {
             fontSize: '14px',
             fontWeight: '400',
             fontFamily,
+            monospace: col === 'position' || col === 'duration',
         }))
         // Measure the header as well, excluding the duration column since it displays an icon and not text.
         if (col !== 'duration') {

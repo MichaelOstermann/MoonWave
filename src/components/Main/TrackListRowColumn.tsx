@@ -24,8 +24,8 @@ export function TrackListRowColumn({ col, row, style }: {
             style={style}
             className={twJoin(
                 'flex h-full items-center',
-                col === 'position' && 'relative justify-end',
-                col === 'duration' && 'justify-end',
+                col === 'position' && 'relative justify-end tabular-nums',
+                col === 'duration' && 'justify-end tabular-nums',
             )}
         >
             {col === 'position' && (
