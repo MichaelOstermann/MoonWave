@@ -306,13 +306,19 @@ effect(() => {
 })
 
 effect(() => {
-    const selectables = $sidebarItems.value.filter(i => i.name !== 'SECTION')
-    $sidebarLSM.map(lsm => setSelectables(lsm, selectables))
-})
+    const selectables = $sidebarItems().filter(i => i.name !== 'SECTION')
+    const position = getLastSelectionPosition($sidebarLSM.peek())
 
-effect(() => {
-    if (hasSelection($sidebarLSM.value)) return
-    $sidebarLSM.map(lsm => selectOne(lsm, { name: 'LIBRARY' }))
+    $sidebarLSM.map((lsm) => {
+        lsm = setSelectables(lsm, selectables)
+        // Try to stay on the current position when deleting a playlist.
+        if (!hasSelection(lsm)) lsm = selectPosition(lsm, position)
+        // Select the previous one when deleting the last playlist.
+        if (!hasSelection(lsm)) lsm = selectPosition(lsm, position - 1)
+        // Select the library otherwise.
+        if (!hasSelection(lsm)) lsm = selectOne(lsm, { name: 'LIBRARY' })
+        return lsm
+    })
 })
 
 changeEffect(() => $tracks.value, (tracksAfter, tracksBefore) => {
