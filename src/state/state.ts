@@ -4,6 +4,7 @@ import { waveformThemes } from '@app/themes/waveforms'
 import { entriesEqual } from '@app/utils/data/entriesEqual'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
 import { map } from '@app/utils/data/map'
+import { uniq } from '@app/utils/data/uniq'
 import { getTracksForLibrary } from '@app/utils/getTracksForLibrary'
 import { getTracksForPlaylist } from '@app/utils/getTracksForPlaylist'
 import { getTracksForRecentlyAdded } from '@app/utils/getTracksForRecentlyAdded'
@@ -11,9 +12,11 @@ import { getTracksForUnsorted } from '@app/utils/getTracksForUnsorted'
 import { invalidateWindowShadows } from '@app/utils/invalidateWindowShadows'
 import { clearSelection } from '@app/utils/lsm/utils/clearSelection'
 import { createLSM } from '@app/utils/lsm/utils/createLSM'
+import { getLastSelectionPosition } from '@app/utils/lsm/utils/getLastSelectionPosition'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { hasSelection } from '@app/utils/lsm/utils/hasSelection'
 import { selectOne } from '@app/utils/lsm/utils/selectOne'
+import { selectPosition } from '@app/utils/lsm/utils/selectPosition'
 import { setSelectables } from '@app/utils/lsm/utils/setSelectables'
 import { removePlaylistTracks } from '@app/utils/playlist/removePlaylistTracks'
 import { changeEffect } from '@app/utils/signals/changeEffect'
@@ -183,6 +186,27 @@ document.addEventListener('pointermove', evt => batch(() => {
     $mouseX.set(evt.clientX)
     $mouseY.set(evt.clientY)
 }), { passive: true })
+
+changeEffect($playingTrackId, (trackId) => {
+    if (!trackId) return
+
+    const MAX_SIZE = 100
+    const prevIds = $prevPlayedTrackIds()
+    const nextIds = $nextPlayedTrackIds()
+
+    if (prevIds.at(-1) === trackId) {
+        $prevPlayedTrackIds.set(prevIds.slice(1))
+        $nextPlayedTrackIds.set(uniq([trackId, ...nextIds]))
+    }
+    else if (nextIds.at(0) === trackId) {
+        $prevPlayedTrackIds.set(uniq([trackId, ...prevIds]))
+        $nextPlayedTrackIds.set(nextIds.slice(1))
+    }
+    else {
+        $prevPlayedTrackIds.set(uniq([trackId, ...prevIds]).slice(0, MAX_SIZE))
+        $nextPlayedTrackIds.set([])
+    }
+})
 
 effect((prev: string[] = []) => {
     if (!$didLoadConfig.value) return prev
