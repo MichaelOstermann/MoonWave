@@ -1,6 +1,7 @@
 import type { PlaylistColor, PlaylistIcon } from '@app/types'
 import type { ComponentProps, ReactNode } from 'react'
 import { colors } from '@app/config/colors'
+import { glide } from '@app/config/easings'
 import { icons } from '@app/config/icons'
 import { clamp } from '@app/utils/data/clamp'
 import { Tooltip } from '@app/utils/modals/components/Tooltip'
@@ -9,8 +10,8 @@ import fuzzysort from 'fuzzysort'
 import { LucideSearch, LucideX } from 'lucide-react'
 import { DynamicIcon } from 'lucide-react/dynamic'
 import { useState } from 'react'
-import { twJoin } from 'tailwind-merge'
 import { VList } from 'virtua'
+import { Pressed } from '../Pressed'
 
 interface IconPickerProps {
     side: 'above' | 'below'
@@ -163,18 +164,20 @@ interface IconColorProps extends Omit<ComponentProps<'div'>, 'color'> {
 
 function IconColor({ color, isActive, ...rest }: IconColorProps): ReactNode {
     return (
-        <div
-            {...rest}
-            className="relative flex size-6 items-center justify-center rounded-full bg-[--outer]"
-            style={{
-                '--inner': color ? `var(--fg-${color.value})` : 'var(--fg)',
-                '--outer': color ? `var(--bg-${color.value})` : 'var(--bg-hover)',
-            }}
-        >
-            <div
-                data-active={isActive}
-                className="absolute size-full scale-[0.3] rounded-full bg-[--inner] data-[active=true]:scale-100"
-            />
+        <div {...rest}>
+            <Pressed
+                className="relative flex size-6 items-center justify-center rounded-full bg-[--outer]"
+                style={{
+                    '--inner': color ? `var(--fg-${color.value})` : 'var(--fg)',
+                    '--outer': color ? `var(--bg-${color.value})` : 'var(--bg-hover)',
+                }}
+            >
+                <div
+                    data-active={isActive}
+                    style={{ transitionTimingFunction: glide }}
+                    className="absolute size-full scale-[0.3] rounded-full bg-[--inner] transition-transform duration-300 data-[active=true]:scale-100"
+                />
+            </Pressed>
         </div>
     )
 }
@@ -193,23 +196,19 @@ function Icon({ icon, activeIcon, onSelectIcon }: IconProps): ReactNode {
 
     return (
         <Tooltip
-            asChild
             tooltip={tooltip}
+            onClick={() => onSelectIcon?.(icon)}
             render={() => formatIconName(icon.value)}
         >
-            <div
-                key={icon.value}
-                onClick={() => onSelectIcon?.(icon)}
-                className={twJoin(
-                    'flex size-[--row-height] items-center justify-center rounded',
-                    isActive && 'bg-[--bg-active] text-[--fg-active]',
-                )}
+            <Pressed
+                data-active={isActive}
+                className="flex size-[--row-height] items-center justify-center rounded transition data-[active=true]:bg-[--bg-active] data-[active=true]:text-[--fg-active]"
             >
                 <DynamicIcon
                     name={icon.value}
                     size={iconSize}
                 />
-            </div>
+            </Pressed>
         </Tooltip>
     )
 }
