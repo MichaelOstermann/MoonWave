@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react'
+import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
 import { twMerge } from 'tailwind-merge'
 
@@ -16,29 +17,29 @@ export function FadeInOut({
     fadeInDuration,
     fadeOutDuration,
     fadeOutDelay,
+    style,
     className,
     children,
     ...rest
 }: FadeInOutProps): ReactNode {
-    const { mounted, isOpenedOrOpening, isClosedOrClosing } = useTransition({
+    const transition = useTransition({
         isOpen: show,
+        easing: glide,
         animateInitial,
-        openDuration: fadeInDuration ?? 300,
-        closeDuration: fadeOutDuration ?? 300,
+        openDuration: fadeInDuration ?? 500,
+        closeDuration: fadeOutDuration ?? 500,
+        openClassName: 'scale-100',
+        closeClassName: 'scale-0',
         closingDelay: fadeOutDelay ?? 0,
     })
 
-    if (!mounted) return null
+    if (!transition.mounted) return null
 
     return (
         <div
             {...rest}
-            className={twMerge(
-                'flex transition-[transform,opacity] duration-300',
-                isOpenedOrOpening && 'scale-100 opacity-100',
-                isClosedOrClosing && 'scale-0 opacity-0',
-                className,
-            )}
+            style={{ ...transition.style, ...style }}
+            className={twMerge('flex', transition.className, className)}
         >
             {children}
         </div>

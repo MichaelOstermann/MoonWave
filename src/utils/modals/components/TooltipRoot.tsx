@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Tooltip } from '../types'
+import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { Portal } from '@radix-ui/react-portal'
@@ -27,21 +28,24 @@ export function TooltipRoot({
     const originY = useSignal(tooltip.originY)
     const maxHeight = useSignal(tooltip.maxHeight)
 
-    const { mounted, status, isOpenedOrOpening, isClosedOrClosing } = useTransition({
+    const transition = useTransition({
         isOpen,
+        easing: glide,
         openDuration: 300,
-        closeDuration: 200,
+        closeDuration: 300,
+        openClassName: 'scale-100 opacity-100',
+        closeClassName: 'scale-75 opacity-0',
         onChange: tooltip.status.set,
     })
 
-    if (!mounted) return null
+    if (!transition.mounted) return null
 
     return (
         <Portal asChild>
             <div
                 ref={el => void tooltip.floatingElement.set(el)}
                 data-modal="tooltip"
-                data-modal-status={status}
+                data-modal-status={transition.status}
                 data-modal-placement={placement}
                 onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
@@ -53,12 +57,12 @@ export function TooltipRoot({
                     <div
                         {...rest}
                         className={twMerge(
-                            'relative flex rounded bg-[--bg] px-2 py-1 text-xs font-semibold text-[--fg] backdrop-blur-xl transition',
-                            isClosedOrClosing && 'scale-90 opacity-0 duration-200',
-                            isOpenedOrOpening && 'scale-100 opacity-100 duration-300',
+                            transition.className,
+                            'relative flex h-7 items-center rounded bg-[--bg] px-2 text-xs font-medium text-[--fg] backdrop-blur-xl',
                             className,
                         )}
                         style={{
+                            ...transition.style,
                             ...style,
                             maxHeight,
                             transformOrigin: `${originX}px ${originY}px`,

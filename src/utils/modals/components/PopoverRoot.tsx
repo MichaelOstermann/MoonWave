@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Popover } from '../types'
+import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { Portal } from '@radix-ui/react-portal'
@@ -34,21 +35,24 @@ export function PopoverRoot({
     const borderWidth = useSignal(popover.borderWidth)
     const maxHeight = useSignal(popover.maxHeight)
 
-    const { mounted, status, isOpenedOrOpening, isClosedOrClosing } = useTransition({
+    const transition = useTransition({
         isOpen,
-        openDuration: 300,
-        closeDuration: 200,
+        easing: glide,
+        openDuration: 500,
+        closeDuration: 300,
+        openClassName: 'scale-100 opacity-100',
+        closeClassName: 'scale-90 opacity-0',
         onChange: popover.status.set,
     })
 
-    if (!mounted) return null
+    if (!transition.mounted) return null
 
     return (
         <Portal asChild>
             <div
                 ref={el => void popover.floatingElement.set(el)}
                 data-modal="popover"
-                data-modal-status={status}
+                data-modal-status={transition.status}
                 data-modal-placement={placement}
                 onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
@@ -60,12 +64,12 @@ export function PopoverRoot({
                     <div
                         {...rest}
                         className={twMerge(
-                            'relative flex rounded-lg border-[--border] bg-[--bg] text-[--fg] shadow-2xl transition',
-                            isClosedOrClosing && 'scale-90 opacity-0 duration-200',
-                            isOpenedOrOpening && 'scale-100 opacity-100 duration-300',
+                            'relative flex rounded-lg border-[--border] bg-[--bg] text-[--fg] shadow-2xl',
+                            transition.className,
                             className,
                         )}
                         style={{
+                            ...transition.style,
                             ...style,
                             maxHeight,
                             borderWidth,
