@@ -7,6 +7,8 @@ import { action } from '@app/utils/signals/action'
 export const setPlaylistColor = action(({ playlistId, color }: { playlistId: string, color: PlaylistColor | undefined }) => {
     $playlists.map(findAndMap(
         p => p.id === playlistId,
-        p => merge(p, { color }),
+        p => p.color?.type === color?.type && p.color?.value === color?.value
+            ? merge(p, { color: undefined })
+            : merge(p, { color }),
     ))
 })
