@@ -38,7 +38,9 @@ export async function showMenu(
     options?.onOpen()
     const menu = await Menu.new({ items: finalizedItems })
     await menu.popup()
-    options?.onClose()
+    requestAnimationFrame(() => {
+        options?.onClose()
+    })
 }
 
 export function useMenu(getItems: (MenuItem | (() => MenuItem))[]): {

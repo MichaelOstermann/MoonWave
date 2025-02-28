@@ -128,7 +128,9 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
                 cancelLabel: 'Cancel',
             })
             if (!answer) return
-            removeTracksFromPlaylist({ trackIds, playlistId: playlist.id })
+            requestAnimationFrame(() => {
+                removeTracksFromPlaylist({ trackIds, playlistId: playlist.id })
+            })
         },
     }
 }
@@ -152,7 +154,9 @@ function moveSelectedTracksToTrash(): MenuItem {
                 cancelLabel: 'Cancel',
             })
             if (!answer) return
-            trashTracks(trackIds)
+            requestAnimationFrame(() => {
+                trashTracks(trackIds)
+            })
         },
     }
 }
