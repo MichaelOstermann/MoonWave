@@ -38,7 +38,7 @@ export function Sidebar(): ReactNode {
             />
             <SidebarResizeHandler />
             <SidebarSearchInput />
-            <div className="mt-4 flex shrink grow flex-col overflow-auto px-2 pb-2">
+            <div className="playlists mt-4 flex shrink grow scroll-p-2 flex-col overflow-auto px-2 pb-2">
                 {sidebarItems.map((item) => {
                     switch (item.name) {
                         case 'SECTION': return (

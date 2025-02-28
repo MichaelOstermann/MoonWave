@@ -1,11 +1,20 @@
 import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $playlists } from '@app/state/state'
+import { autoAnimate } from '@app/utils/dom/autoAnimate'
 import { action } from '@app/utils/signals/action'
 import { match } from 'ts-pattern'
 
-export const onDragEndPlaylists = action(() => {
+export const onDragEndPlaylists = action(async () => {
     const ids = $draggingPlaylistIds()
     const targetId = $dropPlaylistId()
     const side = $dropPlaylistSide()
+
+    autoAnimate({
+        target: document.querySelector('.sidebar .playlists'),
+        filter: element => element.hasAttribute('data-playlist-id'),
+        movedElementsHint: ids.map(id => document.querySelector(`[data-playlist-id="${id}"]`)!),
+    })
+
+    $draggingPlaylistIds.set([])
 
     $playlists.map((playlists) => {
         const playlistsToMove = playlists.filter(p => ids.includes(p.id))
@@ -18,6 +27,4 @@ export const onDragEndPlaylists = action(() => {
             .exhaustive()
         return rest
     })
-
-    $draggingPlaylistIds.set([])
 })

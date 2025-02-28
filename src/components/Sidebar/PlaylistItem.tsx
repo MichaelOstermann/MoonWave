@@ -74,7 +74,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
     ])
 
     const showAudioWaveIcon = !isPopoverOpen && isPlaying
-    const showBorder = menu.isOpen || isPopoverOpen || isEditing || dropTarget === true
+    const showBorder = menu.isOpen || isDragging || isPopoverOpen || isEditing || dropTarget === true
 
     return (
         <SidebarItem
@@ -84,7 +84,6 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
             isActive={isActive}
             isPlaying={isPlaying}
             isEditing={isEditing}
-            isDragging={isDragging}
             showBorder={showBorder}
             dropTarget={dropTarget}
             data-playlist-id={id}

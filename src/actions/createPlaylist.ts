@@ -1,10 +1,16 @@
 import { $playlists } from '@app/state/state'
+import { autoAnimate } from '@app/utils/dom/autoAnimate'
 import { createPlaylist as create } from '@app/utils/playlist/createPlaylist'
 import { action } from '@app/utils/signals/action'
 import { editPlaylistTitle } from './editPlaylistTitle'
 
 export const createPlaylist = action((belowPlaylistId: string | void) => {
     const playlist = create()
+
+    autoAnimate({
+        target: document.querySelector('.sidebar .playlists'),
+        filter: element => element.hasAttribute('data-playlist-id'),
+    })
 
     $playlists.map((ps) => {
         const offset = ps.findIndex(p => p.id === belowPlaylistId) + 1

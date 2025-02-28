@@ -11,7 +11,6 @@ interface SidebarItemProps extends Omit<ComponentProps<'div'>, 'color'> {
     isPlaying: boolean
     color?: PlaylistColor
     isEditing?: boolean
-    isDragging?: boolean
     showBorder?: boolean
     dropTarget?: DropTarget
 }
@@ -22,7 +21,6 @@ export function SidebarItem({
     isActive,
     isPlaying,
     isEditing = false,
-    isDragging = false,
     showBorder = false,
     dropTarget = false,
     children,
@@ -56,11 +54,9 @@ export function SidebarItem({
                 data-active={isActive}
                 data-border={showBorder}
                 data-playing={isPlaying}
-                data-dragging={isDragging}
                 data-color={!!color}
                 className={twJoin(
                     'group flex h-8 shrink grow items-center gap-x-1.5 rounded-md px-1.5 text-sm',
-                    'data-[dragging=true]:opacity-60',
                     'data-[active=false]:data-[selected=true]:data-[border=false]:bg-[--bg-selected]',
                     'data-[active=true]:data-[border=false]:bg-[--bg-active]',
                     'data-[border=true]:shadow-[0_0_0_2px_var(--accent)]',
