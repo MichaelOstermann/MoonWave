@@ -75,7 +75,7 @@
 }
 
 .theme-moonwave-dark [data-modal="tooltip"] {
-    --bg: oklch(17.65% 0.014 280 / 50%);
+    --bg: color-mix(in oklab, var(--fg) 10%, transparent);
 }
 
 .theme-moonwave-dark ::selection {
