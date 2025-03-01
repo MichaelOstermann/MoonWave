@@ -2,7 +2,8 @@ import type { ReactNode } from 'react'
 import { setVolume } from '@app/actions/setVolume'
 import { toggleMute } from '@app/actions/toggleMute'
 import { Button } from '@app/components/Button'
-import { $muted, $volume } from '@app/state/state'
+import { $isMuted } from '@app/state/isMuted'
+import { $volume } from '@app/state/volume'
 import { createSeeker } from '@app/utils/seeker'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
@@ -19,7 +20,7 @@ const seeker = createSeeker({
 })
 
 export function VolumeControls(): ReactNode {
-    const volume = useSignal(() => $muted.value ? 0 : $volume.value)
+    const volume = useSignal(() => $isMuted() ? 0 : $volume())
     const isSeeking = useSignal(seeker.$seeking)
 
     const Icon = match(volume)

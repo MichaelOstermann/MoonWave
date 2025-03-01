@@ -1,43 +1,50 @@
 import type { ReadonlySignal } from './computed'
 import type { Effect } from './effect'
+import type { InternalMeta } from './types'
 import { effect as createPreactEffect, untracked } from '@preact/signals-core'
 import { createCleanups } from './cleanups'
+import { getMeta } from './helpers'
 
-type EffectOptions<T> = {
-    id?: string
-    path?: string
+export type ChangeEffectOptions<T> = {
+    name?: string
+    internal?: boolean
     abort?: AbortSignal
     equals?: (after: T, before: T) => boolean
+    meta?: InternalMeta
 }
 
 export function changeEffect<T>(
     dependencies: ReadonlySignal<T> | (() => T),
     computation: (after: T, before: T) => void,
-    options?: EffectOptions<T>,
+    options?: ChangeEffectOptions<T>,
 ): Effect {
     let current: undefined | { value: T }
     const equals = options?.equals
     const cleanups = createCleanups()
 
-    const effect = createPreactEffect(() => {
+    const disposePreactEffect = createPreactEffect(() => {
         const next = dependencies()
         if (!current) return void (current = { value: next })
         const prev = current.value
         if (prev === next || equals?.(next, prev)) return
         current = { value: next }
         untracked(() => {
+            cleanups.run()
             cleanups.mount(() => computation(next, prev))
         })
-    }) as Effect
+    })
 
-    const dispose = function () {
+    const disposeEffect: Effect = function () {
         cleanups.run()
-        effect()
+        disposePreactEffect()
     }
 
-    // effect.id = options?.id || 'Anonymous'
-    // effect.path = options?.path || ''
-    options?.abort?.addEventListener('abort', dispose)
+    disposeEffect.meta = getMeta(options)
 
-    return dispose
+    options?.abort?.addEventListener('abort', disposeEffect)
+
+    if (import.meta.env.DEV && options?.meta?.dispose)
+        options.meta.dispose.add(disposeEffect)
+
+    return disposeEffect
 }

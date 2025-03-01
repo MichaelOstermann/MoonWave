@@ -9,7 +9,12 @@ import { toggleMode } from '@app/actions/toggleMode'
 import { toggleMute } from '@app/actions/toggleMute'
 import { togglePlayback } from '@app/actions/togglePlayback'
 import { shortcuts } from '@app/config/shortcuts'
-import { $config, $hasNextTrack, $hasPrevTrack, $hasTrack, $muted, $playing } from '@app/state/state'
+import { $config } from '@app/state/config'
+import { $hasNextTrack } from '@app/state/hasNextTrack'
+import { $hasPrevTrack } from '@app/state/hasPrevTrack'
+import { $hasTrack } from '@app/state/hasTrack'
+import { $isMuted } from '@app/state/isMuted'
+import { $isPlaying } from '@app/state/isPlaying'
 import { DialogRoot } from '@app/utils/modals/components/DialogRoot'
 import { createDialog } from '@app/utils/modals/createDialog'
 import { useSignal } from '@app/utils/signals/useSignal'
@@ -74,14 +79,14 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                             icon={LucidePlay}
                             title="Resume"
                             shortcut={shortcuts.togglePlayback[0]}
-                            enabled={useSignal(() => $hasTrack.value && !$playing.value)}
+                            enabled={useSignal(() => $hasTrack() && !$isPlaying())}
                             onSelect={togglePlayback}
                         />
                         <Item
                             icon={LucidePause}
                             title="Pause"
                             shortcut={shortcuts.togglePlayback[0]}
-                            enabled={useSignal(() => $hasTrack.value && $playing.value)}
+                            enabled={useSignal(() => $hasTrack() && $isPlaying())}
                             onSelect={togglePlayback}
                         />
                         <Item
@@ -108,14 +113,14 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                             icon={LucideVolumeOff}
                             title="Mute"
                             shortcut={shortcuts.toggleMute[0]}
-                            enabled={useSignal(() => $muted.value === false)}
+                            enabled={useSignal(() => $isMuted() === false)}
                             onSelect={toggleMute}
                         />
                         <Item
                             icon={LucideVolume2}
                             title="Unmute"
                             shortcut={shortcuts.toggleMute[0]}
-                            enabled={useSignal(() => $muted.value === true)}
+                            enabled={useSignal(() => $isMuted() === true)}
                             onSelect={toggleMute}
                         />
                         <Item
@@ -183,19 +188,19 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                         <Item
                             icon={LucideSun}
                             title="Light"
-                            enabled={useSignal(() => $config.value.themeMode !== 'light')}
+                            enabled={useSignal(() => $config().themeMode !== 'light')}
                             onSelect={() => setThemeMode('light')}
                         />
                         <Item
                             icon={LucideMoon}
                             title="Dark"
-                            enabled={useSignal(() => $config.value.themeMode !== 'dark')}
+                            enabled={useSignal(() => $config().themeMode !== 'dark')}
                             onSelect={() => setThemeMode('dark')}
                         />
                         <Item
                             icon={LucideSunMoon}
                             title="System"
-                            enabled={useSignal(() => ($config.value.themeMode || 'system') !== 'system')}
+                            enabled={useSignal(() => ($config().themeMode || 'system') !== 'system')}
                             onSelect={() => setThemeMode('system')}
                         />
                     </Group>

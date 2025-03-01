@@ -11,7 +11,17 @@ import { savePlaylistTitle } from '@app/actions/savePlaylistTitle'
 import { setPlaylistColor } from '@app/actions/setPlaylistColor'
 import { setPlaylistIcon } from '@app/actions/setPlaylistIcon'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $editingPlaylistId, $focusedView, $isDraggingPlaylists, $isDraggingTracks, $playing, $playingView, $playlistsById, $view } from '@app/state/state'
+import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
+import { $dropPlaylistId } from '@app/state/dropPlaylistId'
+import { $dropPlaylistSide } from '@app/state/dropPlaylistSide'
+import { $editingPlaylistId } from '@app/state/editingPlaylistId'
+import { $focusedView } from '@app/state/focusedView'
+import { $isDraggingPlaylists } from '@app/state/isDraggingPlaylists'
+import { $isDraggingTracks } from '@app/state/isDraggingTracks'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $playingView } from '@app/state/playingView'
+import { $playlistsById } from '@app/state/playlistsById'
+import { $view } from '@app/state/view'
 import { useMenu } from '@app/utils/menu'
 import { PopoverRoot } from '@app/utils/modals/components/PopoverRoot'
 import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
@@ -29,7 +39,7 @@ import { SidebarItem } from './SidebarItem'
 export function PlaylistItem({ id }: { id: string }): ReactNode {
     const playlist = useSignal($playlistsById(id))!
     const isEditing = useSignal(() => $editingPlaylistId() === id)
-    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
+    const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
     const isSelected = useSignal(() => {
         const view = $view()
         return view.name === 'PLAYLIST'
@@ -41,7 +51,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
     const dropTarget = useSignal(() => isDropTarget && $isDraggingPlaylists() ? $dropPlaylistSide() : isDropTarget)
 
     const isPlaying = useSignal(() => {
-        if (!$playing()) return false
+        if (!$isPlaying()) return false
         const view = $playingView()
         return view?.name === 'PLAYLIST'
             && view.value === id

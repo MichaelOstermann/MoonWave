@@ -1,12 +1,14 @@
 import { glide } from '@app/config/easings'
-import { $dropPlaylistId, $isDraggingTracks, $tracksLSM } from '@app/state/state'
+import { $dropPlaylistId } from '@app/state/dropPlaylistId'
+import { $isDraggingTracks } from '@app/state/isDraggingTracks'
+import { $tracksLSM } from '@app/state/tracksLSM'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { action } from '@app/utils/signals/action'
 import { addTracksToPlaylist } from './addTracksToPlaylist'
 
 export const onDragEndTracks = action(() => {
-    const targetPlaylistId = $dropPlaylistId.value
-    const trackIds = getSelections($tracksLSM.value)
+    const targetPlaylistId = $dropPlaylistId()
+    const trackIds = getSelections($tracksLSM())
 
     $isDraggingTracks.set(false)
 

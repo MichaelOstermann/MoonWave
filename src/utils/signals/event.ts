@@ -1,34 +1,36 @@
-import { batch } from '@preact/signals-core'
+import type { InternalMeta, Meta } from './types'
+import { batch, untracked } from '@preact/signals-core'
+import { registerEvent } from './globals'
+import { getMeta } from './helpers'
 
 export interface EventCallback<T = void> {
     (value: T): void
 }
 
+export type EventOptions = {
+    name?: string
+    internal?: boolean
+    meta?: InternalMeta
+}
+
 export interface Event<T = void> {
-    (callback: EventCallback<T>): () => void
-    emit: (value: T) => void
-    clear: () => void
-    filter: (<U extends T>(filter: (value: T) => value is U) => (callback: EventCallback<U>) => () => void)
-        & ((filter: (value: T) => boolean) => (callback: EventCallback<T>) => () => void)
+    (value: T): void
+    meta: Meta
+    cbs: Set<EventCallback<T>>
 }
 
-type EventOptions = {
-    abort?: AbortSignal
-}
+export function event<T = void>(
+    options?: EventOptions,
+): Event<T> {
+    const event: Event<T> = function (value) {
+        untracked(() => batch(() => event.cbs.forEach(cb => cb(value))))
+    }
 
-export function event<T = void>(options?: EventOptions): Event<T> {
-    const cbs = new Set<(value: T) => void>()
+    event.cbs = new Set()
 
-    const event = function (cb) {
-        cbs.add(cb)
-        return () => void cbs.delete(cb)
-    } as Event<T>
+    event.meta = getMeta(options)
 
-    event.clear = () => cbs.clear()
-    event.emit = value => batch(() => cbs.forEach(cb => cb(value)))
-    event.filter = (filter: any) => (cb: any) => event(value => filter(value) && cb(value))
-
-    options?.abort?.addEventListener('abort', event.clear)
+    registerEvent(event)
 
     return event
 }

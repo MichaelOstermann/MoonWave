@@ -1,5 +1,5 @@
 import type { View } from '@app/types'
-import { $sidebarLSM } from '@app/state/state'
+import { $sidebarLSM } from '@app/state/sidebarLSM'
 import { selectOne } from '@app/utils/lsm/utils/selectOne'
 import { action } from '@app/utils/signals/action'
 

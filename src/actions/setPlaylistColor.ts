@@ -1,5 +1,5 @@
 import type { PlaylistColor } from '@app/types'
-import { $playlists } from '@app/state/state'
+import { $playlists } from '@app/state/playlists'
 import { findAndMap } from '@app/utils/data/findAndMap'
 import { merge } from '@app/utils/data/merge'
 import { action } from '@app/utils/signals/action'

@@ -1,5 +1,6 @@
 import type { Track } from '@app/types'
-import { $tracks, $tracksFilter } from '@app/state/state'
+import { $tracks } from '@app/state/tracks'
+import { $tracksFilter } from '@app/state/tracksFilter'
 import { applyFilterToTracks } from './applyFilterToTracks'
 import { pipe } from './data/pipe'
 import { removeUnsupportedTracks } from './removeUnsupportedTracks'
@@ -7,10 +8,10 @@ import { sortView } from './sortTracks'
 
 export function getTracksForLibrary(options?: { applyFilter: boolean }): Track[] {
     return pipe(
-        $tracks.value,
+        $tracks(),
         tracks => removeUnsupportedTracks(tracks),
-        tracks => options?.applyFilter && $tracksFilter.value
-            ? applyFilterToTracks(tracks, $tracksFilter.value)
+        tracks => options?.applyFilter && $tracksFilter()
+            ? applyFilterToTracks(tracks, $tracksFilter())
             : sortView(tracks, { name: 'LIBRARY' }),
     )
 }

@@ -1,4 +1,4 @@
-.theme-moonwave-dark {
+[data-theme="moonwave-dark"] {
     --fg-red: oklch(68% 0.16 10);
     --bg-red: oklch(67% 0.1 10 / 18%);
     --accent-red: oklch(62% 0.12 10);
@@ -36,7 +36,7 @@
     --accent-pink: oklch(68% 0.1 326);
 }
 
-.theme-moonwave-dark {
+[data-theme="moonwave-dark"] {
     --fg: oklch(72% 0.08 272);
     --waveform: oklch(44% 0.06 272);
     --accent: var(--accent-blue);
@@ -45,40 +45,40 @@
     --bg-selected: oklch(40.65% 0.034 276 / 40%);
 }
 
-.theme-moonwave-dark .main {
+[data-theme="moonwave-dark"] .main {
     --bg: oklch(24.65% 0.017 280 / 98%);
     --bg-soft: rgba(0, 0, 0, 0.1);
     --fg-soft: color-mix(in oklab, var(--fg) 50%, var(--bg));
     --bg-hover: color-mix(in oklab, var(--fg) 20%, var(--bg));
 }
 
-.theme-moonwave-dark .sidebar {
+[data-theme="moonwave-dark"] .sidebar {
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     --bg: oklch(21.65% 0.014 280 / 96%);
     --bg-soft: rgba(0, 0, 0, 0.2);
     --fg-soft: color-mix(in oklab, var(--fg) 60%, var(--bg));
 }
 
-.theme-moonwave-dark [data-modal] {
+[data-theme="moonwave-dark"] [data-modal] {
     --bg: oklch(26.65% 0.022 280);
     --bg-soft: rgba(0, 0, 0, 0.2);
     --fg-soft: color-mix(in oklab, var(--fg) 60%, var(--bg));
     --bg-hover: color-mix(in oklab, var(--fg) 20%, var(--bg));
 }
 
-.theme-moonwave-dark [data-modal="dialog"] {
+[data-theme="moonwave-dark"] [data-modal="dialog"] {
     --overlay: oklch(21.65% 0.014 280 / 40%);
 }
 
-.theme-moonwave-dark [data-modal="popover"] {
+[data-theme="moonwave-dark"] [data-modal="popover"] {
     --border: rgba(0, 0, 0, 0.3);
 }
 
-.theme-moonwave-dark [data-modal="tooltip"] {
+[data-theme="moonwave-dark"] [data-modal="tooltip"] {
     --bg: color-mix(in oklab, var(--fg) 10%, transparent);
 }
 
-.theme-moonwave-dark ::selection {
+[data-theme="moonwave-dark"] ::selection {
     color: var(--fg-active);
     background: var(--bg-active);
 }

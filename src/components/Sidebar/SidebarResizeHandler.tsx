@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { $config } from '@app/state/state'
+import { $config } from '@app/state/config'
 import { merge } from '@app/utils/data/merge'
 import { createSeeker } from '@app/utils/seeker'
 import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'

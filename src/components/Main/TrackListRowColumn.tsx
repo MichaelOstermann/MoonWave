@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Column, Row } from './types'
-import { $playing, $playingTrackId } from '@app/state/state'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $playingTrackId } from '@app/state/playingTrackId'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { twJoin } from 'tailwind-merge'
 import { AudioWaveIcon } from '../AudioWaveIcon'
@@ -14,8 +15,8 @@ export function TrackListRowColumn({ col, row, style }: {
 }): ReactNode {
     const showAudioWaveIcon = useSignal(() => {
         return col === 'position'
-            && $playing.value
-            && $playingTrackId.value === row.id
+            && $isPlaying()
+            && $playingTrackId() === row.id
     })
 
     return (

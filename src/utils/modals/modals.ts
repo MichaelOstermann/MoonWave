@@ -1,10 +1,11 @@
 import type { Dialog, Modal, Popover, Tooltip } from './types'
 import { shallowEqualArrays } from 'shallow-equal'
 import { isParentElementOf } from '../dom/isParentElementOf'
-import { withCleanup } from '../signals/cleanups'
+import { onCleanup } from '../signals/cleanups'
 import { computed } from '../signals/computed'
 import { effect } from '../signals/effect'
 import { event } from '../signals/event'
+import { onEvent } from '../signals/onEvent'
 import { signal } from '../signals/signal'
 
 export const onOpenModal = event<Modal>()
@@ -13,27 +14,6 @@ export const onOpeningModal = event<Modal>()
 export const onOpenedModal = event<Modal>()
 export const onClosingModal = event<Modal>()
 export const onClosedModal = event<Modal>()
-
-export const onOpenDialog = onOpenModal.filter(m => m.type === 'dialog')
-export const onCloseDialog = onCloseModal.filter(m => m.type === 'dialog')
-export const onOpeningDialog = onOpeningModal.filter(m => m.type === 'dialog')
-export const onOpenedDialog = onOpenedModal.filter(m => m.type === 'dialog')
-export const onClosingDialog = onClosingModal.filter(m => m.type === 'dialog')
-export const onClosedDialog = onClosedModal.filter(m => m.type === 'dialog')
-
-export const onOpenPopover = onOpenModal.filter(m => m.type === 'popover')
-export const onClosePopover = onCloseModal.filter(m => m.type === 'popover')
-export const onOpeningPopover = onOpeningModal.filter(m => m.type === 'popover')
-export const onOpenedPopover = onOpenedModal.filter(m => m.type === 'popover')
-export const onClosingPopover = onClosingModal.filter(m => m.type === 'popover')
-export const onClosedPopover = onClosedModal.filter(m => m.type === 'popover')
-
-export const onOpenTooltip = onOpenModal.filter(m => m.type === 'tooltip')
-export const onCloseTooltip = onCloseModal.filter(m => m.type === 'tooltip')
-export const onOpeningTooltip = onOpeningModal.filter(m => m.type === 'tooltip')
-export const onOpenedTooltip = onOpenedModal.filter(m => m.type === 'tooltip')
-export const onClosingTooltip = onClosingModal.filter(m => m.type === 'tooltip')
-export const onClosedTooltip = onClosedModal.filter(m => m.type === 'tooltip')
 
 export const modals = signal(new Map<string, Modal>())
 
@@ -135,9 +115,15 @@ export function closeAllTooltipsExcept(tooltip: Tooltip): void {
     }
 }
 
-onOpenDialog(closeAllModalsExcept)
-onOpenPopover(closeAllModalsExcept)
-onOpenTooltip(closeAllTooltipsExcept)
+onEvent(onOpenModal, (modal) => {
+    if (modal.type === 'tooltip') return
+    closeAllModalsExcept(modal)
+})
+
+onEvent(onOpenModal, (modal) => {
+    if (modal.type !== 'tooltip') return
+    closeAllTooltipsExcept(modal)
+})
 
 effect(() => {
     if (hasOpenPopovers()) document.body.setAttribute('has-popover', 'true')
@@ -170,5 +156,5 @@ effect(() => {
         if (!shouldSkip) lastModal?.close()
     }, { capture: true, signal: ac.signal })
 
-    withCleanup(() => ac.abort())
+    onCleanup(() => ac.abort())
 })

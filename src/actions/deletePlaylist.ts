@@ -1,4 +1,4 @@
-import { $playlists } from '@app/state/state'
+import { $playlists } from '@app/state/playlists'
 import { findAndRemove } from '@app/utils/data/findAndRemove'
 import { autoAnimate } from '@app/utils/dom/autoAnimate'
 import { action } from '@app/utils/signals/action'

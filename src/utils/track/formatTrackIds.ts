@@ -1,11 +1,11 @@
-import { $tracksById } from '@app/state/state'
+import { $tracksById } from '@app/state/tracksById'
 
 export function formatTrackIds(trackIds: string[], opts: {
     one: (title: string) => string
     many: (count: number) => string
 }): string {
     const tracks = trackIds
-        .map(tid => $tracksById(tid).value)
+        .map(tid => $tracksById(tid)())
         .filter(t => !!t)
 
     if (tracks.length > 1) return opts.many(tracks.length)

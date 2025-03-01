@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { filterLibrary } from '@app/actions/filterLibrary'
-import { $tracksFilter } from '@app/state/state'
+import { $tracksFilter } from '@app/state/tracksFilter'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideSearch, LucideX } from 'lucide-react'
 

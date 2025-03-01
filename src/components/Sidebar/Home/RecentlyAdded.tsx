@@ -2,7 +2,10 @@ import type { ReactNode } from 'react'
 import { openView } from '@app/actions/openView'
 import { AudioWaveIcon } from '@app/components/AudioWaveIcon'
 import { FadeInOut } from '@app/components/FadeInOut'
-import { $focusedView, $playing, $playingView, $view } from '@app/state/state'
+import { $focusedView } from '@app/state/focusedView'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $playingView } from '@app/state/playingView'
+import { $view } from '@app/state/view'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideClock9 } from 'lucide-react'
 import { LibraryItemIcon } from '../LibraryItemIcon'
@@ -10,11 +13,11 @@ import { LibraryItemTitle } from '../LibraryItemTitle'
 import { SidebarItem } from '../SidebarItem'
 
 export function RecentlyAdded(): ReactNode {
-    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
-    const isSelected = useSignal(() => $view.value.name === 'RECENTLY_ADDED')
+    const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
+    const isSelected = useSignal(() => $view().name === 'RECENTLY_ADDED')
     const isActive = isFocused && isSelected
     const isPlaying = useSignal(() => {
-        if (!$playing()) return false
+        if (!$isPlaying()) return false
         const view = $playingView()
         return view?.name === 'RECENTLY_ADDED'
     })

@@ -1,37 +1,42 @@
+import type { InternalMeta, Meta } from './types'
 import { effect as createPreactEffect } from '@preact/signals-core'
 import { createCleanups } from './cleanups'
+import { getMeta } from './helpers'
+
+export type EffectOptions = {
+    name?: string
+    internal?: boolean
+    abort?: AbortSignal
+    meta?: InternalMeta
+}
 
 export interface Effect {
     (): void
+    meta: Meta
 }
 
-type EffectOptions = {
-    id?: string
-    path?: string
-    abort?: AbortSignal
-}
-
-export function effect<T>(
-    computation: (value: T | undefined) => T | undefined,
+export function effect(
+    computation: () => void,
     options?: EffectOptions,
 ): Effect {
-    let value: T | undefined
     const cleanups = createCleanups()
 
-    const effect = createPreactEffect(() => {
-        cleanups.mount(() => {
-            value = computation(value)
-        })
-    }) as Effect
-
-    const dispose = function () {
+    const disposePreactEffect = createPreactEffect(() => {
         cleanups.run()
-        effect()
+        cleanups.mount(() => computation())
+    })
+
+    const disposeEffect: Effect = function () {
+        cleanups.run()
+        disposePreactEffect()
     }
 
-    // effect.id = options?.id || 'Anonymous'
-    // effect.path = options?.path || ''
-    options?.abort?.addEventListener('abort', dispose)
+    disposeEffect.meta = getMeta(options)
 
-    return dispose
+    options?.abort?.addEventListener('abort', disposeEffect)
+
+    if (import.meta.env.DEV && options?.meta?.dispose)
+        options.meta.dispose.add(disposeEffect)
+
+    return disposeEffect
 }

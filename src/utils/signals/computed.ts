@@ -1,25 +1,30 @@
+import type { InternalMeta, Meta } from './types'
 import { computed as createPreactComputed } from '@preact/signals-core'
+import { registerSignal } from './globals'
+import { getMeta } from './helpers'
+
+export type ReadonlySignalOptions<T> = {
+    name?: string
+    internal?: boolean
+    equals?: (after: T, before: T) => boolean
+    meta?: InternalMeta
+}
 
 export interface ReadonlySignal<T> {
     (): T
-    id: string
-    path: string
-    get value(): T
+    meta: Meta
     peek: () => T
 }
 
-type ComputedOptions<T> = {
-    id?: string
-    path?: string
-    equals?: (after: T, before: T) => boolean
-}
-
-export function computed<T>(computation: (prev: T | undefined) => T, options?: ComputedOptions<T>): ReadonlySignal<T> {
+export function computed<T>(
+    computation: () => T,
+    options?: ReadonlySignalOptions<T>,
+): ReadonlySignal<T> {
     let prev: undefined | { value: T }
     const equals = options?.equals
 
-    const $ = createPreactComputed(() => {
-        const next = computation(prev?.value)
+    const preactComputed = createPreactComputed(() => {
+        const next = computation()
 
         if (prev) {
             if (prev.value === next) return prev.value
@@ -34,13 +39,18 @@ export function computed<T>(computation: (prev: T | undefined) => T, options?: C
     })
 
     const computed = function () {
-        return $.value
+        return preactComputed.value
     } as ReadonlySignal<T>
 
-    computed.id = options?.id || 'Anonymous'
-    computed.path = options?.path || ''
-    computed.peek = () => $.peek()
+    computed.meta = getMeta(options)
+
+    computed.peek = function () {
+        return preactComputed.peek()
+    }
+
     Object.defineProperty(computed, 'value', { get: computed })
+
+    registerSignal(computed)
 
     return computed
 }

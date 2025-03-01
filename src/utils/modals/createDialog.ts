@@ -5,9 +5,8 @@ import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { setEntry } from '../data/setEntry'
 import { changeEffect } from '../signals/changeEffect'
-import { withCleanup } from '../signals/cleanups'
+import { onCleanup } from '../signals/cleanups'
 import { computed } from '../signals/computed'
-import { event } from '../signals/event'
 import { signal } from '../signals/signal'
 import { modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
 
@@ -31,12 +30,6 @@ export function createDialog(
         floatingElement,
         open,
         close,
-        onOpen: event(),
-        onClose: event(),
-        onOpening: event(),
-        onOpened: event(),
-        onClosing: event(),
-        onClosed: event(),
     }
 
     function open() {
@@ -53,40 +46,22 @@ export function createDialog(
         root = createRoot(container)
         document.body.appendChild(container)
         root.render(createElement(render, { dialog }))
-        withCleanup(() => queueMicrotask(() => {
+        onCleanup(() => queueMicrotask(() => {
             root = root?.unmount()
             container = container?.remove()
         }))
     })
 
     changeEffect(isOpen, (isOpen) => {
-        if (isOpen) {
-            dialog.onOpen.emit(dialog)
-            onOpenModal.emit(dialog)
-        }
-        else {
-            dialog.onClose.emit(dialog)
-            onCloseModal.emit(dialog)
-        }
+        if (isOpen) onOpenModal(dialog)
+        else onCloseModal(dialog)
     })
 
     changeEffect(status, (status) => {
-        if (status === 'opening') {
-            dialog.onOpening.emit(dialog)
-            onOpeningModal.emit(dialog)
-        }
-        else if (status === 'opened') {
-            dialog.onOpened.emit(dialog)
-            onOpenedModal.emit(dialog)
-        }
-        else if (status === 'closing') {
-            dialog.onClosing.emit(dialog)
-            onClosingModal.emit(dialog)
-        }
-        else if (status === 'closed') {
-            dialog.onClosed.emit(dialog)
-            onClosedModal.emit(dialog)
-        }
+        if (status === 'opening') onOpeningModal(dialog)
+        else if (status === 'opened') onOpenedModal(dialog)
+        else if (status === 'closing') onClosingModal(dialog)
+        else if (status === 'closed') onClosedModal(dialog)
     })
 
     modals.map(setEntry(id, dialog))

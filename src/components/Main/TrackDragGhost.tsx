@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
-import { $isDraggingTracks, $tracksLSM } from '@app/state/state'
+import { $isDraggingTracks } from '@app/state/isDraggingTracks'
+import { $tracksLSM } from '@app/state/tracksLSM'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { formatTrackIds } from '@app/utils/track/formatTrackIds'
@@ -10,11 +10,10 @@ import { Ghost } from '../Ghost'
 
 export function TrackDragGhost(): ReactNode {
     const isDragging = useSignal($isDraggingTracks)
-    const trackIds = useSignal(() => getSelections($tracksLSM.value))
+    const trackIds = useSignal(() => getSelections($tracksLSM()))
 
     const transition = useTransition({
         isOpen: isDragging,
-        easing: glide,
         openDuration: 300,
         closeDuration: 300,
     })

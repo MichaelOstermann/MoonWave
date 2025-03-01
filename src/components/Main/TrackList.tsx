@@ -2,7 +2,11 @@ import type { VListHandle } from 'virtua'
 import type { Column, Row } from './types'
 import { syncLibrary } from '@app/actions/syncLibrary'
 import { useTable } from '@app/hooks/useTable'
-import { $focusedView, $tracksFilter, $tracksLSM, $view, $viewingTracks } from '@app/state/state'
+import { $focusedView } from '@app/state/focusedView'
+import { $tracksFilter } from '@app/state/tracksFilter'
+import { $tracksLSM } from '@app/state/tracksLSM'
+import { $view } from '@app/state/view'
+import { $viewingTracks } from '@app/state/viewingTracks'
 import { getLastSelectionPosition } from '@app/utils/lsm/utils/getLastSelectionPosition'
 import { measureText } from '@app/utils/measureText'
 import { useMenu } from '@app/utils/menu'
@@ -17,12 +21,12 @@ import { TrackDragGhost } from './TrackDragGhost'
 import { TrackListHeader } from './TrackListHeader'
 import { TrackListRow } from './TrackListRow'
 
-const $rows = computed<Row[]>(() => $viewingTracks.value.map((track, idx) => {
+const $rows = computed<Row[]>(() => $viewingTracks().map((track, idx) => {
     return trackToRow(track, idx)
 }))
 
 const $measurements = computed(() => {
-    const rows = $rows.value
+    const rows = $rows()
     const fontFamily = getComputedStyle(document.body).fontFamily
 
     return columns.reduce((acc, col) => {
@@ -87,7 +91,7 @@ export function TrackList() {
         useSignal($view),
     ])
 
-    const lastSelectedPosition = useSignal(() => getLastSelectionPosition($tracksLSM.value))
+    const lastSelectedPosition = useSignal(() => getLastSelectionPosition($tracksLSM()))
 
     useEffect(() => {
         if (lastSelectedPosition < 0) return

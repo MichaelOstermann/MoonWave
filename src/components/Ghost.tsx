@@ -1,7 +1,7 @@
 import type { UseTransition } from '@app/hooks/useTransition'
 import type { ComponentProps, ReactNode } from 'react'
 import { useWhile } from '@app/hooks/useWhile'
-import { $mouseX, $mouseY } from '@app/state/state'
+import { $mouseX, $mouseY } from '@app/utils/signals/browser'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { twJoin } from 'tailwind-merge'
 

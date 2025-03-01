@@ -1,6 +1,6 @@
 import type { Track } from '@app/types'
 import { extensions } from '@app/config/extensions'
-import { $tracks } from '@app/state/state'
+import { $tracks } from '@app/state/tracks'
 import { invoke } from '@tauri-apps/api/core'
 import { Command } from '@tauri-apps/plugin-shell'
 import { nanoid } from 'nanoid'

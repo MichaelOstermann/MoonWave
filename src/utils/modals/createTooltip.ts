@@ -1,5 +1,4 @@
 import type { ModalStatus, Tooltip, TooltipOptions } from './types'
-import { batch } from '@preact/signals-core'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
 import { removeEntry } from '../data/removeEntry'
@@ -7,21 +6,13 @@ import { setEntry } from '../data/setEntry'
 import { observeDimensions } from '../dom/observeDimensions'
 import { observePosition } from '../dom/observePosition'
 import { onAncestorScroll } from '../dom/onAncestorScroll'
+import { $winHeight, $winWidth } from '../signals/browser'
 import { changeEffect } from '../signals/changeEffect'
-import { withCleanup } from '../signals/cleanups'
+import { onCleanup } from '../signals/cleanups'
 import { computed } from '../signals/computed'
 import { effect } from '../signals/effect'
-import { event } from '../signals/event'
 import { signal } from '../signals/signal'
 import { getTooltip, modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
-
-// TODO
-const windowWidth = signal(window.innerWidth)
-const windowHeight = signal(window.innerHeight)
-window.addEventListener('resize', () => batch(() => {
-    windowWidth.set(window.innerWidth)
-    windowHeight.set(window.innerHeight)
-}))
 
 export function createTooltip(
     id: string,
@@ -60,7 +51,7 @@ export function createTooltip(
     const floatingHeight = computed(() => floatingRect()?.height ?? 0)
 
     const maxHeightAbove = computed(() => anchorTop() - offset() - paddingTop())
-    const maxHeightBelow = computed(() => windowHeight() - anchorBottom() - offset() - paddingBottom())
+    const maxHeightBelow = computed(() => $winHeight() - anchorBottom() - offset() - paddingBottom())
     const placement = computed(() => maxHeightBelow() >= floatingHeight() ? 'below' : 'above')
     const matchPlacement = (placements: { above: number, below: number }): number => placements[placement()]
 
@@ -72,7 +63,7 @@ export function createTooltip(
     const x = computed(() => clamp(
         anchorCenter() - floatingWidth() / 2,
         paddingLeft(),
-        windowWidth() - floatingWidth() - paddingRight(),
+        $winWidth() - floatingWidth() - paddingRight(),
     ))
     const y = computed(() => matchPlacement({
         above: anchorTop() - floatingHeight() - offset(),
@@ -108,12 +99,6 @@ export function createTooltip(
         open,
         close,
         register,
-        onOpen: event({ abort: ac.signal }),
-        onClose: event({ abort: ac.signal }),
-        onOpening: event({ abort: ac.signal }),
-        onOpened: event({ abort: ac.signal }),
-        onClosing: event({ abort: ac.signal }),
-        onClosed: event({ abort: ac.signal }),
     }
 
     const dispose = debounce(() => {
@@ -154,39 +139,21 @@ export function createTooltip(
         anchorRect.set(anchor.getBoundingClientRect())
         floatingRect.set(floating.getBoundingClientRect())
 
-        withCleanup(observePosition(anchor, anchorRect.set))
-        withCleanup(observeDimensions(floating, floatingRect.set))
-        withCleanup(onAncestorScroll(anchor, close))
+        onCleanup(observePosition(anchor, anchorRect.set))
+        onCleanup(observeDimensions(floating, floatingRect.set))
+        onCleanup(onAncestorScroll(anchor, close))
     }, { abort: ac.signal })
 
     changeEffect(isOpen, (isOpen) => {
-        if (isOpen) {
-            tooltip.onOpen.emit(tooltip)
-            onOpenModal.emit(tooltip)
-        }
-        else {
-            tooltip.onClose.emit(tooltip)
-            onCloseModal.emit(tooltip)
-        }
+        if (isOpen) onOpenModal(tooltip)
+        else onCloseModal(tooltip)
     }, { abort: ac.signal })
 
     changeEffect(status, (status) => {
-        if (status === 'opening') {
-            tooltip.onOpening.emit(tooltip)
-            onOpeningModal.emit(tooltip)
-        }
-        else if (status === 'opened') {
-            tooltip.onOpened.emit(tooltip)
-            onOpenedModal.emit(tooltip)
-        }
-        else if (status === 'closing') {
-            tooltip.onClosing.emit(tooltip)
-            onClosingModal.emit(tooltip)
-        }
-        else if (status === 'closed') {
-            tooltip.onClosed.emit(tooltip)
-            onClosedModal.emit(tooltip)
-        }
+        if (status === 'opening') onOpeningModal(tooltip)
+        else if (status === 'opened') onOpenedModal(tooltip)
+        else if (status === 'closing') onClosingModal(tooltip)
+        else if (status === 'closed') onClosedModal(tooltip)
     }, { abort: ac.signal })
 
     return tooltip

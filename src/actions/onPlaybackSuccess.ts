@@ -1,5 +1,9 @@
 import type { Track, View } from '@app/types'
-import { $loadedAudioMetadata, $playing, $playingTrackId, $playingView, audio } from '@app/state/state'
+import { audio } from '@app/state/audio'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $loadedAudioMetadata } from '@app/state/loadedAudioMetadata'
+import { $playingTrackId } from '@app/state/playingTrackId'
+import { $playingView } from '@app/state/playingView'
 import { action } from '@app/utils/signals/action'
 import { onAudioChangeDuration } from './onAudioChangeDuration'
 import { onAudioChangePosition } from './onAudioChangePosition'
@@ -9,7 +13,7 @@ export const onPlaybackSuccess = action(({ track, view }: {
     view: View
 }) => {
     $loadedAudioMetadata.set(true)
-    $playing.set(!audio.paused)
+    $isPlaying.set(!audio.paused)
     $playingTrackId.set(track.id)
     $playingView.set(view)
 

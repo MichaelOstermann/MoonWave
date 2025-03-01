@@ -1,7 +1,7 @@
 import type { ReadonlySignal } from './signals/computed'
 import type { Signal } from './signals/signal'
-import { $mouseX } from '@app/state/state'
 import { pipe } from './data/pipe'
+import { $mouseX } from './signals/browser'
 import { computed } from './signals/computed'
 import { effect } from './signals/effect'
 import { signal } from './signals/signal'
@@ -35,17 +35,17 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     const $dragging = signal(false)
     const $hovering = signal(false)
     const $enabled = signal(opts.disabled !== false)
-    const $seeking = computed(() => $dragging.value || $hovering.value)
+    const $seeking = computed(() => $dragging() || $hovering())
 
     const $bounds = signal<DOMRect>(undefined)
-    const $left = computed(() => $bounds.value?.left ?? 0)
-    const $width = computed(() => $bounds.value?.width ?? 0)
+    const $left = computed(() => $bounds()?.left ?? 0)
+    const $width = computed(() => $bounds()?.width ?? 0)
 
-    const $absX = computed(() => $seeking.value ? $mouseX.value : 0)
+    const $absX = computed(() => $seeking() ? $mouseX() : 0)
     const $relX = computed(() => pipe(
-        $absX.value,
-        x => x - $left.value,
-        x => x / $width.value,
+        $absX(),
+        x => x - $left(),
+        x => x / $width(),
         x => Math.min(x, 1),
         x => Math.max(x, 0),
     ))
@@ -55,7 +55,7 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     }
 
     const onElementMouseDown = function () {
-        $bounds.set($element.value?.getBoundingClientRect())
+        $bounds.set($element()?.getBoundingClientRect())
         $dragging.set(true)
         opts.onSeekStart?.(getPosition())
     }
@@ -70,7 +70,7 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     }
 
     const onElementMouseEnter = function () {
-        $bounds.set($element.value?.getBoundingClientRect())
+        $bounds.set($element()?.getBoundingClientRect())
         $hovering.set(true)
     }
 
@@ -79,10 +79,10 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     }
 
     effect(() => {
-        $element.value?.removeEventListener('pointerdown', onElementMouseDown)
+        $element()?.removeEventListener('pointerdown', onElementMouseDown)
 
-        if ($enabled.value && $element.value)
-            $element.value?.addEventListener('pointerdown', onElementMouseDown)
+        if ($enabled() && $element())
+            $element()?.addEventListener('pointerdown', onElementMouseDown)
         else
             $dragging.set(false)
     })
@@ -91,19 +91,19 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
         document.removeEventListener('pointermove', onDocumentMouseMove)
         document.removeEventListener('pointerup', onDocumentMouseUp)
 
-        if ($dragging.value) {
+        if ($dragging()) {
             document.addEventListener('pointermove', onDocumentMouseMove, { passive: true })
             document.addEventListener('pointerup', onDocumentMouseUp)
         }
     })
 
     effect(() => {
-        $element.value?.removeEventListener('pointerenter', onElementMouseEnter)
-        $element.value?.removeEventListener('pointerleave', onElementMouseLeave)
+        $element()?.removeEventListener('pointerenter', onElementMouseEnter)
+        $element()?.removeEventListener('pointerleave', onElementMouseLeave)
 
-        if (opts.useHoverPreview && $enabled.value && $element.value) {
-            $element.value?.addEventListener('pointerenter', onElementMouseEnter)
-            $element.value?.addEventListener('pointerleave', onElementMouseLeave)
+        if (opts.useHoverPreview && $enabled() && $element()) {
+            $element()?.addEventListener('pointerenter', onElementMouseEnter)
+            $element()?.addEventListener('pointerleave', onElementMouseLeave)
         }
         else {
             $hovering.set(false)
@@ -112,7 +112,7 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
 
     effect(() => {
         if (!opts.cursor) return
-        if ($dragging.value)
+        if ($dragging())
             document.body.classList.add(opts.cursor)
         else
             document.body.classList.remove(opts.cursor)

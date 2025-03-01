@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { seekTo } from '@app/actions/seekTo'
 import { Logo } from '@app/components/Logo'
-import { $currentTrackDuration, $playingTrackId } from '@app/state/state'
+import { $currentTrackDuration } from '@app/state/currentTrackDuration'
+import { $playingTrackId } from '@app/state/playingTrackId'
 import { createSeeker } from '@app/utils/seeker'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { TrackDuration } from './TrackDuration'
@@ -15,12 +16,12 @@ const seeker = createSeeker<HTMLDivElement>({
     useHoverPreview: true,
     cursor: '!cursor-crosshair',
     onSeekEnd(pos) {
-        seekTo($currentTrackDuration.value * pos.relX)
+        seekTo($currentTrackDuration() * pos.relX)
     },
 })
 
 export function CurrentTrack(): ReactNode {
-    const hasTrack = useSignal(() => $playingTrackId.value != null)
+    const hasTrack = useSignal(() => $playingTrackId() != null)
     const iSeeking = useSignal(seeker.$seeking)
     const position = useSignal(seeker.$relX)
 

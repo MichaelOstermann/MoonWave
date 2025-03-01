@@ -2,7 +2,11 @@ import type { ReactNode } from 'react'
 import { openView } from '@app/actions/openView'
 import { AudioWaveIcon } from '@app/components/AudioWaveIcon'
 import { FadeInOut } from '@app/components/FadeInOut'
-import { $focusedView, $playing, $playingView, $unsortedTracksCount, $view } from '@app/state/state'
+import { $focusedView } from '@app/state/focusedView'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $playingView } from '@app/state/playingView'
+import { $unsortedTracksCount } from '@app/state/unsortedTracksCount'
+import { $view } from '@app/state/view'
 import { useSignal } from '@app/utils/signals/useSignal'
 import NumberFlow from '@number-flow/react'
 import { LucideArchive } from 'lucide-react'
@@ -13,11 +17,11 @@ import { SidebarItem } from '../SidebarItem'
 
 export function Unsorted(): ReactNode {
     const count = useSignal($unsortedTracksCount)
-    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
-    const isSelected = useSignal(() => $view.value.name === 'UNSORTED')
+    const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
+    const isSelected = useSignal(() => $view().name === 'UNSORTED')
     const isActive = isFocused && isSelected
     const isPlaying = useSignal(() => {
-        if (!$playing()) return false
+        if (!$isPlaying()) return false
         const view = $playingView()
         return view?.name === 'UNSORTED'
     })

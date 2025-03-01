@@ -1,5 +1,5 @@
 import type { ThemeMode } from '@app/types'
-import { $config } from '@app/state/state'
+import { $config } from '@app/state/config'
 import { merge } from '@app/utils/data/merge'
 import { action } from '@app/utils/signals/action'
 

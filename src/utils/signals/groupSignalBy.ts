@@ -11,7 +11,7 @@ export function groupSignalBy<T extends object, U extends string | number>(
     const empty = signal([])
 
     const $idx = computed<Record<U, T[]>>(() => {
-        return $target.value.reduce((idx, value) => {
+        return $target().reduce((idx, value) => {
             const key = by(value)
             idx[key] ??= []
             idx[key].push(value)
@@ -23,7 +23,7 @@ export function groupSignalBy<T extends object, U extends string | number>(
         if (value == null) return empty
         const existing = cache.get(value)?.deref()
         if (existing) return existing
-        const signal = computed<T[]>(() => $idx.value[value] ?? [])
+        const signal = computed<T[]>(() => $idx()[value] ?? [])
         const ref = new WeakRef(signal)
         cache.set(value, ref)
         return signal

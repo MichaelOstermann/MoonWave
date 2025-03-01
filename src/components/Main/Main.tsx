@@ -1,4 +1,4 @@
-import { $playlistColor } from '@app/state/state'
+import { $playlistColor } from '@app/state/playlistColor'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { Trackbar } from './Trackbar/Trackbar'
 import { TrackList } from './TrackList'

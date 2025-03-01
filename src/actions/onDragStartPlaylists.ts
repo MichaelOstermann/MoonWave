@@ -1,4 +1,4 @@
-import { $draggingPlaylistIds } from '@app/state/state'
+import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
 import { action } from '@app/utils/signals/action'
 import { onDragEndPlaylists } from './onDragEndPlaylists'
 

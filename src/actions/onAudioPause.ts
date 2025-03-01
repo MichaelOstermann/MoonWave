@@ -1,4 +1,6 @@
-import { $loadedAudioMetadata, $playing, audio } from '@app/state/state'
+import { audio } from '@app/state/audio'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $loadedAudioMetadata } from '@app/state/loadedAudioMetadata'
 import { action } from '@app/utils/signals/action'
 
 export const onAudioPause = action(() => {
@@ -9,6 +11,6 @@ export const onAudioPause = action(() => {
         if (!$loadedAudioMetadata()) return
         if (!audio.paused) return
 
-        $playing.set(false)
+        $isPlaying.set(false)
     }, 0)
 })
