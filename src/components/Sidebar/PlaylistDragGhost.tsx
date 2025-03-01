@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
-import { $draggingPlaylistIds, $isDraggingPlaylists } from '@app/state/state'
+import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
+import { $isDraggingPlaylists } from '@app/state/isDraggingPlaylists'
 import { formatPlaylistIds } from '@app/utils/playlist/formatPlaylistIds'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { createPortal } from 'react-dom'
@@ -13,7 +13,6 @@ export function PlaylistDragGhost(): ReactNode {
 
     const transition = useTransition({
         isOpen: isDraggingPlaylists,
-        easing: glide,
         openDuration: 300,
         closeDuration: 300,
     })

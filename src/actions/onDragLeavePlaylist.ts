@@ -1,7 +1,7 @@
-import { $dropPlaylistId } from '@app/state/state'
+import { $dropPlaylistId } from '@app/state/dropPlaylistId'
 import { action } from '@app/utils/signals/action'
 
 export const onDragLeavePlaylist = action((playlistId: string) => {
-    if ($dropPlaylistId.value !== playlistId) return
+    if ($dropPlaylistId() !== playlistId) return
     $dropPlaylistId.set(null)
 })

@@ -1,25 +1,17 @@
 import type { ModalStatus, Popover, PopoverOptions } from './types'
-import { batch } from '@preact/signals-core'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
 import { removeEntry } from '../data/removeEntry'
 import { setEntry } from '../data/setEntry'
 import { observeDimensions } from '../dom/observeDimensions'
 import { observePosition } from '../dom/observePosition'
+import { $winHeight, $winWidth } from '../signals/browser'
 import { changeEffect } from '../signals/changeEffect'
-import { withCleanup } from '../signals/cleanups'
+import { onCleanup } from '../signals/cleanups'
 import { computed } from '../signals/computed'
 import { effect } from '../signals/effect'
-import { event } from '../signals/event'
 import { signal } from '../signals/signal'
 import { getPopover, modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
-
-const windowWidth = signal(window.innerWidth)
-const windowHeight = signal(window.innerHeight)
-window.addEventListener('resize', () => batch(() => {
-    windowWidth.set(window.innerWidth)
-    windowHeight.set(window.innerHeight)
-}))
 
 export function createPopover(
     id: string,
@@ -62,7 +54,7 @@ export function createPopover(
     const floatingHeight = computed(() => floatingRect()?.height ?? 0)
 
     const maxHeightAbove = computed(() => anchorTop() - offset() - arrowHeight() - paddingTop())
-    const maxHeightBelow = computed(() => windowHeight() - anchorBottom() - offset() - arrowHeight() - paddingBottom())
+    const maxHeightBelow = computed(() => $winHeight() - anchorBottom() - offset() - arrowHeight() - paddingBottom())
     const maxHeight = computed(() => Math.max(maxHeightAbove(), maxHeightBelow()))
     const placement = computed(() => maxHeightAbove() > maxHeightBelow() ? 'above' : 'below')
     const matchPlacement = (placements: { above: number, below: number }): number => placements[placement()]
@@ -70,7 +62,7 @@ export function createPopover(
     const x = computed(() => clamp(
         anchorCenter() - floatingWidth() / 2,
         paddingLeft(),
-        windowWidth() - floatingWidth() - paddingRight(),
+        $winWidth() - floatingWidth() - paddingRight(),
     ))
     const y = computed(() => matchPlacement({
         above: anchorTop() - floatingHeight() - arrowHeight() - offset(),
@@ -118,12 +110,6 @@ export function createPopover(
         open,
         close,
         register,
-        onOpen: event({ abort: ac.signal }),
-        onClose: event({ abort: ac.signal }),
-        onOpening: event({ abort: ac.signal }),
-        onOpened: event({ abort: ac.signal }),
-        onClosing: event({ abort: ac.signal }),
-        onClosed: event({ abort: ac.signal }),
     }
 
     const dispose = debounce(() => {
@@ -164,38 +150,20 @@ export function createPopover(
         anchorRect.set(anchor.getBoundingClientRect())
         floatingRect.set(floating.getBoundingClientRect())
 
-        withCleanup(observePosition(anchor, anchorRect.set))
-        withCleanup(observeDimensions(floating, floatingRect.set))
+        onCleanup(observePosition(anchor, anchorRect.set))
+        onCleanup(observeDimensions(floating, floatingRect.set))
     }, { abort: ac.signal })
 
     changeEffect(isOpen, (isOpen) => {
-        if (isOpen) {
-            popover.onOpen.emit(popover)
-            onOpenModal.emit(popover)
-        }
-        else {
-            popover.onClose.emit(popover)
-            onCloseModal.emit(popover)
-        }
+        if (isOpen) onOpenModal(popover)
+        else onCloseModal(popover)
     }, { abort: ac.signal })
 
     changeEffect(status, (status) => {
-        if (status === 'opening') {
-            popover.onOpening.emit(popover)
-            onOpeningModal.emit(popover)
-        }
-        else if (status === 'opened') {
-            popover.onOpened.emit(popover)
-            onOpenedModal.emit(popover)
-        }
-        else if (status === 'closing') {
-            popover.onClosing.emit(popover)
-            onClosingModal.emit(popover)
-        }
-        else if (status === 'closed') {
-            popover.onClosed.emit(popover)
-            onClosedModal.emit(popover)
-        }
+        if (status === 'opening') onOpeningModal(popover)
+        else if (status === 'opened') onOpenedModal(popover)
+        else if (status === 'closing') onClosingModal(popover)
+        else if (status === 'closed') onClosedModal(popover)
     }, { abort: ac.signal })
 
     return popover

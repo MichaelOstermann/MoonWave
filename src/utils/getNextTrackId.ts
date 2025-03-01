@@ -1,4 +1,8 @@
-import { $nextPlayedTrackIds, $playedTrackIds, $playingMode, $playingTrackId, $playingTracks } from '@app/state/state'
+import { $nextPlayedTrackIds } from '@app/state/nextPlayedTrackIds'
+import { $playedTrackIds } from '@app/state/playedTrackIds'
+import { $playingMode } from '@app/state/playingMode'
+import { $playingTrackId } from '@app/state/playingTrackId'
+import { $playingTracks } from '@app/state/playingTracks'
 
 export function getNextTrackId(excludedTrackIds: string[]): string | undefined {
     return getNextSingleTrackId(excludedTrackIds)
@@ -9,15 +13,15 @@ export function getNextTrackId(excludedTrackIds: string[]): string | undefined {
 }
 
 function getNextSingleTrackId(excludedTrackIds: string[]): string | undefined {
-    if ($playingMode.value !== 'SINGLE') return
-    const trackId = $playingTrackId.value ?? $nextPlayedTrackIds.value.at(0)
+    if ($playingMode() !== 'SINGLE') return
+    const trackId = $playingTrackId() ?? $nextPlayedTrackIds().at(0)
     if (!trackId) return undefined
     return excludedTrackIds.includes(trackId) ? undefined : trackId
 }
 
 function getNextPlayedTrackId(excludedTrackIds: string[]): string | undefined {
-    const playingTrackId = $playingTrackId.value
-    for (const trackId of $nextPlayedTrackIds.value) {
+    const playingTrackId = $playingTrackId()
+    for (const trackId of $nextPlayedTrackIds()) {
         if (trackId !== playingTrackId && !excludedTrackIds.includes(trackId))
             return trackId
     }
@@ -25,22 +29,22 @@ function getNextPlayedTrackId(excludedTrackIds: string[]): string | undefined {
 }
 
 function getNextRepeatTrackId(excludedTrackIds: string[]): string | undefined {
-    if ($playingMode.value !== 'REPEAT') return
-    const playingTrackId = $playingTrackId.value
-    const tracks = $playingTracks.value.filter(t => !excludedTrackIds.includes(t.id))
+    if ($playingMode() !== 'REPEAT') return
+    const playingTrackId = $playingTrackId()
+    const tracks = $playingTracks().filter(t => !excludedTrackIds.includes(t.id))
     const offset = tracks.findIndex(t => t.id === playingTrackId)
     const nextTrack = tracks.at(offset + 1) ?? tracks.at(0)
     return nextTrack?.id
 }
 
 function getNextShuffleTrackId(excludedTrackIds: string[]): string | undefined {
-    if ($playingMode.value !== 'SHUFFLE') return
+    if ($playingMode() !== 'SHUFFLE') return
 
-    const playingTrackId = $playingTrackId.value
-    const trackIds = $playingTracks.value.map(t => t.id).filter(tid => tid !== playingTrackId && !excludedTrackIds.includes(tid))
+    const playingTrackId = $playingTrackId()
+    const trackIds = $playingTracks().map(t => t.id).filter(tid => tid !== playingTrackId && !excludedTrackIds.includes(tid))
     if (!trackIds.length) return undefined
 
-    const unplayedTrackIds = trackIds.filter(tid => !$playedTrackIds.value.includes(tid))
+    const unplayedTrackIds = trackIds.filter(tid => !$playedTrackIds().includes(tid))
     if (unplayedTrackIds.length) return random(unplayedTrackIds)
 
     $playedTrackIds.set([])
@@ -48,7 +52,7 @@ function getNextShuffleTrackId(excludedTrackIds: string[]): string | undefined {
 }
 
 function getFallbackTrackId(excludedTrackIds: string[]): string | undefined {
-    return $playingTracks.value.find(t => !excludedTrackIds.includes(t.id))?.id
+    return $playingTracks().find(t => !excludedTrackIds.includes(t.id))?.id
 }
 
 function random<T>(list: T[]): T | undefined {

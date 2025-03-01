@@ -1,7 +1,9 @@
-import { $muted, $volume, audio } from '@app/state/state'
+import { audio } from '@app/state/audio'
+import { $isMuted } from '@app/state/isMuted'
+import { $volume } from '@app/state/volume'
 import { action } from '@app/utils/signals/action'
 
 export const onAudioChangeVolume = action(() => {
     $volume.set(audio.volume)
-    $muted.set(audio.muted)
+    $isMuted.set(audio.muted)
 })

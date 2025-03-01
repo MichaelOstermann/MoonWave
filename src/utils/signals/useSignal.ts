@@ -3,6 +3,8 @@ import { effect } from '@preact/signals-core'
 import { useSyncExternalStore } from 'react'
 import { computed } from './computed'
 
+const subscribe = effect
+
 export function useSignal<T>(signal: Signal<T>): T
 export function useSignal<T>(fn: () => T): T
 export function useSignal<T>(signalOrFn: Signal<T> | (() => T)): T {
@@ -13,7 +15,7 @@ export function useSignal<T>(signalOrFn: Signal<T> | (() => T)): T {
     return useSyncExternalStore(
         (cb) => {
             let isFirst = true
-            return effect(() => {
+            return subscribe(() => {
                 signal()
                 if (!isFirst) cb()
                 isFirst = false

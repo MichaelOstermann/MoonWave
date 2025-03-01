@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import { createPlaylist } from '@app/actions/createPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
-import { $config, $focusedView, $sidebarItems } from '@app/state/state'
+import { $config } from '@app/state/config'
+import { $focusedView } from '@app/state/focusedView'
+import { $sidebarItems } from '@app/state/sidebarItems'
 import { useMenu } from '@app/utils/menu'
 import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'
 import { useSignal } from '@app/utils/signals/useSignal'
@@ -16,7 +18,7 @@ import { SidebarSectionHeader } from './SidebarSectionHeader'
 
 export function Sidebar(): ReactNode {
     const sidebarItems = useSignal($sidebarItems)
-    const width = useSignal(() => getSidebarWidth($config.value.sidebarWidth))
+    const width = useSignal(() => getSidebarWidth($config().sidebarWidth))
 
     const menu = useMenu([
         { text: 'New Playlist', action: createPlaylist },

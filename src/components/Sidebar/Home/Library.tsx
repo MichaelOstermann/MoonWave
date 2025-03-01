@@ -3,7 +3,14 @@ import { openView } from '@app/actions/openView'
 import { AudioWaveIcon } from '@app/components/AudioWaveIcon'
 import { FadeInOut } from '@app/components/FadeInOut'
 import { Spinner } from '@app/components/Spinner'
-import { $focusedView, $playing, $playingView, $preparingSync, $syncGoal, $syncing, $syncProgress, $view } from '@app/state/state'
+import { $focusedView } from '@app/state/focusedView'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $isPreparingSync } from '@app/state/isPreparingSync'
+import { $isSyncing } from '@app/state/isSyncing'
+import { $playingView } from '@app/state/playingView'
+import { $syncGoal } from '@app/state/syncGoal'
+import { $syncProgress } from '@app/state/syncProgress'
+import { $view } from '@app/state/view'
 import { pipe } from '@app/utils/data/pipe'
 import { useSignal } from '@app/utils/signals/useSignal'
 import NumberFlow from '@number-flow/react'
@@ -15,19 +22,19 @@ import { LibraryItemTitle } from '../LibraryItemTitle'
 import { SidebarItem } from '../SidebarItem'
 
 export function Library(): ReactNode {
-    const isFocused = useSignal(() => $focusedView.value === 'SIDEBAR')
-    const isSelected = useSignal(() => $view.value.name === 'LIBRARY')
+    const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
+    const isSelected = useSignal(() => $view().name === 'LIBRARY')
     const isActive = isFocused && isSelected
     const isPlaying = useSignal(() => {
-        if (!$playing()) return false
+        if (!$isPlaying()) return false
         const view = $playingView()
         return view?.name === 'LIBRARY'
     })
 
-    const isPreparingSync = useSignal($preparingSync)
-    const isSyncing = useSignal($syncing)
+    const isPreparingSync = useSignal($isPreparingSync)
+    const isSyncing = useSignal($isSyncing)
     const syncProgress = useSignal(() => pipe(
-        $syncProgress.value / $syncGoal.value,
+        $syncProgress() / $syncGoal(),
         v => v || 0,
         v => v * 100,
         v => Math.round(v),

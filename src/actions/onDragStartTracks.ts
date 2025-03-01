@@ -1,13 +1,15 @@
-import { $isDraggingTracks, $playlists, $tracksLSM } from '@app/state/state'
+import { $isDraggingTracks } from '@app/state/isDraggingTracks'
+import { $playlists } from '@app/state/playlists'
+import { $tracksLSM } from '@app/state/tracksLSM'
 import { isSelected } from '@app/utils/lsm/utils/isSelected'
 import { selectOne } from '@app/utils/lsm/utils/selectOne'
 import { action } from '@app/utils/signals/action'
 import { onDragEndTracks } from './onDragEndTracks'
 
 export const onDragStartTracks = action((trackId: string) => {
-    if ($playlists.value.length === 0) return
+    if ($playlists().length === 0) return
 
-    if (!isSelected($tracksLSM.value, trackId))
+    if (!isSelected($tracksLSM(), trackId))
         $tracksLSM.map(lsm => selectOne(lsm, trackId))
 
     $isDraggingTracks.set(true)

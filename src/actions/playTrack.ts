@@ -1,5 +1,11 @@
 import type { Track, View } from '@app/types'
-import { $loadedAudioMetadata, $playingTrackId, $playingView, $tracksById, $view, $waveformPeaks, audio } from '@app/state/state'
+import { audio } from '@app/state/audio'
+import { $loadedAudioMetadata } from '@app/state/loadedAudioMetadata'
+import { $playingTrackId } from '@app/state/playingTrackId'
+import { $playingView } from '@app/state/playingView'
+import { $tracksById } from '@app/state/tracksById'
+import { $view } from '@app/state/view'
+import { $waveformPeaks } from '@app/state/waveformPeaks'
 import { action } from '@app/utils/signals/action'
 import { loadWaveform } from '@app/utils/waveform/loadWaveform'
 import { readFile } from '@tauri-apps/plugin-fs'
@@ -10,14 +16,14 @@ export const playTrack = action(async ({ trackId, view }: {
     trackId: string
     view?: View
 }): Promise<boolean> => {
-    const track = $tracksById(trackId).value
+    const track = $tracksById(trackId)()
     if (!track) return false
 
     const nextPlayingView = view
-        ?? $playingView.value
-        ?? $view.value
+        ?? $playingView()
+        ?? $view()
 
-    if ($playingTrackId.value === trackId) {
+    if ($playingTrackId() === trackId) {
         seekTo(0)
         audio.play()
         onPlaybackSuccess({ track, view: nextPlayingView })

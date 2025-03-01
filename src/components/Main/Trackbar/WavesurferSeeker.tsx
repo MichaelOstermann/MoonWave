@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
-import { $currentTrackDuration } from '@app/state/state'
+import { $currentTrackDuration } from '@app/state/currentTrackDuration'
 import { formatDuration } from '@app/utils/formatDuration'
 import { useSignal } from '@app/utils/signals/useSignal'
 
 export function WavesurferSeeker({ position }: { position: number }): ReactNode {
-    const trackPosition = useSignal(() => formatDuration($currentTrackDuration.value * position))
+    const trackPosition = useSignal(() => formatDuration($currentTrackDuration() * position))
 
     return (
         <div

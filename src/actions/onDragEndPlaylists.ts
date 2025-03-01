@@ -1,4 +1,7 @@
-import { $draggingPlaylistIds, $dropPlaylistId, $dropPlaylistSide, $playlists } from '@app/state/state'
+import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
+import { $dropPlaylistId } from '@app/state/dropPlaylistId'
+import { $dropPlaylistSide } from '@app/state/dropPlaylistSide'
+import { $playlists } from '@app/state/playlists'
 import { autoAnimate } from '@app/utils/dom/autoAnimate'
 import { action } from '@app/utils/signals/action'
 import { match } from 'ts-pattern'

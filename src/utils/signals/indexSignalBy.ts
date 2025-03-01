@@ -12,14 +12,14 @@ export function indexSignalBy<T extends object, U extends PropertyKey>(
     const empty = signal(undefined)
 
     const $idx = computed<Record<U, T>>(() => {
-        return indexBy($target.value, by)
+        return indexBy($target(), by)
     })
 
     return function (value) {
         if (value == null) return empty
         const existing = cache.get(value)?.deref()
         if (existing) return existing
-        const signal = computed<T | undefined>(() => $idx.value[value])
+        const signal = computed<T | undefined>(() => $idx()[value])
         const ref = new WeakRef(signal)
         cache.set(value, ref)
         return signal

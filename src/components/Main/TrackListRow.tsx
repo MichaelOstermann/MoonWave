@@ -8,7 +8,12 @@ import { onDragStartTracks } from '@app/actions/onDragStartTracks'
 import { removeTracksFromPlaylist } from '@app/actions/removeTracksFromPlaylist'
 import { syncLibrary } from '@app/actions/syncLibrary'
 import { trashTracks } from '@app/actions/trashTracks'
-import { $focusedView, $playingTrackId, $playlists, $playlistsById, $tracksLSM, $view } from '@app/state/state'
+import { $focusedView } from '@app/state/focusedView'
+import { $playingTrackId } from '@app/state/playingTrackId'
+import { $playlists } from '@app/state/playlists'
+import { $playlistsById } from '@app/state/playlistsById'
+import { $tracksLSM } from '@app/state/tracksLSM'
+import { $view } from '@app/state/view'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionInGroup'
 import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGroup'
@@ -81,12 +86,13 @@ export function TrackListRow({ row, idx, colStyles }: {
 }
 
 function addSelectedTracksToPlaylistMenuItem(): MenuItem {
-    const trackIds = getSelections($tracksLSM.value)
-    const currentPlaylistId = $view.value.name === 'PLAYLIST'
-        ? $view.value.value
+    const trackIds = getSelections($tracksLSM())
+    const view = $view()
+    const currentPlaylistId = view.name === 'PLAYLIST'
+        ? view.value
         : null
 
-    const playlists = $playlists.value
+    const playlists = $playlists()
         .filter(playlist => playlist.id !== currentPlaylistId)
         .sort((a, b) => a.title.localeCompare(b.title))
         .map(playlist => ({
@@ -103,14 +109,15 @@ function addSelectedTracksToPlaylistMenuItem(): MenuItem {
 }
 
 function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
-    const trackIds = getSelections($tracksLSM.value)
+    const trackIds = getSelections($tracksLSM())
     if (!trackIds.length) return
 
-    const currentPlaylistId = $view.value.name === 'PLAYLIST'
-        ? $view.value.value
+    const view = $view()
+    const currentPlaylistId = view.name === 'PLAYLIST'
+        ? view.value
         : null
 
-    const playlist = $playlistsById(currentPlaylistId).value
+    const playlist = $playlistsById(currentPlaylistId)()
     if (!playlist) return
 
     const prompt = formatTrackIds(trackIds, {
@@ -136,7 +143,7 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
 }
 
 function moveSelectedTracksToTrash(): MenuItem {
-    const trackIds = getSelections($tracksLSM.value)
+    const trackIds = getSelections($tracksLSM())
     if (!trackIds.length) return
 
     const prompt = formatTrackIds(trackIds, {

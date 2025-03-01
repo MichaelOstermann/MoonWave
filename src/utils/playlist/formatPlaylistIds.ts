@@ -1,11 +1,11 @@
-import { $playlistsById } from '@app/state/state'
+import { $playlistsById } from '@app/state/playlistsById'
 
 export function formatPlaylistIds(playlistIds: string[], opts: {
     one: (title: string) => string
     many: (count: number) => string
 }): string {
     const playlists = playlistIds
-        .map(pid => $playlistsById(pid).value)
+        .map(pid => $playlistsById(pid)())
         .filter(t => !!t)
 
     if (playlists.length > 1) return opts.many(playlists.length)

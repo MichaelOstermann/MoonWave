@@ -4,7 +4,11 @@ import { playPrev } from '@app/actions/playPrev'
 import { toggleMode } from '@app/actions/toggleMode'
 import { togglePlayback } from '@app/actions/togglePlayback'
 import { Button } from '@app/components/Button'
-import { $hasNextTrack, $hasPrevTrack, $hasTrack, $playing, $playingMode } from '@app/state/state'
+import { $hasNextTrack } from '@app/state/hasNextTrack'
+import { $hasPrevTrack } from '@app/state/hasPrevTrack'
+import { $hasTrack } from '@app/state/hasTrack'
+import { $isPlaying } from '@app/state/isPlaying'
+import { $playingMode } from '@app/state/playingMode'
 import { useSignal } from '@app/utils/signals/useSignal'
 import { LucideFastForward, LucidePause, LucidePlay, LucideRepeat, LucideRepeat1, LucideRewind, LucideShuffle } from 'lucide-react'
 import { match } from 'ts-pattern'
@@ -35,7 +39,7 @@ function PlayPrevButton(): ReactNode {
 
 function PlayPauseButton(): ReactNode {
     const hasTrack = useSignal($hasTrack)
-    const Icon = useSignal($playing)
+    const Icon = useSignal($isPlaying)
         ? LucidePause
         : LucidePlay
 

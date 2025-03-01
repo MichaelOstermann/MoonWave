@@ -12,6 +12,7 @@
         "tauri": "tauri"
     },
     "dependencies": {
+        "@babel/template": "^7.26.9",
         "@monstermann/hotkeys": "^0.0.0",
         "@number-flow/react": "^0.5.5",
         "@preact/signals-core": "^1.8.0",

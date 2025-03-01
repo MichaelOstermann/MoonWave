@@ -1,7 +1,8 @@
 import { bootstrap } from './actions/bootstrap'
 import { Main } from './components/Main/Main'
 import { Sidebar } from './components/Sidebar/Sidebar'
-import './utils/keyboard'
+
+import.meta.glob('./effects/*.ts', { eager: true })
 
 bootstrap()
 

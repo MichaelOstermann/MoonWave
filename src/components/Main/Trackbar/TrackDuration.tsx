@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { $currentTrackDuration, $currentTrackPosition } from '@app/state/state'
+import { $currentTrackDuration } from '@app/state/currentTrackDuration'
+import { $currentTrackPosition } from '@app/state/currentTrackPosition'
 import { formatDuration } from '@app/utils/formatDuration'
 import { useSignal } from '@app/utils/signals/useSignal'
 

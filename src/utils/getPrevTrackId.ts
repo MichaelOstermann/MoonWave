@@ -1,13 +1,16 @@
-import { $currentTrackPosition, $playingMode, $playingTrackId, $prevPlayedTrackIds } from '@app/state/state'
+import { $currentTrackPosition } from '@app/state/currentTrackPosition'
+import { $playingMode } from '@app/state/playingMode'
+import { $playingTrackId } from '@app/state/playingTrackId'
+import { $prevPlayedTrackIds } from '@app/state/prevPlayedTrackIds'
 
 export function getPrevTrackId(): string | undefined {
-    const mode = $playingMode.value
-    const playingTrackId = $playingTrackId.value
+    const mode = $playingMode()
+    const playingTrackId = $playingTrackId()
 
     if (mode === 'SINGLE') return playingTrackId
-    if ($currentTrackPosition.value >= 5) return playingTrackId
-    if ($prevPlayedTrackIds.value.length)
-        return $prevPlayedTrackIds.value[0]
+    if ($currentTrackPosition() >= 5) return playingTrackId
+    if ($prevPlayedTrackIds().length)
+        return $prevPlayedTrackIds()[0]
 
     return playingTrackId
 }

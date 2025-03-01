@@ -1,5 +1,4 @@
 import type { ReadonlySignal } from '../signals/computed'
-import type { Event } from '../signals/event'
 import type { Signal } from '../signals/signal'
 
 export type ModalStatus =
@@ -54,12 +53,6 @@ export type Popover = {
     open: () => void
     close: () => void
     register: () => () => void
-    onOpen: Event<Popover>
-    onClose: Event<Popover>
-    onOpening: Event<Popover>
-    onOpened: Event<Popover>
-    onClosing: Event<Popover>
-    onClosed: Event<Popover>
 }
 
 export type TooltipOptions = {
@@ -94,12 +87,6 @@ export type Tooltip = {
     open: () => void
     close: () => void
     register: () => () => void
-    onOpen: Event<Tooltip>
-    onClose: Event<Tooltip>
-    onOpening: Event<Tooltip>
-    onOpened: Event<Tooltip>
-    onClosing: Event<Tooltip>
-    onClosed: Event<Tooltip>
 }
 
 export type Dialog = {
@@ -110,12 +97,6 @@ export type Dialog = {
     floatingElement: Signal<HTMLElement | null>
     open: () => void
     close: () => void
-    onOpen: Event<Dialog>
-    onClose: Event<Dialog>
-    onOpening: Event<Dialog>
-    onOpened: Event<Dialog>
-    onClosing: Event<Dialog>
-    onClosed: Event<Dialog>
 }
 
 export type Modal =

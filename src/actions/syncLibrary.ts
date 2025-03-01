@@ -1,6 +1,10 @@
 import type { Track } from '@app/types'
 import { extensions } from '@app/config/extensions'
-import { $preparingSync, $syncGoal, $syncing, $syncProgress, $tracks } from '@app/state/state'
+import { $isPreparingSync } from '@app/state/isPreparingSync'
+import { $isSyncing } from '@app/state/isSyncing'
+import { $syncGoal } from '@app/state/syncGoal'
+import { $syncProgress } from '@app/state/syncProgress'
+import { $tracks } from '@app/state/tracks'
 import { append } from '@app/utils/data/append'
 import { findAndMapOr } from '@app/utils/data/findAndMapOr'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
@@ -14,9 +18,9 @@ import { readDir } from '@tauri-apps/plugin-fs'
 const debounce = 500
 
 export const syncLibrary = action(async () => {
-    if ($preparingSync() || $syncing()) return
+    if ($isPreparingSync() || $isSyncing()) return
 
-    $preparingSync.set(true)
+    $isPreparingSync.set(true)
     $syncProgress.set(0)
     $syncGoal.set(0)
 
@@ -24,8 +28,8 @@ export const syncLibrary = action(async () => {
     const paths = await getAudioFilePaths(libraryPath)
 
     batch(() => {
-        $syncing.set(true)
-        $preparingSync.set(false)
+        $isSyncing.set(true)
+        $isPreparingSync.set(false)
         $syncGoal.set(paths.length)
     })
 
@@ -56,7 +60,7 @@ export const syncLibrary = action(async () => {
 
     // Give the sidebar animations room to settle.
     setTimeout(() => {
-        $syncing.set(false)
+        $isSyncing.set(false)
     }, 1000)
 })
 

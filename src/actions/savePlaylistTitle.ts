@@ -1,4 +1,6 @@
-import { $editingPlaylistId, $playlists, $playlistsById } from '@app/state/state'
+import { $editingPlaylistId } from '@app/state/editingPlaylistId'
+import { $playlists } from '@app/state/playlists'
+import { $playlistsById } from '@app/state/playlistsById'
 import { findAndMap } from '@app/utils/data/findAndMap'
 import { setPlaylistTitle } from '@app/utils/playlist/setPlaylistTitle'
 import { action } from '@app/utils/signals/action'
