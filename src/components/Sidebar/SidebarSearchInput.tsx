@@ -1,42 +1,41 @@
 import type { ReactNode } from 'react'
-import { filterLibrary } from '@app/actions/filterLibrary'
-import { $tracksFilter } from '@app/state/tracksFilter'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { filterLibrary } from '@app/actions/tracks/filterLibrary'
+import { $tracksFilter } from '@app/state/tracks/tracksFilter'
+import { useSignal } from '@monstermann/signals'
 import { LucideSearch, LucideX } from 'lucide-react'
+import { Input } from '../Core/Input/Input'
+import { InputLeft } from '../Core/Input/InputLeft'
+import { InputRight } from '../Core/Input/InputRight'
+import { InputRoot } from '../Core/Input/InputRoot'
+import { useInput } from '../Core/Input/useInput'
 
 export function SidebarSearchInput(): ReactNode {
     const value = useSignal($tracksFilter)
+    const input = useInput({
+        value,
+        placeholder: 'Search',
+        onUpdate: value => filterLibrary(value),
+        onEscape: () => filterLibrary(''),
+    })
 
     return (
         <div
             className="group flex shrink-0 px-2"
             onClick={evt => evt.stopPropagation()}
         >
-            <div className="relative flex shrink grow">
-                <div className="pointer-events-none absolute inset-y-0 left-1.5 flex items-center">
-                    <div className="flex size-[22px] items-center justify-center">
-                        <LucideSearch className="size-4" />
-                    </div>
-                </div>
-                <div
-                    className="absolute inset-y-0 right-0 flex items-center px-2.5 group-has-[input:placeholder-shown]:hidden"
+            <InputRoot input={input} className="h-8">
+                <InputLeft className="size-8">
+                    <LucideSearch className="size-4" />
+                </InputLeft>
+                <Input className="sidebar-search-input px-8" />
+                <InputRight
+                    className="size-8"
+                    show={value !== ''}
                     onClick={() => filterLibrary('')}
-                    onPointerDown={evt => evt.preventDefault()}
                 >
                     <LucideX className="size-4" />
-                </div>
-                <input
-                    type="text"
-                    placeholder="Search"
-                    className="sidebar-search-input h-8 w-full rounded-md bg-[--bg-soft] px-8 text-sm outline-none placeholder:text-[--fg-soft]"
-                    value={value}
-                    onChange={evt => filterLibrary(evt.target.value)}
-                    onContextMenu={evt => evt.stopPropagation()}
-                    onKeyDown={(evt) => {
-                        if (evt.key === 'Escape') filterLibrary('')
-                    }}
-                />
-            </div>
+                </InputRight>
+            </InputRoot>
         </div>
     )
 }

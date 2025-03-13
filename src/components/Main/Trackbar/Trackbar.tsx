@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react'
 import { CurrentTrack } from './CurrentTrack'
 import { PlaybackControls } from './PlaybackControls'
+import { SidepanelToggle } from './SidepanelToggle'
 import { VolumeControls } from './VolumeControls'
 
 export function Trackbar(): ReactNode {
     return (
         <div
             data-tauri-drag-region
-            className="trackbar no-shrink flex h-14 items-center px-5"
+            className="trackbar no-shrink flex h-14 items-center px-3"
         >
             <div
                 data-tauri-drag-region
@@ -24,6 +25,7 @@ export function Trackbar(): ReactNode {
             >
                 <VolumeControls />
             </div>
+            <SidepanelToggle />
         </div>
     )
 }

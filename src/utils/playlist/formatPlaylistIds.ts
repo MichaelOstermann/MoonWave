@@ -1,4 +1,4 @@
-import { $playlistsById } from '@app/state/playlistsById'
+import { $playlistsById } from '@app/state/playlists/playlistsById'
 
 export function formatPlaylistIds(playlistIds: string[], opts: {
     one: (title: string) => string

@@ -1,26 +1,26 @@
 import type { MenuItem } from '@app/utils/menu'
 import type { CSSProperties, ReactNode } from 'react'
 import type { Column, Row } from './types'
-import { addTracksToPlaylist } from '@app/actions/addTracksToPlaylist'
-import { onClickTrack } from '@app/actions/onClickTrack'
-import { onDoubleClickTrack } from '@app/actions/onDoubleClickTrack'
-import { onDragStartTracks } from '@app/actions/onDragStartTracks'
-import { removeTracksFromPlaylist } from '@app/actions/removeTracksFromPlaylist'
-import { syncLibrary } from '@app/actions/syncLibrary'
-import { trashTracks } from '@app/actions/trashTracks'
-import { $focusedView } from '@app/state/focusedView'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $playlists } from '@app/state/playlists'
-import { $playlistsById } from '@app/state/playlistsById'
-import { $tracksLSM } from '@app/state/tracksLSM'
-import { $view } from '@app/state/view'
+import { syncLibrary } from '@app/actions/app/syncLibrary'
+import { addTracksToPlaylist } from '@app/actions/playlists/addTracksToPlaylist'
+import { removeTracksFromPlaylist } from '@app/actions/playlists/removeTracksFromPlaylist'
+import { onClickTrack } from '@app/actions/tracks/onClickTrack'
+import { onDoubleClickTrack } from '@app/actions/tracks/onDoubleClickTrack'
+import { onDragStartTracks } from '@app/actions/tracks/onDragStartTracks'
+import { trashTracks } from '@app/actions/tracks/trashTracks'
+import { $playlists } from '@app/state/playlists/playlists'
+import { $playlistsById } from '@app/state/playlists/playlistsById'
+import { $viewingPlaylistId } from '@app/state/playlists/viewingPlaylistId'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $playingTrackId } from '@app/state/tracks/playingTrackId'
+import { $tracksLSM } from '@app/state/tracks/tracksLSM'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
 import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionInGroup'
 import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGroup'
 import { isSelected } from '@app/utils/lsm/utils/isSelected'
 import { useMenu } from '@app/utils/menu'
-import { useSignal } from '@app/utils/signals/useSignal'
 import { formatTrackIds } from '@app/utils/track/formatTrackIds'
+import { useSignal } from '@monstermann/signals'
 import { confirm } from '@tauri-apps/plugin-dialog'
 import { twMerge } from 'tailwind-merge'
 import { columns } from './config'
@@ -56,9 +56,9 @@ export function TrackListRow({ row, idx, colStyles }: {
             className={twMerge(
                 'relative flex h-8 items-center text-sm leading-7',
                 isEven && !selected && 'bg-[--bg-soft]',
-                isPlaying && 'text-[--fg-active]',
+                isPlaying && 'text-[--fg-accent]',
                 selected && 'bg-[--bg-selected]',
-                isActive && 'bg-[--bg-active] text-[--fg-active]',
+                isActive && 'bg-[--bg-accent] text-[--fg-accent]',
                 !selected && 'rounded-md',
                 firstSelected && lastSelected && 'rounded-md',
                 firstSelected && !lastSelected && 'rounded-t-md',
@@ -87,10 +87,7 @@ export function TrackListRow({ row, idx, colStyles }: {
 
 function addSelectedTracksToPlaylistMenuItem(): MenuItem {
     const trackIds = getSelections($tracksLSM())
-    const view = $view()
-    const currentPlaylistId = view.name === 'PLAYLIST'
-        ? view.value
-        : null
+    const currentPlaylistId = $viewingPlaylistId()
 
     const playlists = $playlists()
         .filter(playlist => playlist.id !== currentPlaylistId)
@@ -112,12 +109,9 @@ function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
     const trackIds = getSelections($tracksLSM())
     if (!trackIds.length) return
 
-    const view = $view()
-    const currentPlaylistId = view.name === 'PLAYLIST'
-        ? view.value
-        : null
-
+    const currentPlaylistId = $viewingPlaylistId()
     const playlist = $playlistsById(currentPlaylistId)()
+
     if (!playlist) return
 
     const prompt = formatTrackIds(trackIds, {

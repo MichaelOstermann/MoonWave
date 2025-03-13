@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import { useTransition } from '@app/hooks/useTransition'
-import { $isDraggingTracks } from '@app/state/isDraggingTracks'
-import { $tracksLSM } from '@app/state/tracksLSM'
+import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
+import { $tracksLSM } from '@app/state/tracks/tracksLSM'
 import { getSelections } from '@app/utils/lsm/utils/getSelections'
-import { useSignal } from '@app/utils/signals/useSignal'
 import { formatTrackIds } from '@app/utils/track/formatTrackIds'
+import { useSignal } from '@monstermann/signals'
 import { createPortal } from 'react-dom'
 import { Ghost } from '../Ghost'
 

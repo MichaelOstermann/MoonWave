@@ -6,14 +6,14 @@ body[has-popover=true] #root {
     input,
     textarea,
     [contenteditable=true],
-    [data-modal-trigger] {
+    .popover-trigger {
         pointer-events: auto;
     }
 }
 
-[data-modal][data-modal-status="closing"],
-[data-modal][data-modal-status="closed"],
-[data-modal][data-modal-status="closing"] *,
-[data-modal][data-modal-status="closed"] * {
+.modal.closing,
+.modal.closed,
+.modal.closing *,
+.modal.closed * {
     pointer-events: none;
 }

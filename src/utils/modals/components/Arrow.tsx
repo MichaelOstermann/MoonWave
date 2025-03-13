@@ -13,7 +13,9 @@ export const Arrow = function ({
     tipRadius,
     strokeWidth,
     style,
-}: ArrowProps): ReactNode | null {
+}: ArrowProps): ReactNode {
+    if (width === 0 || height === 0) return null
+
     const svgX = (width / 2) * (tipRadius / -8 + 1)
     const svgY = ((height / 2) * tipRadius) / 4
 

@@ -1,13 +1,9 @@
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import type { Dialog, ModalStatus } from './types'
+import { changeEffect, computed, onCleanup, signal, waitFor } from '@monstermann/signals'
 import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
-import { setEntry } from '../data/setEntry'
-import { changeEffect } from '../signals/changeEffect'
-import { onCleanup } from '../signals/cleanups'
-import { computed } from '../signals/computed'
-import { signal } from '../signals/signal'
 import { modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
 
 export function createDialog(
@@ -34,10 +30,12 @@ export function createDialog(
 
     function open() {
         isOpen.set(true)
+        return waitFor(() => status() === 'opened')
     }
 
     function close() {
         isOpen.set(false)
+        return waitFor(() => status() === 'closed')
     }
 
     changeEffect(mounted, (mounted) => {
@@ -64,7 +62,7 @@ export function createDialog(
         else if (status === 'closed') onClosedModal(dialog)
     })
 
-    modals.map(setEntry(id, dialog))
+    modals.set(id, dialog)
 
     return dialog
 }

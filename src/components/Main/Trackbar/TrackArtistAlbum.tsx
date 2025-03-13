@@ -1,12 +1,10 @@
 import type { ReactNode } from 'react'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $tracksById } from '@app/state/tracksById'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { $playingTrack } from '@app/state/tracks/playingTrack'
+import { useSignal } from '@monstermann/signals'
 
 export function TrackArtistAlbum(): ReactNode {
     const content = useSignal(() => {
-        const trackId = $playingTrackId()
-        const track = $tracksById(trackId)()
+        const track = $playingTrack()
         if (!track) return ''
         return [track.artist, track.album]
             .filter(Boolean)

@@ -1,4 +1,4 @@
-import type { IconName } from 'lucide-react/dynamic'
+import type { IconName } from './config/icons'
 
 export type Color =
     | 'red'
@@ -36,20 +36,25 @@ export type PlaylistIcon =
 export type PlaylistColor =
     | { type: 'PRESET', value: Color }
 
-export type Track = {
-    id: string
+export type AudioMetadata = {
     mimetype: string
-    addedAt: number
     path: string
     filehash: string
-    audiohash: string
     title: string
     album: string
     artist: string
     duration: number
+    size: number
+    sampleRate?: number
+    bitrate?: number
     year?: number
     trackNr?: number
     diskNr?: number
+}
+
+export type Track = AudioMetadata & {
+    id: string
+    addedAt: number
 }
 
 export type Playlist = {
@@ -68,26 +73,43 @@ export type Library = {
 
 export type Config = {
     sidebarWidth?: number
+    sidepanelWidth?: number
     libraryMode?: Mode
     recentlyAddedMode?: Mode
     unsortedMode?: Mode
     themeMode?: ThemeMode
-    darkThemeName?: ThemeName
-    lightThemeName?: ThemeName
+    darkThemeName?: ThemeNameDark
+    lightThemeName?: ThemeNameLight
     waveformTheme?: WaveformThemeName
 }
 
 export type ThemeMode =
     | 'light'
     | 'dark'
-    | 'system'
 
 export type ThemeName =
-    | 'moonwave'
+    | 'catppuccin-dark'
+    | 'catppuccin-light'
+    | 'dusk-dark'
+    | 'dust-light'
+    | 'gruvbox-dark'
+    | 'gruvbox-light'
+    | 'kanagawa-dark'
+    | 'moon-dark'
+    | 'nord-dark'
+    | 'rose-pine-dark'
+    | 'rose-pine-light'
+    | 'tokyo-night-dark'
+    | 'tokyo-night-light'
+    | 'wave-light'
+
+export type ThemeNameLight = Extract<ThemeName, `${string}-light`>
+export type ThemeNameDark = Extract<ThemeName, `${string}-dark`>
 
 export type WaveformThemeName =
-    | 'default'
-    | 'soundcloud'
+    | 'hifi'
+    | 'bars-center'
+    | 'bars-bottom'
 
 export type WaveformTheme = {
     barWidth: number | undefined

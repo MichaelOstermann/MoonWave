@@ -39,6 +39,8 @@ tauri-plugin-updater = "2"
 tauri-plugin-window-state = "2"
 
 # Non-Tauri dependencies
+rayon = "1.10.0"
+ring = "0.17.14"
 lofty = "0.22.0"
 new_mime_guess = "4.0.4"
 trash = "5.2.1"

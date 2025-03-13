@@ -1,38 +1,28 @@
-import type { ThemeName } from '@app/types'
-import { $config } from '@app/state/config'
-import { $didLoadLibrary } from '@app/state/didLoadLibrary'
-import { $playlistColor } from '@app/state/playlistColor'
-import { $waveformProgressColor } from '@app/state/waveformProgressColor'
-import { $waveformWaveColor } from '@app/state/waveformWaveColor'
-import { $prefersDarkMode } from '@app/utils/signals/browser'
-import { effect } from '@app/utils/signals/effect'
+import { $didLoadLibrary } from '@app/state/app/didLoadLibrary'
+import { $viewingPlaylistColor } from '@app/state/playlists/viewingPlaylistColor'
+import { $accent } from '@app/state/theme/accent'
+import { $themeMode } from '@app/state/theme/themeMode'
+import { $themeName } from '@app/state/theme/themeName'
+import { $waveformProgressColor } from '@app/state/theme/waveformProgressColor'
+import { $waveformWaveColor } from '@app/state/theme/waveformWaveColor'
+import { effect } from '@monstermann/signals'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { match } from 'ts-pattern'
 
 effect(() => {
     if (!$didLoadLibrary()) return
 
-    const themeModeSystem = $prefersDarkMode() ? 'dark' : 'light'
-    const themeModeUser = $config().themeMode || 'system'
+    const themeMode = $themeMode()
+    const themeName = $themeName()
 
-    const themeMode = themeModeUser === 'system'
-        ? themeModeSystem
-        : themeModeUser
-
-    getCurrentWindow().setTheme(themeMode)
-
-    const themeName = match(themeMode)
-        .returnType<ThemeName>()
-        .with('light', () => $config().lightThemeName || 'moonwave')
-        .with('dark', () => $config().darkThemeName || 'moonwave')
-        .exhaustive()
-
-    document.body.setAttribute('data-theme', `${themeName}-${themeMode}`)
+    document.body.setAttribute('data-mode', themeMode)
+    document.body.setAttribute('data-theme', themeName)
 
     const style = getComputedStyle(document.body)
-    const playlistColor = $playlistColor()?.value
+    const playlistColor = $viewingPlaylistColor()?.value
     const progressProperty = playlistColor ? `--accent-${playlistColor}` : '--accent'
 
+    $accent.set(style.getPropertyValue('--accent'))
     $waveformWaveColor.set(style.getPropertyValue('--waveform'))
     $waveformProgressColor.set(style.getPropertyValue(progressProperty))
+    getCurrentWindow().setTheme(themeMode)
 })

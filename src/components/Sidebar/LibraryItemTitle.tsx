@@ -18,9 +18,9 @@ export function LibraryItemTitle({
                 <span
                     className={twJoin(
                         'truncate',
-                        'group-data-[active=true]:text-[--fg-active]',
-                        'group-data-[border=true]:text-[--fg-active]',
-                        'group-data-[playing=true]:text-[--fg-active]',
+                        'group-data-[active=true]:text-[--fg-accent]',
+                        'group-data-[border=true]:text-[--fg-accent]',
+                        'group-data-[playing=true]:text-[--fg-accent]',
                     )}
                 >
                     {title}
@@ -49,7 +49,7 @@ function EditingTitle({
             type="text"
             value={newTitle}
             placeholder="New Playlist"
-            className="shrink grow border-0 bg-transparent text-[--fg-active] outline-none placeholder:text-[--fg-soft]"
+            className="shrink grow border-0 bg-transparent text-[--fg-accent] outline-none placeholder:text-[--fg-soft]"
             onClick={evt => evt.stopPropagation()}
             onChange={evt => setNewTitle(evt.target.value)}
             onKeyDown={(evt) => {

@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from 'react'
 import type { Column, Row } from './types'
-import { $isPlaying } from '@app/state/isPlaying'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { $isPlaying } from '@app/state/audio/isPlaying'
+import { $playingTrackId } from '@app/state/tracks/playingTrackId'
+import { useSignal } from '@monstermann/signals'
 import { twJoin } from 'tailwind-merge'
 import { AudioWaveIcon } from '../AudioWaveIcon'
 import { FadeInOut } from '../FadeInOut'
@@ -50,7 +50,7 @@ function Position({ position, showAudioWaveIcon }: {
 }): ReactNode {
     return (
         <>
-            <FadeInOut animateInitial={false} show={!showAudioWaveIcon} className="absolute">
+            <FadeInOut show={!showAudioWaveIcon} className="absolute">
                 {position}
             </FadeInOut>
             <FadeInOut show={showAudioWaveIcon} className="absolute">

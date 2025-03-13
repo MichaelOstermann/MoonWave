@@ -1,8 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Dialog } from '../types'
-import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { twJoin, twMerge } from 'tailwind-merge'
 
 export interface DialogRootProps extends ComponentProps<'div'> {
@@ -19,7 +18,6 @@ export function DialogRoot({
 
     const transition = useTransition({
         isOpen,
-        easing: glide,
         openDuration: 500,
         closeDuration: 300,
         onChange: dialog.status.set,
@@ -27,24 +25,26 @@ export function DialogRoot({
 
     return (
         <div
-            data-modal="dialog"
-            data-modal-status={transition.status}
-            style={transition.style}
+            style={transition.style({
+                open: { opacity: 1 },
+                close: { opacity: 0 },
+            })}
             className={twJoin(
-                transition.className,
-                'absolute inset-0 flex items-center justify-center bg-[--overlay]',
-                transition.isClosedOrClosing && 'opacity-0',
-                transition.isOpenedOrOpening && 'opacity-100',
+                'modal dialog absolute inset-0 flex items-center justify-center bg-[--overlay]',
+                transition.status,
             )}
         >
             <div
                 ref={el => void dialog.floatingElement.set(el)}
-                style={style}
+                style={{
+                    ...transition.style({
+                        open: { transform: 'scale(1)' },
+                        close: { transform: 'scale(0.95)' },
+                    }),
+                    ...style,
+                }}
                 className={twMerge(
-                    transition.className,
-                    'flex rounded-lg bg-[--bg] text-sm text-[--fg] shadow-2xl',
-                    transition.isClosedOrClosing && 'scale-95',
-                    transition.isOpenedOrOpening && 'scale-100',
+                    'floating flex rounded-lg border border-[--border] bg-[--bg] text-sm text-[--fg]',
                     className,
                 )}
             >

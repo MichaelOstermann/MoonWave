@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { $currentTrackDuration } from '@app/state/currentTrackDuration'
-import { $currentTrackPosition } from '@app/state/currentTrackPosition'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { $currentTrackDuration } from '@app/state/audio/currentTrackDuration'
+import { $currentTrackPosition } from '@app/state/audio/currentTrackPosition'
+import { useSignal } from '@monstermann/signals'
 
 export function TrackPosition(): ReactNode {
     const width = useSignal(() => 100 * ($currentTrackPosition() / $currentTrackDuration()))

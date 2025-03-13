@@ -1,34 +1,35 @@
-import type { ReactNode } from 'react'
-import { createPlaylist } from '@app/actions/createPlaylist'
-import { deletePlaylist } from '@app/actions/deletePlaylist'
-import { editPlaylistTitle } from '@app/actions/editPlaylistTitle'
-import { onClickPlaylist } from '@app/actions/onClickPlaylist'
-import { onDragEnterPlaylist } from '@app/actions/onDragEnterPlaylist'
-import { onDragLeavePlaylist } from '@app/actions/onDragLeavePlaylist'
-import { onDragStartPlaylists } from '@app/actions/onDragStartPlaylists'
-import { resetPlaylistIcon } from '@app/actions/resetPlaylistIcon'
-import { savePlaylistTitle } from '@app/actions/savePlaylistTitle'
-import { setPlaylistColor } from '@app/actions/setPlaylistColor'
-import { setPlaylistIcon } from '@app/actions/setPlaylistIcon'
-import { syncLibrary } from '@app/actions/syncLibrary'
-import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
-import { $dropPlaylistId } from '@app/state/dropPlaylistId'
-import { $dropPlaylistSide } from '@app/state/dropPlaylistSide'
-import { $editingPlaylistId } from '@app/state/editingPlaylistId'
-import { $focusedView } from '@app/state/focusedView'
-import { $isDraggingPlaylists } from '@app/state/isDraggingPlaylists'
-import { $isDraggingTracks } from '@app/state/isDraggingTracks'
-import { $isPlaying } from '@app/state/isPlaying'
-import { $playingView } from '@app/state/playingView'
-import { $playlistsById } from '@app/state/playlistsById'
-import { $view } from '@app/state/view'
+import { syncLibrary } from '@app/actions/app/syncLibrary'
+import { createPlaylist } from '@app/actions/playlists/createPlaylist'
+import { deletePlaylist } from '@app/actions/playlists/deletePlaylist'
+import { editPlaylistTitle } from '@app/actions/playlists/editPlaylistTitle'
+import { onClickPlaylist } from '@app/actions/playlists/onClickPlaylist'
+import { onDragEnterPlaylist } from '@app/actions/playlists/onDragEnterPlaylist'
+import { onDragLeavePlaylist } from '@app/actions/playlists/onDragLeavePlaylist'
+import { onDragStartPlaylists } from '@app/actions/playlists/onDragStartPlaylists'
+import { resetPlaylistIcon } from '@app/actions/playlists/resetPlaylistIcon'
+import { savePlaylistTitle } from '@app/actions/playlists/savePlaylistTitle'
+import { setPlaylistColor } from '@app/actions/playlists/setPlaylistColor'
+import { setPlaylistIcon } from '@app/actions/playlists/setPlaylistIcon'
+import { icons } from '@app/config/icons'
+import { $isPlaying } from '@app/state/audio/isPlaying'
+import { $draggingPlaylistIds } from '@app/state/playlists/draggingPlaylistIds'
+import { $dropPlaylistId } from '@app/state/playlists/dropPlaylistId'
+import { $dropPlaylistSide } from '@app/state/playlists/dropPlaylistSide'
+import { $editingPlaylistId } from '@app/state/playlists/editingPlaylistId'
+import { $isDraggingPlaylists } from '@app/state/playlists/isDraggingPlaylists'
+import { $playlistsById } from '@app/state/playlists/playlistsById'
+import { $viewingPlaylistId } from '@app/state/playlists/viewingPlaylistId'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $playingView } from '@app/state/sidebar/playingView'
+import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
 import { useMenu } from '@app/utils/menu'
 import { PopoverRoot } from '@app/utils/modals/components/PopoverRoot'
 import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
 import { usePopover } from '@app/utils/modals/usePopover'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { confirm } from '@tauri-apps/plugin-dialog'
-import { DynamicIcon } from 'lucide-react/dynamic'
+import { LucideListMusic } from 'lucide-react'
+import { createElement, type ReactNode } from 'react'
 import { AudioWaveIcon } from '../AudioWaveIcon'
 import { FadeInOut } from '../FadeInOut'
 import { IconPicker } from './IconPicker'
@@ -40,11 +41,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
     const playlist = useSignal($playlistsById(id))!
     const isEditing = useSignal(() => $editingPlaylistId() === id)
     const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
-    const isSelected = useSignal(() => {
-        const view = $view()
-        return view.name === 'PLAYLIST'
-            && view.value === id
-    })
+    const isSelected = useSignal(() => $viewingPlaylistId() === id)
     const isActive = isFocused && isSelected
     const isDragging = useSignal(() => $draggingPlaylistIds().includes(id))
     const isDropTarget = useSignal(() => $dropPlaylistId() === id)
@@ -57,9 +54,8 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
             && view.value === id
     })
 
-    const popover = usePopover(id, { paddingTop: 25 })
+    const popover = usePopover(id, { paddingTop: 25, offset: 8 })
     const isPopoverOpen = useSignal(popover.isOpen)
-    const popoverSide = useSignal(popover.placement)
 
     const menu = useMenu([
         { text: 'Edit Title', action: () => editPlaylistTitle(id) },
@@ -85,6 +81,9 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
 
     const showAudioWaveIcon = !isPopoverOpen && isPlaying
     const showBorder = menu.isOpen || isDragging || isPopoverOpen || isEditing || dropTarget === true
+    const icon = playlist.icon
+        ? icons[playlist.icon.value] ?? LucideListMusic
+        : LucideListMusic
 
     return (
         <SidebarItem
@@ -116,11 +115,11 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
         >
             <PopoverTarget asChild popover={popover}>
                 <LibraryItemIcon>
-                    <FadeInOut animateInitial={false} show={showAudioWaveIcon} className="absolute">
+                    <FadeInOut show={showAudioWaveIcon} className="absolute">
                         <AudioWaveIcon className="mb-1 size-4" />
                     </FadeInOut>
-                    <FadeInOut animateInitial={false} show={!showAudioWaveIcon} className="absolute">
-                        <DynamicIcon name={playlist.icon ? playlist.icon.value : 'list-music'} className="size-4" />
+                    <FadeInOut show={!showAudioWaveIcon} className="absolute">
+                        {createElement(icon, { className: 'size-4' })}
                     </FadeInOut>
                 </LibraryItemIcon>
             </PopoverTarget>
@@ -128,7 +127,6 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
                 popover={popover}
                 render={() => (
                     <IconPicker
-                        side={popoverSide}
                         activeIcon={playlist.icon}
                         activeColor={playlist.color}
                         onSelectIcon={icon => setPlaylistIcon({ playlistId: id, icon })}

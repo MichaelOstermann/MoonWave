@@ -1,4 +1,4 @@
-import { $tracksById } from '@app/state/tracksById'
+import { $tracksById } from '@app/state/tracks/tracksById'
 
 export function formatTrackIds(trackIds: string[], opts: {
     one: (title: string) => string

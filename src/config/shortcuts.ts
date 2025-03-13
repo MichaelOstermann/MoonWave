@@ -3,7 +3,6 @@ export const shortcuts = {
     createPlaylist: ['cmd+n'],
     syncLibrary: ['cmd+s'],
     toggleMute: ['cmd+m'],
-    setRepeatMode: ['cmd+r'],
     toggleMode: ['cmd+r'],
     togglePlayback: ['space'],
     switchFocus: ['tab'],

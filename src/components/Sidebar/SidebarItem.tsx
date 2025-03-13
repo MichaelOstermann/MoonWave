@@ -47,8 +47,8 @@ export function SidebarItem({
                 style={{
                     ...style,
                     '--accent': color ? `var(--accent-${color.value})` : undefined,
-                    '--fg-active': color ? `var(--fg-${color.value})` : undefined,
-                    '--bg-active': color ? `var(--bg-${color.value})` : undefined,
+                    '--fg-accent': color ? `var(--fg-${color.value})` : undefined,
+                    '--bg-accent': color ? `var(--bg-${color.value})` : undefined,
                 }}
                 data-selected={isSelected}
                 data-active={isActive}
@@ -58,7 +58,7 @@ export function SidebarItem({
                 className={twJoin(
                     'group flex h-8 shrink grow items-center gap-x-1.5 rounded-md px-1.5 text-sm',
                     'data-[active=false]:data-[selected=true]:data-[border=false]:bg-[--bg-selected]',
-                    'data-[active=true]:data-[border=false]:bg-[--bg-active]',
+                    'data-[active=true]:data-[border=false]:bg-[--bg-accent]',
                     'data-[border=true]:shadow-[0_0_0_2px_var(--accent)]',
                     className,
                 )}

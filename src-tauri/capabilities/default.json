@@ -26,11 +26,6 @@
             "identifier": "shell:allow-execute",
             "allow": [
                 {
-                    "name": "openssl",
-                    "cmd": "openssl",
-                    "args": ["sha256", { "validator": ".+" }]
-                },
-                {
                     "name": "bin/ffmpeg",
                     "sidecar": true,
                     "args": true

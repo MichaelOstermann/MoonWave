@@ -1,5 +1,5 @@
-import { $isMinimized } from '@app/state/isMinimized'
-import { changeEffect } from '@app/utils/signals/changeEffect'
+import { $isMinimized } from '@app/state/app/isMinimized'
+import { changeEffect } from '@monstermann/signals'
 import { getCurrentWindow, LogicalSize } from '@tauri-apps/api/window'
 
 changeEffect($isMinimized, (isMinimized) => {

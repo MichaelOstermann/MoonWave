@@ -1,18 +1,18 @@
 import type { ReactNode } from 'react'
-import { openView } from '@app/actions/openView'
+import { openView } from '@app/actions/app/openView'
 import { AudioWaveIcon } from '@app/components/AudioWaveIcon'
+import { Spinner } from '@app/components/Core/Spinner/Spinner'
 import { FadeInOut } from '@app/components/FadeInOut'
-import { Spinner } from '@app/components/Spinner'
-import { $focusedView } from '@app/state/focusedView'
-import { $isPlaying } from '@app/state/isPlaying'
-import { $isPreparingSync } from '@app/state/isPreparingSync'
-import { $isSyncing } from '@app/state/isSyncing'
-import { $playingView } from '@app/state/playingView'
-import { $syncGoal } from '@app/state/syncGoal'
-import { $syncProgress } from '@app/state/syncProgress'
-import { $view } from '@app/state/view'
+import { $isPreparingSync } from '@app/state/app/isPreparingSync'
+import { $isSyncing } from '@app/state/app/isSyncing'
+import { $syncGoal } from '@app/state/app/syncGoal'
+import { $syncProgress } from '@app/state/app/syncProgress'
+import { $isPlaying } from '@app/state/audio/isPlaying'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $playingView } from '@app/state/sidebar/playingView'
+import { $view } from '@app/state/sidebar/view'
 import { pipe } from '@app/utils/data/pipe'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import NumberFlow from '@number-flow/react'
 import { Gauge } from '@suyalcinkaya/gauge'
 import { LucideBook } from 'lucide-react'
@@ -37,7 +37,7 @@ export function Library(): ReactNode {
         $syncProgress() / $syncGoal(),
         v => v || 0,
         v => v * 100,
-        v => Math.round(v),
+        v => Math.floor(v),
     ))
 
     return (
@@ -51,15 +51,15 @@ export function Library(): ReactNode {
             }}
         >
             <LibraryItemIcon>
-                <FadeInOut animateInitial={false} show={isPreparingSync} className="absolute">
+                <FadeInOut show={isPreparingSync} className="absolute">
                     <Spinner
-                        size={18}
+                        size={16}
                         strokeWidth={2}
-                        primary="var(--fg-active)"
+                        primary="var(--fg-accent)"
                         secondary="var(--bg-selected)"
                     />
                 </FadeInOut>
-                <FadeInOut animateInitial={false} show={isSyncing} className="absolute">
+                <FadeInOut show={isSyncing} className="absolute">
                     <Gauge
                         showAnimation
                         value={syncProgress}
@@ -67,14 +67,14 @@ export function Library(): ReactNode {
                         gapPercent={0}
                         strokeWidth={12}
                         variant="ascending"
-                        primary="var(--fg-active)"
+                        primary="var(--fg-accent)"
                         secondary="var(--bg-selected)"
                     />
                 </FadeInOut>
-                <FadeInOut animateInitial={false} show={isPlaying && !isPreparingSync && !isSyncing} className="absolute">
+                <FadeInOut show={isPlaying && !isPreparingSync && !isSyncing} className="absolute">
                     <AudioWaveIcon className="mb-1 size-4" />
                 </FadeInOut>
-                <FadeInOut animateInitial={false} show={!isPreparingSync && !isSyncing && !isPlaying} className="absolute">
+                <FadeInOut show={!isPreparingSync && !isSyncing && !isPlaying} className="absolute">
                     <LucideBook className="size-4" />
                 </FadeInOut>
             </LibraryItemIcon>
@@ -82,7 +82,7 @@ export function Library(): ReactNode {
                 title="Library"
             />
             <FadeInOut show={isSyncing}>
-                <Badge className="tabular-nums">
+                <Badge>
                     <NumberFlow
                         willChange
                         suffix="%"

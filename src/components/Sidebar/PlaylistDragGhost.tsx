@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import { useTransition } from '@app/hooks/useTransition'
-import { $draggingPlaylistIds } from '@app/state/draggingPlaylistIds'
-import { $isDraggingPlaylists } from '@app/state/isDraggingPlaylists'
+import { $draggingPlaylistIds } from '@app/state/playlists/draggingPlaylistIds'
+import { $isDraggingPlaylists } from '@app/state/playlists/isDraggingPlaylists'
 import { formatPlaylistIds } from '@app/utils/playlist/formatPlaylistIds'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { createPortal } from 'react-dom'
 import { Ghost } from '../Ghost'
 

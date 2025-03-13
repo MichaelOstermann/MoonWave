@@ -1,25 +1,24 @@
 import type { LucideIcon } from 'lucide-react'
-import { createPlaylist } from '@app/actions/createPlaylist'
-import { playNext } from '@app/actions/playNext'
-import { playPrev } from '@app/actions/playPrev'
-import { setThemeMode } from '@app/actions/setThemeMode'
-import { setVolume } from '@app/actions/setVolume'
-import { syncLibrary } from '@app/actions/syncLibrary'
-import { toggleMode } from '@app/actions/toggleMode'
-import { toggleMute } from '@app/actions/toggleMute'
-import { togglePlayback } from '@app/actions/togglePlayback'
+import { syncLibrary } from '@app/actions/app/syncLibrary'
+import { toggleThemeMode } from '@app/actions/app/toggleThemeMode'
+import { playNext } from '@app/actions/audio/playNext'
+import { playPrev } from '@app/actions/audio/playPrev'
+import { setVolume } from '@app/actions/audio/setVolume'
+import { toggleMode } from '@app/actions/audio/toggleMode'
+import { toggleMute } from '@app/actions/audio/toggleMute'
+import { togglePlayback } from '@app/actions/audio/togglePlayback'
+import { createPlaylist } from '@app/actions/playlists/createPlaylist'
 import { shortcuts } from '@app/config/shortcuts'
-import { $config } from '@app/state/config'
-import { $hasNextTrack } from '@app/state/hasNextTrack'
-import { $hasPrevTrack } from '@app/state/hasPrevTrack'
-import { $hasTrack } from '@app/state/hasTrack'
-import { $isMuted } from '@app/state/isMuted'
-import { $isPlaying } from '@app/state/isPlaying'
+import { $isMuted } from '@app/state/audio/isMuted'
+import { $isPlaying } from '@app/state/audio/isPlaying'
+import { $hasNextTrack } from '@app/state/tracks/hasNextTrack'
+import { $hasPrevTrack } from '@app/state/tracks/hasPrevTrack'
+import { $hasTrack } from '@app/state/tracks/hasTrack'
 import { DialogRoot } from '@app/utils/modals/components/DialogRoot'
 import { createDialog } from '@app/utils/modals/createDialog'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { Command } from 'cmdk'
-import { LucideFastForward, LucideMoon, LucidePause, LucidePlay, LucidePlus, LucideRefreshCw, LucideRepeat, LucideRewind, LucideSearch, LucideSun, LucideSunMoon, LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
+import { LucideFastForward, LucidePause, LucidePlay, LucidePlus, LucideRefreshCw, LucideRepeat, LucideRewind, LucideSearch, LucideSunMoon, LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
 import { createElement, type ReactNode, useState } from 'react'
 import { twJoin } from 'tailwind-merge'
 import { Kbd } from './Kbd'
@@ -72,6 +71,13 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                             title="Sync Library"
                             shortcut={shortcuts.syncLibrary[0]}
                             onSelect={syncLibrary}
+                        />
+                    </Group>
+                    <Group heading="Theme">
+                        <Item
+                            icon={LucideSunMoon}
+                            title="Toggle Mode"
+                            onSelect={() => toggleThemeMode()}
                         />
                     </Group>
                     <Group heading="Playback">
@@ -184,26 +190,6 @@ export const CommandMenu = createDialog('CommandMenu', ({ dialog }) => {
                             onSelect={() => setVolume(1)}
                         />
                     </Group>
-                    <Group heading="Mode">
-                        <Item
-                            icon={LucideSun}
-                            title="Light"
-                            enabled={useSignal(() => $config().themeMode !== 'light')}
-                            onSelect={() => setThemeMode('light')}
-                        />
-                        <Item
-                            icon={LucideMoon}
-                            title="Dark"
-                            enabled={useSignal(() => $config().themeMode !== 'dark')}
-                            onSelect={() => setThemeMode('dark')}
-                        />
-                        <Item
-                            icon={LucideSunMoon}
-                            title="System"
-                            enabled={useSignal(() => ($config().themeMode || 'system') !== 'system')}
-                            onSelect={() => setThemeMode('system')}
-                        />
-                    </Group>
                 </Command.List>
             </Command>
         </DialogRoot>
@@ -250,8 +236,8 @@ function Item({ icon, title, shortcut, enabled, onSelect }: {
                 'flex h-9 items-center gap-x-2 rounded-md px-2.5',
                 'data-[selected=true]:bg-[--bg-selected]',
             )}
-            onSelect={() => {
-                CommandMenu.close()
+            onSelect={async () => {
+                await CommandMenu.close()
                 onSelect()
             }}
         >

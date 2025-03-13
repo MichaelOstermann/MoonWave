@@ -1,25 +1,31 @@
 import type { ComponentProps, ReactNode } from 'react'
-import type { Tooltip as TooltipT } from '../types'
+import { useTooltip } from '../useTooltip'
 import { TooltipRoot } from './TooltipRoot'
 import { TooltipTarget } from './TooltipTarget'
 
 interface TooltipProps extends Omit<ComponentProps<'div'>, 'popover'> {
-    tooltip: TooltipT
+    id?: string
     delay?: number
     asChild?: boolean
-    render: () => ReactNode
+    content?: string
+    render?: () => ReactNode
 }
 
 export function Tooltip({
-    tooltip,
+    id,
     delay,
     asChild,
+    content,
     render,
     children,
+    ...rest
 }: TooltipProps): ReactNode {
+    const tooltip = useTooltip(id)
+
     return (
         <>
             <TooltipTarget
+                {...rest}
                 tooltip={tooltip}
                 delay={delay}
                 asChild={asChild}
@@ -28,7 +34,7 @@ export function Tooltip({
             </TooltipTarget>
             <TooltipRoot
                 tooltip={tooltip}
-                render={render}
+                render={() => content ?? render?.() ?? ''}
             />
         </>
     )

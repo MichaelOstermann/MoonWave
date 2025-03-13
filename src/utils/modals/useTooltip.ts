@@ -1,12 +1,13 @@
 import type { Tooltip, TooltipOptions } from './types'
-import { useEffect } from 'react'
+import { useEffect, useId } from 'react'
 import { createTooltip } from './createTooltip'
 
 export function useTooltip(
-    id: string,
+    id?: string,
     options: Partial<TooltipOptions> = {},
 ): Tooltip {
-    const tooltip = createTooltip(id, options)
+    const fallbackId = useId()
+    const tooltip = createTooltip(id ?? fallbackId, options)
     useEffect(() => tooltip.register(), [tooltip])
     return tooltip
 }

@@ -1,0 +1,46 @@
+/* Reference: https://github.com/barklan/kanagawa.vscode */
+
+[data-theme-preview="kanagawa-dark"] {
+    --fg: #DCD7BA;
+    --bg: #1F1F28;
+}
+
+[data-theme="kanagawa-dark"] {
+    --border: #16161D;
+    --fg: #DCD7BA;
+    --fg-soft: #727169;
+    --bg-selected: #363646;
+    --bg-hover: #363646;
+    --bg-soft: rgba(0, 0, 0, 0.1);
+    --waveform: #727169;
+    --accent: var(--accent-blue);
+    --bg-accent: var(--bg-blue);
+    --fg-accent: var(--fg-blue);
+}
+
+[data-theme="kanagawa-dark"] .main,
+[data-theme="kanagawa-dark"] .sidebar,
+[data-theme="kanagawa-dark"] .sidepanel {
+    --bg: color-mix(in srgb, #1F1F28 96%, transparent);
+}
+
+[data-theme="kanagawa-dark"] .dialog .floating,
+[data-theme="kanagawa-dark"] .popover .floating {
+    backdrop-filter: blur(80px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 20px 25px -5px rgb(0 0 0 / 0.2),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+[data-theme="kanagawa-dark"] .dialog {
+    --overlay: color-mix(in srgb, #1F1F28 40%, transparent);
+}
+
+[data-theme="kanagawa-dark"] .tooltip {
+    --bg: color-mix(in oklab, var(--fg) 10%, transparent);
+}
+
+[data-theme="kanagawa-dark"] ::selection {
+    color: var(--fg-accent);
+    background: var(--bg-accent);
+}

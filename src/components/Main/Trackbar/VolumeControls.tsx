@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
-import { setVolume } from '@app/actions/setVolume'
-import { toggleMute } from '@app/actions/toggleMute'
+import { setVolume } from '@app/actions/audio/setVolume'
+import { toggleMute } from '@app/actions/audio/toggleMute'
 import { Button } from '@app/components/Button'
-import { $isMuted } from '@app/state/isMuted'
-import { $volume } from '@app/state/volume'
+import { $isMuted } from '@app/state/audio/isMuted'
+import { $volume } from '@app/state/audio/volume'
 import { createSeeker } from '@app/utils/seeker'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { LucideVolume1, LucideVolume2, LucideVolumeOff } from 'lucide-react'
 import { match } from 'ts-pattern'
 
@@ -30,7 +30,10 @@ export function VolumeControls(): ReactNode {
 
     return (
         <div className="flex items-center">
-            <Button onClick={toggleMute}>
+            <Button
+                onClick={toggleMute}
+                className="size-7"
+            >
                 <Icon className="size-3.5" />
             </Button>
             <div

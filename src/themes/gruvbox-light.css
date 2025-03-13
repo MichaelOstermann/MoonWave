@@ -1,0 +1,39 @@
+[data-theme-preview="gruvbox-light"] {
+    --fg: #3c3836;
+    --bg: #fbf1c7;
+}
+
+[data-theme="gruvbox-light"] {
+    --border: #ebdbb2;
+    --fg: #3c3836;
+    --bg: #fbf1c7;
+    --fg-soft: #a89984;
+    --bg-selected: #ebdbb2;
+    --bg-hover: #ebdbb2;
+    --bg-soft: #f2e5bc;
+    --waveform: #928374;
+    --accent: var(--accent-blue);
+    --bg-accent: var(--bg-blue);
+    --fg-accent: var(--fg-blue);
+}
+
+[data-theme="gruvbox-light"] .dialog .floating,
+[data-theme="gruvbox-light"] .popover .floating {
+    --border: rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+        0 20px 25px -5px rgb(0 0 0 / 0.1),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+[data-theme="gruvbox-light"] .dialog {
+    --overlay: color-mix(in srgb, #fbf1c7 40%, transparent);
+}
+
+[data-theme="gruvbox-light"] .tooltip {
+    --bg: color-mix(in oklab, var(--fg) 4%, transparent);
+}
+
+[data-theme="gruvbox-light"] ::selection {
+    color: var(--fg-accent);
+    background: var(--bg-accent);
+}

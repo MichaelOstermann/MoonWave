@@ -1,12 +1,6 @@
 import type { Dialog, Modal, Popover, Tooltip } from './types'
-import { shallowEqualArrays } from 'shallow-equal'
+import { computed, effect, event, onCleanup, onEvent, signal } from '@monstermann/signals'
 import { isParentElementOf } from '../dom/isParentElementOf'
-import { onCleanup } from '../signals/cleanups'
-import { computed } from '../signals/computed'
-import { effect } from '../signals/effect'
-import { event } from '../signals/event'
-import { onEvent } from '../signals/onEvent'
-import { signal } from '../signals/signal'
 
 export const onOpenModal = event<Modal>()
 export const onCloseModal = event<Modal>()
@@ -15,25 +9,11 @@ export const onOpenedModal = event<Modal>()
 export const onClosingModal = event<Modal>()
 export const onClosedModal = event<Modal>()
 
-export const modals = signal(new Map<string, Modal>())
-
-export const openModals = computed(() => {
-    return Array
-        .from(modals().values())
-        .filter(m => m.isOpen())
-}, { equals: shallowEqualArrays })
-
-export const openDialogs = computed(() => {
-    return openModals().filter(m => m.type === 'dialog')
-}, { equals: shallowEqualArrays })
-
-export const openPopovers = computed(() => {
-    return openModals().filter(m => m.type === 'popover')
-}, { equals: shallowEqualArrays })
-
-export const openTooltips = computed(() => {
-    return openModals().filter(m => m.type === 'tooltip')
-}, { equals: shallowEqualArrays })
+export const modals = new Map<string, Modal>()
+export const openModals = signal<Modal[]>([])
+export const openDialogs = computed(() => openModals().filter(m => m.type === 'dialog'))
+export const openPopovers = computed(() => openModals().filter(m => m.type === 'popover'))
+export const openTooltips = computed(() => openModals().filter(m => m.type === 'tooltip'))
 
 export const hasOpenModals = computed(() => openModals().length > 0)
 export const hasOpenDialogs = computed(() => openDialogs().length > 0)
@@ -41,7 +21,7 @@ export const hasOpenPopovers = computed(() => openPopovers().length > 0)
 export const hasOpenTooltips = computed(() => openTooltips().length > 0)
 
 export function getModal(id: string): Modal | undefined {
-    return modals().get(id)
+    return modals.get(id)
 }
 
 export function getDialog(id: string): Dialog | undefined {
@@ -59,16 +39,16 @@ export function getTooltip(id: string): Tooltip | undefined {
     return modal?.type === 'tooltip' ? modal : undefined
 }
 
-export function openModal(id: string): void {
-    return modals.peek().get(id)?.open()
+export async function openModal(id: string): Promise<void> {
+    return modals.get(id)?.open()
 }
 
-export function closeModal(id: string): void {
-    return modals.peek().get(id)?.close()
+export async function closeModal(id: string): Promise<void> {
+    return modals.get(id)?.close()
 }
 
 export function isModalOpen(id: string): boolean {
-    return modals().get(id)?.isOpen() === true
+    return modals.get(id)?.isOpen() === true
 }
 
 export function closeAllModals(): void {
@@ -114,6 +94,14 @@ export function closeAllTooltipsExcept(tooltip: Tooltip): void {
         openTooltip.close()
     }
 }
+
+onEvent(onOpenModal, (modal) => {
+    openModals.map(m => [...m, modal])
+})
+
+onEvent(onCloseModal, (modal) => {
+    openModals.map(m => m.filter(m => m !== modal))
+})
 
 onEvent(onOpenModal, (modal) => {
     if (modal.type === 'tooltip') return

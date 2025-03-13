@@ -1,24 +1,22 @@
 import type { ReactNode } from 'react'
-import { createPlaylist } from '@app/actions/createPlaylist'
-import { syncLibrary } from '@app/actions/syncLibrary'
-import { $config } from '@app/state/config'
-import { $focusedView } from '@app/state/focusedView'
-import { $sidebarItems } from '@app/state/sidebarItems'
+import { syncLibrary } from '@app/actions/app/syncLibrary'
+import { createPlaylist } from '@app/actions/playlists/createPlaylist'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $sidebarItems } from '@app/state/sidebar/sidebarItems'
+import { $sidebarWidth } from '@app/state/sidebar/sidebarWidth'
 import { useMenu } from '@app/utils/menu'
-import { getSidebarWidth } from '@app/utils/sidebar/getSidebarWidth'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { Library } from './Home/Library'
 import { RecentlyAdded } from './Home/RecentlyAdded'
 import { Unsorted } from './Home/Unsorted'
 import { PlaylistDragGhost } from './PlaylistDragGhost'
 import { PlaylistItem } from './PlaylistItem'
-import { SidebarResizeHandler } from './SidebarResizeHandler'
 import { SidebarSearchInput } from './SidebarSearchInput'
 import { SidebarSectionHeader } from './SidebarSectionHeader'
 
 export function Sidebar(): ReactNode {
     const sidebarItems = useSignal($sidebarItems)
-    const width = useSignal(() => getSidebarWidth($config().sidebarWidth))
+    const width = useSignal($sidebarWidth)
 
     const menu = useMenu([
         { text: 'New Playlist', action: createPlaylist },
@@ -29,8 +27,8 @@ export function Sidebar(): ReactNode {
         <div
             onContextMenu={menu.show}
             style={{ width }}
-            className="sidebar relative flex h-full shrink-0 flex-col bg-[--bg] text-[--fg]"
             onClick={() => $focusedView.set('SIDEBAR')}
+            className="sidebar absolute inset-y-0 left-0 flex flex-col border-r border-[--border] bg-[--bg] text-[--fg]"
         >
             <PlaylistDragGhost />
             <div
@@ -38,7 +36,6 @@ export function Sidebar(): ReactNode {
                 className="h-11 shrink-0"
                 onClick={evt => evt.stopPropagation()}
             />
-            <SidebarResizeHandler />
             <SidebarSearchInput />
             <div className="playlists mt-4 flex shrink grow scroll-p-2 flex-col overflow-auto px-2 pb-2">
                 {sidebarItems.map((item) => {

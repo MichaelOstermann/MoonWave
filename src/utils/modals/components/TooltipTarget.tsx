@@ -1,8 +1,8 @@
 import type { Tooltip } from '../types'
-import { useSignal } from '@app/utils/signals/useSignal'
 import { Slot } from '@radix-ui/react-slot'
 import { useUnmountEffect } from '@react-hookz/web'
 import { type ComponentProps, type ReactNode, useRef } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 interface TooltipTargetProps extends Omit<ComponentProps<'div'>, 'popover'> {
     tooltip: Tooltip
@@ -14,10 +14,10 @@ export function TooltipTarget({
     tooltip,
     delay = 600,
     asChild,
+    className,
     ...rest
 }: TooltipTargetProps): ReactNode {
     const Comp = asChild ? Slot : 'div'
-    const status = useSignal(tooltip.status)
     const timerRef = useRef<Timer>(undefined)
 
     useUnmountEffect(() => clearTimeout(timerRef.current))
@@ -26,8 +26,7 @@ export function TooltipTarget({
         <Comp
             {...rest}
             ref={el => void tooltip.anchorElement.set(el)}
-            data-modal-target="tooltip"
-            data-modal-status={status}
+            className={twMerge('tooltip-target', className)}
             onMouseDown={() => clearTimeout(timerRef.current)}
             onMouseMove={() => {
                 clearTimeout(timerRef.current)

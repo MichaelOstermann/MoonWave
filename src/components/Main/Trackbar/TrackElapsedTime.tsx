@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { $currentTrackPosition } from '@app/state/currentTrackPosition'
+import { $currentTrackPosition } from '@app/state/audio/currentTrackPosition'
 import { formatDuration } from '@app/utils/formatDuration'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 
 export function TrackElapsedTime(): ReactNode {
     const currentTrackPosition = useSignal(() => formatDuration($currentTrackPosition()))

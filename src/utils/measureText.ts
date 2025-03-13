@@ -37,16 +37,15 @@ function measureMonospace(text: string, opts: {
     const { cache } = getCanvas(opts)
     if (cache.has(text)) return cache.get(text)!
 
-    const chars = new Set(text)
+    const chars = [...text]
+    const uniqueChars = new Set(text)
     let charWidth = 0
-    let charCount = 0
 
-    for (const char of chars) {
-        charCount++
+    for (const char of uniqueChars) {
         charWidth = Math.max(charWidth, measureRegular(char, opts))
     }
 
-    const value = charWidth * charCount
+    const value = charWidth * chars.length
     cache.set(text, value)
     return value
 }

@@ -1104,7 +1104,7 @@ const blacklist = [
 ]
 
 const glob = new Bun.Glob('*.json')
-const data = []
+const icons = []
 
 for await (const fileName of glob.scan('lucide-main/icons/')) {
     const iconData = await Bun.file(`lucide-main/icons/${fileName}`).json()
@@ -1119,10 +1119,26 @@ for await (const fileName of glob.scan('lucide-main/icons/')) {
         continue
     }
 
-    data.push({
+    icons.push({
         name: iconName,
         tags: [...iconData.tags, ...iconData.categories],
     })
 }
 
-Bun.write('src/config/icons.ts', `/* eslint-disable */\nimport type { IconName } from 'lucide-react/dynamic'\nexport const icons = ${JSON.stringify(data)} as unknown as { name: IconName, tags: string[] }[]`)
+Bun.write('src/config/icons.ts', `
+/* eslint-disable */
+
+import type { LucideIcon } from 'lucide-react'
+import { ${icons.map(icon => pascalCase(icon.name)).join(', ')} } from 'lucide-react'
+
+export type IconName = ${icons.map(icon => `'${icon.name}'`).join(' | ')}
+export const iconData = ${JSON.stringify(icons)} as { name: IconName, tags: string[] }[]
+export const icons = { ${icons.map(icon => `'${icon.name}': ${pascalCase(icon.name)}`).join(', ')} } as Record<IconName, LucideIcon>
+`.trim())
+
+function pascalCase(value) {
+    return value
+        .split('-')
+        .map(v => `${v[0].toUpperCase()}${v.slice(1)}`)
+        .join('')
+}

@@ -1,5 +1,4 @@
-import type { ReadonlySignal } from '../signals/computed'
-import type { Signal } from '../signals/signal'
+import type { ReadonlySignal, Signal } from '@monstermann/signals'
 
 export type ModalStatus =
     | 'opening'
@@ -12,7 +11,6 @@ export type PopoverPlacement =
     | 'below'
 
 export type PopoverOptions = {
-    enabled: boolean
     offset: number
     borderWidth: number
     paddingTop: number
@@ -22,13 +20,13 @@ export type PopoverOptions = {
     arrowWidth: number
     arrowHeight: number
     arrowRadius: number
+    enableArrow: boolean
 }
 
 export type Popover = {
     type: 'popover'
     id: string
     isOpen: Signal<boolean>
-    isEnabled: Signal<boolean>
     status: Signal<ModalStatus>
     offset: Signal<number>
     borderWidth: Signal<number>
@@ -41,7 +39,6 @@ export type Popover = {
     arrowRadius: Signal<number>
     anchorElement: Signal<HTMLElement | null>
     floatingElement: Signal<HTMLElement | null>
-    hasMeasurements: ReadonlySignal<boolean>
     maxHeight: ReadonlySignal<number>
     placement: ReadonlySignal<PopoverPlacement>
     x: ReadonlySignal<number>
@@ -50,13 +47,12 @@ export type Popover = {
     arrowY: ReadonlySignal<number>
     originX: ReadonlySignal<number>
     originY: ReadonlySignal<number>
-    open: () => void
-    close: () => void
+    open: () => Promise<void>
+    close: () => Promise<void>
     register: () => () => void
 }
 
 export type TooltipOptions = {
-    enabled: boolean
     offset: number
     paddingTop: number
     paddingLeft: number
@@ -68,7 +64,6 @@ export type Tooltip = {
     type: 'tooltip'
     id: string
     isOpen: Signal<boolean>
-    isEnabled: Signal<boolean>
     status: Signal<ModalStatus>
     offset: Signal<number>
     paddingTop: Signal<number>
@@ -77,15 +72,14 @@ export type Tooltip = {
     paddingBottom: Signal<number>
     anchorElement: Signal<HTMLElement | null>
     floatingElement: Signal<HTMLElement | null>
-    hasMeasurements: ReadonlySignal<boolean>
     maxHeight: ReadonlySignal<number>
     placement: ReadonlySignal<PopoverPlacement>
     x: ReadonlySignal<number>
     y: ReadonlySignal<number>
     originX: ReadonlySignal<number>
     originY: ReadonlySignal<number>
-    open: () => void
-    close: () => void
+    open: () => Promise<void>
+    close: () => Promise<void>
     register: () => () => void
 }
 
@@ -95,8 +89,8 @@ export type Dialog = {
     isOpen: Signal<boolean>
     status: Signal<ModalStatus>
     floatingElement: Signal<HTMLElement | null>
-    open: () => void
-    close: () => void
+    open: () => Promise<void>
+    close: () => Promise<void>
 }
 
 export type Modal =

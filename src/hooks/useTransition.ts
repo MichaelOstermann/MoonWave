@@ -1,25 +1,27 @@
 import type { CSSProperties } from 'react'
-import { usePrevious } from '@react-hookz/web'
+import { glide } from '@app/config/easings'
+import { useUpdateEffect } from '@react-hookz/web'
 import { useEffect, useState } from 'react'
-import { twJoin } from 'tailwind-merge'
 
 export type TransitionStatus = 'closed' | 'opening' | 'closing' | 'opened'
 
 export type UseTransitionOpts = {
     isOpen: boolean
     easing?: string
-    animateInitial?: boolean
+    animateMount?: boolean
     openDuration: number
     closeDuration: number
     closingDelay?: number
-    className?: string
-    openClassName?: string
-    closeClassName?: string
     onChange?: (status: TransitionStatus) => void
+    onClosed?: () => void
+    onClosing?: () => void
+    onOpening?: () => void
+    onOpened?: () => void
 }
 
 export type UseTransition = {
     mounted: boolean
+    easing: string
     status: TransitionStatus
     isOpen: boolean
     isClosed: boolean
@@ -30,32 +32,40 @@ export type UseTransition = {
     isOpenedOrOpening: boolean
     openDuration: number
     closeDuration: number
-    style: CSSProperties
-    className: string
+    style: (opts: { open?: CSSProperties, close?: CSSProperties }) => CSSProperties
 }
 
 export function useTransition({
     isOpen,
-    easing = 'cubic-bezier(0.4, 0, 0.2, 1)',
-    animateInitial = true,
+    easing = glide,
+    animateMount = true,
     openDuration,
     closeDuration,
     closingDelay = 0,
-    className,
-    openClassName,
-    closeClassName,
     onChange,
+    onClosed,
+    onClosing,
+    onOpening,
+    onOpened,
 }: UseTransitionOpts): UseTransition {
-    const [status, setStatus] = useState<TransitionStatus>(isOpen && !animateInitial ? 'opened' : 'closed')
-    const prevStatus = usePrevious(status)
+    const [status, setStatus] = useState<TransitionStatus>(isOpen && !animateMount ? 'opened' : 'closed')
 
     useEffect(() => {
-        if (isOpen && (status === 'closed' || status === 'closing')) {
+        if (isOpen && status === 'closed') {
             const raf = requestAnimationFrame(() => setStatus('opening'))
             return () => cancelAnimationFrame(raf)
         }
 
-        if (!isOpen && (status === 'opened' || status === 'opening')) {
+        if (isOpen && status === 'closing') {
+            return setStatus('opening')
+        }
+
+        if (!isOpen && status === 'opened') {
+            const timeout = setTimeout(() => setStatus('closing'), closingDelay)
+            return () => clearTimeout(timeout)
+        }
+
+        if (!isOpen && status === 'opening') {
             const timeout = setTimeout(() => setStatus('closing'), closingDelay)
             return () => clearTimeout(timeout)
         }
@@ -79,32 +89,20 @@ export function useTransition({
         closingDelay,
     ])
 
-    useEffect(() => {
-        if (!prevStatus) return
-        if (prevStatus === status) return
-        onChange?.(status)
-    }, [onChange, prevStatus, status])
+    useUpdateEffect(() => onChange?.(status), [status])
+    useUpdateEffect(() => void (status === 'opening' && onOpening?.()), [status])
+    useUpdateEffect(() => void (status === 'opened' && onOpened?.()), [status])
+    useUpdateEffect(() => void (status === 'closing' && onClosing?.()), [status])
+    useUpdateEffect(() => void (status === 'closed' && onClosed?.()), [status])
 
     const isClosedOrClosing = status === 'closed' || status === 'closing'
     const isOpenedOrOpening = status === 'opened' || status === 'opening'
 
-    const style = isOpen
-        ? { '--transition-duration': `${openDuration}ms`, '--transition-easing': easing }
-        : { '--transition-duration': `${closeDuration}ms`, '--transition-easing': easing }
-
-    const tClassName = twJoin(
-        'transition-[transform,opacity] duration-[--transition-duration] ease-[--transition-easing]',
-        className,
-        isOpenedOrOpening && openClassName,
-        isClosedOrClosing && closeClassName,
-    )
-
     return {
         mounted: isOpen || status !== 'closed',
+        easing,
         isOpen,
         status,
-        style,
-        className: tClassName,
         openDuration,
         closeDuration,
         isClosed: status === 'closed',
@@ -113,5 +111,12 @@ export function useTransition({
         isOpened: status === 'opened',
         isClosedOrClosing,
         isOpenedOrOpening,
+        style({ open, close }) {
+            const base = (isOpenedOrOpening ? open : close) ?? {}
+            const properties = Object.keys(base)
+            const duration = isOpenedOrOpening ? `${openDuration}ms` : `${closeDuration}ms`
+            const transition = properties.map(property => `${property} ${duration} ${easing}`).join(', ')
+            return { ...base, transition }
+        },
     }
 }

@@ -1,8 +1,8 @@
 import { dfdl } from './dfdl'
 
 export const map: {
-    <T>(transform: (item: T) => T): (target: T[]) => T[]
-    <T>(target: T[], transform: (item: T) => T): T[]
+    <T, U>(transform: (item: T) => U): (target: T[]) => U[]
+    <T, U>(target: T[], transform: (item: T) => U): U[]
 } = dfdl((target, transform) => {
     let clone
 

@@ -1,9 +1,8 @@
 import type { UseTransition } from '@app/hooks/useTransition'
 import type { ComponentProps, ReactNode } from 'react'
 import { useWhile } from '@app/hooks/useWhile'
-import { $mouseX, $mouseY } from '@app/utils/signals/browser'
-import { useSignal } from '@app/utils/signals/useSignal'
-import { twJoin } from 'tailwind-merge'
+import { $mouseX, $mouseY, useSignal } from '@monstermann/signals'
+import { twMerge } from 'tailwind-merge'
 
 interface GhostProps extends ComponentProps<'div'> {
     transition: UseTransition
@@ -21,17 +20,16 @@ export function Ghost({
 
     return (
         <div
-            className="pointer-events-none absolute left-0 top-0 flex items-center justify-center whitespace-nowrap"
+            className="modal tooltip pointer-events-none absolute left-0 top-0 flex items-center justify-center whitespace-nowrap"
             style={{ transform: `translate(${x}px, ${y}px)` }}
         >
             <div
-                data-modal="tooltip"
-                style={transition.style}
-                className={twJoin(
-                    transition.className,
-                    'absolute flex h-8 -translate-y-1 items-center rounded-md bg-[--bg] px-3 text-xs font-medium text-[--fg] backdrop-blur-xl',
-                    transition.isOpenedOrOpening && 'scale-100 opacity-100',
-                    transition.isClosedOrClosing && 'scale-75 opacity-0',
+                style={transition.style({
+                    open: { opacity: 1, transform: 'scale(1)' },
+                    close: { opacity: 0, transform: 'scale(0.75)' },
+                })}
+                className={twMerge(
+                    'floating absolute flex h-8 -translate-y-1 items-center rounded-md bg-[--bg] px-3 text-xs font-medium text-[--fg] backdrop-blur-xl',
                     className,
                 )}
             >

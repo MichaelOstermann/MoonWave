@@ -1,7 +1,7 @@
-import { $currentTrackPosition } from '@app/state/currentTrackPosition'
-import { $playingMode } from '@app/state/playingMode'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $prevPlayedTrackIds } from '@app/state/prevPlayedTrackIds'
+import { $currentTrackPosition } from '@app/state/audio/currentTrackPosition'
+import { $playingMode } from '@app/state/audio/playingMode'
+import { $playingTrackId } from '@app/state/tracks/playingTrackId'
+import { $prevPlayedTrackIds } from '@app/state/tracks/prevPlayedTrackIds'
 
 export function getPrevTrackId(): string | undefined {
     const mode = $playingMode()

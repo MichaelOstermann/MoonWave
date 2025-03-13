@@ -1,0 +1,53 @@
+[data-theme-preview="moon-dark"] {
+    --fg: oklch(72% 0.08 272);
+    --bg: oklch(24.65% 0.020 280);
+}
+
+[data-theme="moon-dark"] {
+    --border: rgba(0, 0, 0, 0.3);
+    --fg: oklch(72% 0.08 272);
+    --fg-soft: oklch(50% 0.06 272);
+    --bg-selected: oklch(30.65% 0.030 276);
+    --bg-hover: oklch(34.65% 0.040 276);
+    --bg-soft: rgba(0, 0, 0, 0.1);
+    --waveform: oklch(44% 0.06 272);
+    --accent: var(--accent-blue);
+    --bg-accent: var(--bg-blue);
+    --fg-accent: var(--fg-blue);
+}
+
+[data-theme="moon-dark"] .main {
+    --bg: oklch(24.65% 0.020 280 / 98%);
+}
+
+[data-theme="moon-dark"] .sidebar,
+[data-theme="moon-dark"] .sidepanel {
+    --bg: oklch(21.65% 0.018 280 / 96%);
+}
+
+[data-theme="moon-dark"] .modal {
+    --bg: oklch(24.38% 0.023 280 / 50%);
+    --fg: oklch(66% 0.08 272);
+    --border: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="moon-dark"] .dialog .floating,
+[data-theme="moon-dark"] .popover .floating {
+    backdrop-filter: blur(80px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 20px 25px -5px rgb(0 0 0 / 0.2),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+[data-theme="moon-dark"] .dialog {
+    --overlay: oklch(21.65% 0.014 280 / 40%);
+}
+
+[data-theme="moon-dark"] .tooltip {
+    --bg: color-mix(in oklab, var(--fg) 10%, transparent);
+}
+
+[data-theme="moon-dark"] ::selection {
+    color: var(--fg-accent);
+    background: var(--bg-accent);
+}

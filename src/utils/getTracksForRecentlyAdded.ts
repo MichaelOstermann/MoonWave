@@ -1,6 +1,6 @@
 import type { Track } from '@app/types'
-import { $tracks } from '@app/state/tracks'
-import { $tracksFilter } from '@app/state/tracksFilter'
+import { $tracks } from '@app/state/tracks/tracks'
+import { $tracksFilter } from '@app/state/tracks/tracksFilter'
 import { applyFilterToTracks } from './applyFilterToTracks'
 import { pipe } from './data/pipe'
 import { removeUnsupportedTracks } from './removeUnsupportedTracks'

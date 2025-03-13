@@ -1,8 +1,8 @@
-import { $nextPlayedTrackIds } from '@app/state/nextPlayedTrackIds'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $prevPlayedTrackIds } from '@app/state/prevPlayedTrackIds'
+import { $nextPlayedTrackIds } from '@app/state/tracks/nextPlayedTrackIds'
+import { $playingTrackId } from '@app/state/tracks/playingTrackId'
+import { $prevPlayedTrackIds } from '@app/state/tracks/prevPlayedTrackIds'
 import { uniq } from '@app/utils/data/uniq'
-import { changeEffect } from '@app/utils/signals/changeEffect'
+import { changeEffect } from '@monstermann/signals'
 
 const MAX_SIZE = 100
 

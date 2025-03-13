@@ -1,8 +1,8 @@
-import { $nextPlayedTrackIds } from '@app/state/nextPlayedTrackIds'
-import { $playedTrackIds } from '@app/state/playedTrackIds'
-import { $playingMode } from '@app/state/playingMode'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $playingTracks } from '@app/state/playingTracks'
+import { $playingMode } from '@app/state/audio/playingMode'
+import { $nextPlayedTrackIds } from '@app/state/tracks/nextPlayedTrackIds'
+import { $playedTrackIds } from '@app/state/tracks/playedTrackIds'
+import { $playingTrackId } from '@app/state/tracks/playingTrackId'
+import { $playingTracks } from '@app/state/tracks/playingTracks'
 
 export function getNextTrackId(excludedTrackIds: string[]): string | undefined {
     return getNextSingleTrackId(excludedTrackIds)

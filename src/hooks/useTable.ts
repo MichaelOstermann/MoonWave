@@ -21,6 +21,7 @@ type Config<T extends ColumnName> = {
     outerPadding?: number
     innerPadding?: number
     gap?: number
+    colStyles?: CSSProperties
 }
 
 export function useTable<T extends ColumnName>(config: Config<T>): {
@@ -50,10 +51,9 @@ export function useTable<T extends ColumnName>(config: Config<T>): {
         acc[col] = {
             order: `var(--table-${col}-order)`,
             width: `var(--table-${col}-width)`,
-            minWidth: `var(--table-${col}-width)`,
-            maxWidth: `var(--table-${col}-width)`,
             paddingLeft: `var(--table-${col}-padding-left)`,
             paddingRight: `var(--table-${col}-padding-right)`,
+            ...config.colStyles,
         }
         return acc
     }, {} as Record<T, CSSProperties>)

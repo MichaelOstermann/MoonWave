@@ -1,11 +1,9 @@
-import { audio } from '@app/state/audio'
-import { $playingTrackId } from '@app/state/playingTrackId'
-import { $tracksById } from '@app/state/tracksById'
-import { effect } from '@app/utils/signals/effect'
+import { audio } from '@app/state/audio/audio'
+import { $playingTrack } from '@app/state/tracks/playingTrack'
+import { effect } from '@monstermann/signals'
 
 effect(() => {
-    const trackId = $playingTrackId()
-    const track = $tracksById(trackId)()
+    const track = $playingTrack()
 
     if (!track) {
         audio.title = ''

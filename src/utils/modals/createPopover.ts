@@ -1,16 +1,9 @@
 import type { ModalStatus, Popover, PopoverOptions } from './types'
+import { $winHeight, $winWidth, changeEffect, computed, effect, onCleanup, signal, waitFor } from '@monstermann/signals'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
-import { removeEntry } from '../data/removeEntry'
-import { setEntry } from '../data/setEntry'
 import { observeDimensions } from '../dom/observeDimensions'
 import { observePosition } from '../dom/observePosition'
-import { $winHeight, $winWidth } from '../signals/browser'
-import { changeEffect } from '../signals/changeEffect'
-import { onCleanup } from '../signals/cleanups'
-import { computed } from '../signals/computed'
-import { effect } from '../signals/effect'
-import { signal } from '../signals/signal'
 import { getPopover, modals, onClosedModal, onCloseModal, onClosingModal, onOpenedModal, onOpeningModal, onOpenModal } from './modals'
 
 export function createPopover(
@@ -18,19 +11,19 @@ export function createPopover(
     options: Partial<PopoverOptions> = {},
 ): Popover {
     const existing = getPopover(id)
+    existing?.offset.set(options.offset ?? 4)
     if (existing) return existing
 
     let dependents = 0
     const ac = new AbortController()
 
     const isOpen = signal(false)
-    const isEnabled = signal(options.enabled ?? true)
     const status = signal<ModalStatus>('closed')
 
     const offset = signal(options.offset ?? 4)
     const borderWidth = signal(options.borderWidth ?? 1)
-    const arrowWidth = signal(options.arrowWidth ?? 20)
-    const arrowHeight = signal(options.arrowHeight ?? 12)
+    const arrowWidth = signal(options.enableArrow ? (options.arrowWidth ?? 20) : 0)
+    const arrowHeight = signal(options.enableArrow ? (options.arrowHeight ?? 12) : 0)
     const arrowRadius = signal(options.arrowRadius ?? 3)
     const paddingTop = signal(options.paddingTop ?? 10)
     const paddingLeft = signal(options.paddingLeft ?? 6)
@@ -39,7 +32,6 @@ export function createPopover(
 
     const anchorElement = signal<HTMLElement>(null)
     const floatingElement = signal<HTMLElement>(null)
-    const hasMeasurements = computed(() => !!(anchorElement() && floatingElement()))
 
     const anchorRect = signal<DOMRectReadOnly>(null)
     const anchorWidth = computed(() => anchorRect()?.width ?? 0)
@@ -85,7 +77,6 @@ export function createPopover(
         type: 'popover',
         id,
         isOpen,
-        isEnabled,
         status,
         offset,
         borderWidth,
@@ -98,7 +89,6 @@ export function createPopover(
         arrowRadius,
         anchorElement,
         floatingElement,
-        hasMeasurements,
         maxHeight,
         placement,
         x,
@@ -114,13 +104,13 @@ export function createPopover(
 
     const dispose = debounce(() => {
         if (dependents > 0) return
-        modals.map(removeEntry(id))
+        modals.delete(id)
         ac.abort()
     }, 100)
 
     function register() {
         dependents++
-        modals.map(setEntry(id, popover))
+        modals.set(id, popover)
         return () => {
             dependents--
             dispose()
@@ -128,17 +118,14 @@ export function createPopover(
     }
 
     function open() {
-        if (!isEnabled()) return
         isOpen.set(true)
+        return waitFor(() => status() === 'opened')
     }
 
     function close() {
         isOpen.set(false)
+        return waitFor(() => status() === 'closed')
     }
-
-    effect(() => {
-        if (!isEnabled()) close()
-    }, { abort: ac.signal })
 
     effect(() => {
         if (!isOpen()) return

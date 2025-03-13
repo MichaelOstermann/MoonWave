@@ -1,0 +1,50 @@
+/* Reference: https://catppuccin.com/palette/ */
+
+[data-theme-preview="catppuccin-dark"] {
+    --fg: #cad3f5;
+    --bg: #24273a;
+}
+
+[data-theme="catppuccin-dark"] {
+    --border: #181926;
+    --fg: #cad3f5;
+    --fg-soft: #6e738d;
+    --bg-selected: #363a4f;
+    --bg-hover: #363a4f;
+    --bg-soft: rgba(0, 0, 0, 0.1);
+    --waveform: #5b6078;
+    --accent: var(--accent-blue);
+    --bg-accent: var(--bg-blue);
+    --fg-accent: var(--fg-blue);
+}
+
+[data-theme="catppuccin-dark"] .main {
+    --bg: color-mix(in srgb, #24273a 98%, transparent);
+}
+
+[data-theme="catppuccin-dark"] .sidebar,
+[data-theme="catppuccin-dark"] .sidepanel {
+    --fg: #b8c0e0;
+    --bg: color-mix(in srgb, #1e2030 96%, transparent);
+}
+
+[data-theme="catppuccin-dark"] .dialog .floating,
+[data-theme="catppuccin-dark"] .popover .floating {
+    backdrop-filter: blur(80px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 20px 25px -5px rgb(0 0 0 / 0.2),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+[data-theme="catppuccin-dark"] .dialog {
+    --overlay: color-mix(in srgb, #1e2030 40%, transparent);
+}
+
+[data-theme="catppuccin-dark"] .tooltip {
+    --bg: color-mix(in oklab, var(--fg) 10%, transparent);
+}
+
+[data-theme="catppuccin-dark"] ::selection {
+    color: var(--fg-accent);
+    background: var(--bg-accent);
+}

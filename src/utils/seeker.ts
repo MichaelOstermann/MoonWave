@@ -1,14 +1,10 @@
-import type { ReadonlySignal } from './signals/computed'
-import type { Signal } from './signals/signal'
+import { $mouseX, computed, effect, type ReadonlySignal, signal, type Signal } from '@monstermann/signals'
 import { pipe } from './data/pipe'
-import { $mouseX } from './signals/browser'
-import { computed } from './signals/computed'
-import { effect } from './signals/effect'
-import { signal } from './signals/signal'
 
 type Position = {
     relX: number
     absX: number
+    diffX: number
 }
 
 type SeekerOptions = {
@@ -41,6 +37,7 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     const $left = computed(() => $bounds()?.left ?? 0)
     const $width = computed(() => $bounds()?.width ?? 0)
 
+    const $startX = signal(0)
     const $absX = computed(() => $seeking() ? $mouseX() : 0)
     const $relX = computed(() => pipe(
         $absX(),
@@ -51,10 +48,16 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     ))
 
     const getPosition = function (): Position {
-        return { absX: $absX.peek(), relX: $relX.peek() }
+        return {
+            absX: $absX.peek(),
+            relX: $relX.peek(),
+            diffX: $startX.peek() - $mouseX.peek(),
+        }
     }
 
-    const onElementMouseDown = function () {
+    const onElementMouseDown = function (evt: MouseEvent) {
+        evt.preventDefault()
+        $startX.set($mouseX.peek())
         $bounds.set($element()?.getBoundingClientRect())
         $dragging.set(true)
         opts.onSeekStart?.(getPosition())

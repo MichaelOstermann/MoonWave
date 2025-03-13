@@ -71,9 +71,9 @@ export async function autoAnimate({
 
         const fadeIn = function (element: HTMLElement, duration: number, delay: number): void {
             setStyle(element, 'opacity', '0')
-            setStyle(element, 'transform', 'scale(.96)')
+            setStyle(element, 'transform', 'scale(.9)')
             animate(element, [
-                { transform: 'scale(.96)', opacity: 0 },
+                { transform: 'scale(.9)', opacity: 0 },
                 { transform: 'scale(1)', opacity: 1 },
             ], { duration, delay, easing: glide, fill: 'forwards' })
         }
@@ -83,7 +83,7 @@ export async function autoAnimate({
             setStyle(element, 'transform', 'scale(1)')
             animate(element, [
                 { transform: 'scale(1)', opacity: 1 },
-                { transform: 'scale(.96)', opacity: 0 },
+                { transform: 'scale(.9)', opacity: 0 },
             ], { duration, delay, easing: glide, fill: 'forwards' })
         }
 

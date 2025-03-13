@@ -1,20 +1,22 @@
 import type { VListHandle } from 'virtua'
 import type { Column, Row } from './types'
-import { syncLibrary } from '@app/actions/syncLibrary'
+import { syncLibrary } from '@app/actions/app/syncLibrary'
+import { glide } from '@app/config/easings'
 import { useTable } from '@app/hooks/useTable'
-import { $focusedView } from '@app/state/focusedView'
-import { $tracksFilter } from '@app/state/tracksFilter'
-import { $tracksLSM } from '@app/state/tracksLSM'
-import { $view } from '@app/state/view'
-import { $viewingTracks } from '@app/state/viewingTracks'
+import { $mainWidth } from '@app/state/app/mainWidth'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $view } from '@app/state/sidebar/view'
+import { $isTogglingSidepanel } from '@app/state/sidepanel/isTogglingSidepanel'
+import { $tracksFilter } from '@app/state/tracks/tracksFilter'
+import { $tracksLSM } from '@app/state/tracks/tracksLSM'
+import { $viewingTracks } from '@app/state/tracks/viewingTracks'
 import { getLastSelectionPosition } from '@app/utils/lsm/utils/getLastSelectionPosition'
 import { measureText } from '@app/utils/measureText'
 import { useMenu } from '@app/utils/menu'
-import { computed } from '@app/utils/signals/computed'
-import { useSignal } from '@app/utils/signals/useSignal'
 import { trackToRow } from '@app/utils/trackToRow'
-import { useResizeObserver, useUpdateEffect } from '@react-hookz/web'
-import { useEffect, useRef, useState } from 'react'
+import { computed, useSignal } from '@monstermann/signals'
+import { useUpdateEffect } from '@react-hookz/web'
+import { useEffect, useRef } from 'react'
 import { VList } from 'virtua'
 import { columns, header, minWidths, reservedColumns } from './config'
 import { TrackDragGhost } from './TrackDragGhost'
@@ -53,8 +55,8 @@ export function TrackList() {
     const measurements = useSignal($measurements)
     const ref = useRef<HTMLDivElement>(null)
     const vlistRef = useRef<VListHandle>(null)
-    const [availableWidth, setAvailableWidth] = useState(0)
-    useResizeObserver(ref as any, ({ contentRect }) => setAvailableWidth(contentRect.width))
+    const availableWidth = useSignal($mainWidth)
+    const isTogglingSidepanel = useSignal($isTogglingSidepanel)
 
     const gap = 20
     const outerPadding = 10
@@ -73,6 +75,7 @@ export function TrackList() {
         gap,
         outerPadding,
         innerPadding,
+        colStyles: isTogglingSidepanel ? { transition: `width 500ms ${glide}` } : undefined,
     })
 
     const headerGap = <div key="header" style={{ height: 0 }} />

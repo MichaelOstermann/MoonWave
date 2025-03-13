@@ -11,7 +11,8 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "paths": {
-            "@app/*": ["./src/*"]
+            "@app/*": ["./src/*"],
+            "@monstermann/signals": ["./packages/signals/index.ts"]
         },
         "allowImportingTsExtensions": true,
         "noEmit": true,
@@ -22,5 +23,8 @@
             "path": "./tsconfig.node.json"
         }
     ],
-    "include": ["src"]
+    "include": [
+        "src",
+        "packages/**/*"
+    ]
 }

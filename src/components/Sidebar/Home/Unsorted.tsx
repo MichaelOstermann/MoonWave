@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react'
-import { openView } from '@app/actions/openView'
+import { openView } from '@app/actions/app/openView'
 import { AudioWaveIcon } from '@app/components/AudioWaveIcon'
 import { FadeInOut } from '@app/components/FadeInOut'
-import { $focusedView } from '@app/state/focusedView'
-import { $isPlaying } from '@app/state/isPlaying'
-import { $playingView } from '@app/state/playingView'
-import { $unsortedTracksCount } from '@app/state/unsortedTracksCount'
-import { $view } from '@app/state/view'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { $isPlaying } from '@app/state/audio/isPlaying'
+import { $focusedView } from '@app/state/sidebar/focusedView'
+import { $playingView } from '@app/state/sidebar/playingView'
+import { $view } from '@app/state/sidebar/view'
+import { $unsortedTracksCount } from '@app/state/tracks/unsortedTracksCount'
+import { useSignal } from '@monstermann/signals'
 import NumberFlow from '@number-flow/react'
 import { LucideArchive } from 'lucide-react'
 import { Badge } from '../Badge'
@@ -37,10 +37,10 @@ export function Unsorted(): ReactNode {
             }}
         >
             <LibraryItemIcon>
-                <FadeInOut animateInitial={false} show={isPlaying} className="absolute">
+                <FadeInOut show={isPlaying} className="absolute">
                     <AudioWaveIcon className="mb-1 size-4" />
                 </FadeInOut>
-                <FadeInOut animateInitial={false} show={!isPlaying} className="absolute">
+                <FadeInOut show={!isPlaying} className="absolute">
                     <LucideArchive className="size-4" />
                 </FadeInOut>
             </LibraryItemIcon>
@@ -48,7 +48,7 @@ export function Unsorted(): ReactNode {
                 title="Unsorted"
             />
             <FadeInOut show={count > 0} fadeOutDelay={1000}>
-                <Badge className="tabular-nums">
+                <Badge>
                     <NumberFlow
                         willChange
                         value={count}

@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Popover } from '../types'
-import { useSignal } from '@app/utils/signals/useSignal'
 import { Slot } from '@radix-ui/react-slot'
+import { twMerge } from 'tailwind-merge'
 
 interface PopoverTargetProps extends Omit<ComponentProps<'div'>, 'popover'> {
     popover: Popover
@@ -11,17 +11,16 @@ interface PopoverTargetProps extends Omit<ComponentProps<'div'>, 'popover'> {
 export function PopoverTarget({
     popover,
     asChild,
+    className,
     ...rest
 }: PopoverTargetProps): ReactNode {
     const Comp = asChild ? Slot : 'div'
-    const status = useSignal(popover.status)
 
     return (
         <Comp
             {...rest}
             ref={el => void popover.anchorElement.set(el)}
-            data-modal-target="popover"
-            data-modal-status={status}
+            className={twMerge('popover-target', className)}
         />
     )
 }

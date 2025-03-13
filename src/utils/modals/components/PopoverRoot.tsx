@@ -1,10 +1,9 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Popover } from '../types'
-import { glide } from '@app/config/easings'
 import { useTransition } from '@app/hooks/useTransition'
-import { useSignal } from '@app/utils/signals/useSignal'
+import { useSignal } from '@monstermann/signals'
 import { Portal } from '@radix-ui/react-portal'
-import { twMerge } from 'tailwind-merge'
+import { twJoin, twMerge } from 'tailwind-merge'
 import { Arrow } from './Arrow'
 import './styles.css'
 
@@ -21,7 +20,6 @@ export function PopoverRoot({
     ...rest
 }: PopoverProps): ReactNode {
     const isOpen = useSignal(popover.isOpen)
-    const hasMeasurements = useSignal(popover.hasMeasurements)
     const placement = useSignal(popover.placement)
     const x = useSignal(popover.x)
     const y = useSignal(popover.y)
@@ -37,11 +35,8 @@ export function PopoverRoot({
 
     const transition = useTransition({
         isOpen,
-        easing: glide,
         openDuration: 500,
         closeDuration: 300,
-        openClassName: 'scale-100 opacity-100',
-        closeClassName: 'scale-90 opacity-0',
         onChange: popover.status.set,
     })
 
@@ -51,46 +46,43 @@ export function PopoverRoot({
         <Portal asChild>
             <div
                 ref={el => void popover.floatingElement.set(el)}
-                data-modal="popover"
-                data-modal-status={transition.status}
-                data-modal-placement={placement}
                 onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
                 onContextMenu={evt => evt.stopPropagation()}
                 style={{ top: y, left: x }}
-                className="absolute flex"
+                className={twJoin('modal popover absolute flex', transition.status)}
             >
-                {hasMeasurements && (
-                    <div
-                        {...rest}
-                        className={twMerge(
-                            'relative flex rounded-lg border-[--border] bg-[--bg] text-[--fg] shadow-2xl',
-                            transition.className,
-                            className,
-                        )}
+                <div
+                    {...rest}
+                    className={twMerge(
+                        'floating relative flex rounded-lg border-[--border] bg-[--bg] text-[--fg]',
+                        className,
+                    )}
+                    style={{
+                        ...transition.style({
+                            open: { opacity: 1, transform: 'scale(1)' },
+                            close: { opacity: 0, transform: 'scale(0.9)' },
+                        }),
+                        ...style,
+                        maxHeight,
+                        borderWidth,
+                        transformOrigin: `${originX}px ${originY}px`,
+                    }}
+                >
+                    <Arrow
+                        width={arrowWidth}
+                        height={arrowHeight}
+                        tipRadius={arrowRadius}
+                        strokeWidth={borderWidth}
                         style={{
-                            ...transition.style,
-                            ...style,
-                            maxHeight,
-                            borderWidth,
-                            transformOrigin: `${originX}px ${originY}px`,
+                            position: 'absolute',
+                            top: arrowY,
+                            left: arrowX,
+                            transform: placement === 'below' ? 'rotate(180deg)' : '',
                         }}
-                    >
-                        <Arrow
-                            width={arrowWidth}
-                            height={arrowHeight}
-                            tipRadius={arrowRadius}
-                            strokeWidth={borderWidth}
-                            style={{
-                                position: 'absolute',
-                                top: arrowY,
-                                left: arrowX,
-                                transform: placement === 'below' ? 'rotate(180deg)' : '',
-                            }}
-                        />
-                        {render()}
-                    </div>
-                )}
+                    />
+                    {render()}
+                </div>
             </div>
         </Portal>
     )
