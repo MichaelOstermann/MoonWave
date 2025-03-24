@@ -1,8 +1,8 @@
-[data-mode="light"] {
+[data-mode='light'] {
     --fg-red: oklch(53% 0.2 20);
     --bg-red: oklch(68% 0.12 20 / 20%);
     --accent-red: oklch(62% 0.2 20);
-            
+
     --fg-orange: oklch(52% 0.2 47);
     --bg-orange: oklch(68% 0.14 47 / 18%);
     --accent-orange: oklch(66% 0.18 47);
@@ -10,11 +10,11 @@
     --fg-yellow: oklch(52% 0.32 90);
     --bg-yellow: oklch(66% 0.28 90 / 18%);
     --accent-yellow: oklch(74% 0.24 90);
-            
+
     --fg-green: oklch(52% 0.24 133);
     --bg-green: oklch(70% 0.14 133 / 20%);
     --accent-green: oklch(64% 0.2 133);
-            
+
     --fg-teal: oklch(52% 0.24 173);
     --bg-teal: oklch(70% 0.1 173 / 20%);
     --accent-teal: oklch(64% 0.2 173);
@@ -22,25 +22,25 @@
     --fg-cyan: oklch(54% 0.2 231);
     --bg-cyan: oklch(72% 0.11 231 / 20%);
     --accent-cyan: oklch(64% 0.2 231);
-        
-    --fg-blue: oklch(54% 0.20 262);
-    --bg-blue: oklch(70% 0.20 262 / 20%);
-    --accent-blue: oklch(64% 0.20 262);
-        
+
+    --fg-blue: oklch(54% 0.2 262);
+    --bg-blue: oklch(70% 0.2 262 / 20%);
+    --accent-blue: oklch(64% 0.2 262);
+
     --fg-purple: oklch(56% 0.24 284);
     --bg-purple: oklch(66% 0.2 284 / 20%);
     --accent-purple: oklch(64% 0.2 284);
-        
+
     --fg-pink: oklch(54% 0.22 326);
     --bg-pink: oklch(70% 0.14 326 / 20%);
     --accent-pink: oklch(68% 0.2 326);
 }
 
-[data-mode="dark"] {
+[data-mode='dark'] {
     --fg-red: oklch(68% 0.16 10);
     --bg-red: oklch(67% 0.1 10 / 18%);
     --accent-red: oklch(62% 0.12 10);
-        
+
     --fg-orange: oklch(70% 0.14 47);
     --bg-orange: oklch(67% 0.1 47 / 20%);
     --accent-orange: oklch(68% 0.08 47);
@@ -48,11 +48,11 @@
     --fg-yellow: oklch(74% 0.12 90);
     --bg-yellow: oklch(67% 0.1 90 / 20%);
     --accent-yellow: oklch(68% 0.1 90);
-        
+
     --fg-green: oklch(74% 0.14 133);
     --bg-green: oklch(67% 0.1 133 / 20%);
     --accent-green: oklch(70% 0.1 133);
-        
+
     --fg-teal: oklch(74% 0.11 173);
     --bg-teal: oklch(62% 0.09 173 / 20%);
     --accent-teal: oklch(68% 0.08 173);
@@ -60,15 +60,15 @@
     --fg-cyan: oklch(76% 0.11 231);
     --bg-cyan: oklch(70% 0.1 231 / 20%);
     --accent-cyan: oklch(70% 0.1 231);
-    
+
     --fg-blue: oklch(78% 0.2 262);
     --bg-blue: oklch(67% 0.17 262 / 20%);
     --accent-blue: oklch(67% 0.17 262);
-        
+
     --fg-purple: oklch(74% 0.14 284);
     --bg-purple: oklch(67% 0.14 284 / 20%);
     --accent-purple: oklch(70% 0.13 284);
-    
+
     --fg-pink: oklch(74% 0.12 326);
     --bg-pink: oklch(60% 0.09 326 / 20%);
     --accent-pink: oklch(68% 0.1 326);

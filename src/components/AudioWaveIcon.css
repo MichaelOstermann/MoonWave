@@ -7,21 +7,47 @@
 .bar {
     position: absolute;
     bottom: 0px;
-    width: 2px;      
+    width: 2px;
     height: 3px;
 }
 
 @keyframes sound-1 {
-    0% { height: 3px; }
-    100% { height: 12px; }
+    0% {
+        height: 3px;
+    }
+    100% {
+        height: 12px;
+    }
 }
 
 @keyframes sound-2 {
-    0% { height: 3px; }
-    100% { height: 10px; }
+    0% {
+        height: 3px;
+    }
+    100% {
+        height: 10px;
+    }
 }
 
-.bar:nth-child(1)  { left: 0px; animation: sound-2 linear infinite alternate; animation-duration: 450ms; animation-delay: 200ms; }
-.bar:nth-child(2)  { left: 3px; animation: sound-1 linear infinite alternate; animation-duration: 430ms; }
-.bar:nth-child(3)  { left: 6px; animation: sound-1 linear infinite alternate; animation-duration: 410ms; }
-.bar:nth-child(4)  { left: 9px; animation: sound-2 linear infinite alternate; animation-duration: 400ms; animation-delay: 100ms; }
+.bar:nth-child(1) {
+    left: 0px;
+    animation: sound-2 linear infinite alternate;
+    animation-duration: 450ms;
+    animation-delay: 200ms;
+}
+.bar:nth-child(2) {
+    left: 3px;
+    animation: sound-1 linear infinite alternate;
+    animation-duration: 430ms;
+}
+.bar:nth-child(3) {
+    left: 6px;
+    animation: sound-1 linear infinite alternate;
+    animation-duration: 410ms;
+}
+.bar:nth-child(4) {
+    left: 9px;
+    animation: sound-2 linear infinite alternate;
+    animation-duration: 400ms;
+    animation-delay: 100ms;
+}

@@ -1,11 +1,11 @@
-body[has-popover=true] #root {
+body[has-popover='true'] #root {
     * {
         pointer-events: none;
     }
 
     input,
     textarea,
-    [contenteditable=true],
+    [contenteditable='true'],
     .popover-trigger {
         pointer-events: auto;
     }

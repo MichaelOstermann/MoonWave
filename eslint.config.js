@@ -7,6 +7,9 @@ export default antfu(
         yaml: false,
         react: true,
         typescript: true,
+        formatters: {
+            css: true,
+        },
         stylistic: {
             indent: 4,
         },

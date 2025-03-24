@@ -1,9 +1,9 @@
-[data-theme-preview="dust-light"] {
+[data-theme-preview='dust-light'] {
     --fg: oklch(32% 0.005 286);
     --bg: oklch(96% 0.004 90);
 }
 
-[data-theme="dust-light"] {
+[data-theme='dust-light'] {
     --border: rgba(0, 0, 0, 0.08);
     --fg: oklch(32% 0.005 286);
     --fg-soft: oklch(62% 0.005 286);
@@ -16,31 +16,32 @@
     --fg-accent: var(--fg-blue);
 }
 
-[data-theme="dust-light"] .main,
-[data-theme="dust-light"] .sidebar,
-[data-theme="dust-light"] .sidepanel {
+[data-theme='dust-light'] .main,
+[data-theme='dust-light'] .sidebar,
+[data-theme='dust-light'] .sidepanel {
     --bg: oklch(96% 0.004 90 / 90%);
 }
 
-[data-theme="dust-light"] .dialog .floating,
-[data-theme="dust-light"] .popover .floating {
+[data-theme='dust-light'] .dialog .floating,
+[data-theme='dust-light'] .popover .floating {
     --bg: oklch(96% 0.004 90 / 60%);
     --border: rgba(0, 0, 0, 0.13);
     backdrop-filter: blur(80px);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5),
         0 20px 25px -5px rgb(0 0 0 / 0.1),
         0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-[data-theme="dust-light"] .dialog {
+[data-theme='dust-light'] .dialog {
     --overlay: oklch(90% 0.004 90 / 40%);
 }
 
-[data-theme="dust-light"] .tooltip {
+[data-theme='dust-light'] .tooltip {
     --bg: color-mix(in oklab, var(--fg) 4%, transparent);
 }
 
-[data-theme="dust-light"] ::selection {
+[data-theme='dust-light'] ::selection {
     color: var(--fg-accent);
     background: var(--bg-accent);
 }

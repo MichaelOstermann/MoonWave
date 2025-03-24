@@ -1,9 +1,9 @@
-[data-theme-preview="rose-pine-light"] {
+[data-theme-preview='rose-pine-light'] {
     --fg: #575279;
     --bg: #faf4ed;
 }
 
-[data-theme="rose-pine-light"] {
+[data-theme='rose-pine-light'] {
     --border: transparent;
     --fg: #575279;
     --fg-soft: #9893a5;
@@ -16,35 +16,36 @@
     --fg-accent: var(--fg-blue);
 }
 
-[data-theme="rose-pine-light"] .main {
+[data-theme='rose-pine-light'] .main {
     --bg: #faf4ed;
 }
 
-[data-theme="rose-pine-light"] .sidebar,
-[data-theme="rose-pine-light"] .sidepanel {
+[data-theme='rose-pine-light'] .sidebar,
+[data-theme='rose-pine-light'] .sidepanel {
     --fg: #797593;
     --bg: #faf4ed;
 }
 
-[data-theme="rose-pine-light"] .dialog .floating,
-[data-theme="rose-pine-light"] .popover .floating {
+[data-theme='rose-pine-light'] .dialog .floating,
+[data-theme='rose-pine-light'] .popover .floating {
     backdrop-filter: blur(80px);
     --border: rgba(0, 0, 0, 0.1);
     --bg: rgba(255, 255, 255, 0.3);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5),
         0 20px 25px -5px rgb(0 0 0 / 0.1),
         0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-[data-theme="rose-pine-light"] .dialog {
+[data-theme='rose-pine-light'] .dialog {
     --overlay: color-mix(in srgb, #faf4ed 40%, transparent);
 }
 
-[data-theme="rose-pine-light"] .tooltip {
+[data-theme='rose-pine-light'] .tooltip {
     --bg: color-mix(in oklab, var(--fg) 4%, transparent);
 }
 
-[data-theme="rose-pine-light"] ::selection {
+[data-theme='rose-pine-light'] ::selection {
     color: var(--fg-accent);
     background: var(--bg-accent);
 }

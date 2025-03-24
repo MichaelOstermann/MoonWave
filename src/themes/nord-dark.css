@@ -1,51 +1,52 @@
 /* Reference: https://github.com/nordtheme/visual-studio-code */
 
-[data-theme-preview="nord-dark"] {
+[data-theme-preview='nord-dark'] {
     --fg: #d8dee9;
     --bg: #2e3440;
 }
 
-[data-theme="nord-dark"] {
+[data-theme='nord-dark'] {
     --border: #3b4252;
     --fg: #d8dee9;
-    --fg-soft: #949AA6; 
+    --fg-soft: #949aa6;
     --bg-selected: #434c5ecc;
     --bg-hover: #3b4252;
     --bg-soft: #3b4252;
-    --waveform: #616E88;
+    --waveform: #616e88;
     --accent: #88c0d0;
     --bg-accent: #88c0d033;
     --fg-accent: #88c0d0;
 }
 
-[data-theme="nord-dark"] .main {
+[data-theme='nord-dark'] .main {
     --bg-soft: color-mix(in srgb, #3b4252 50%, transparent);
 }
 
-[data-theme="nord-dark"] .main,
-[data-theme="nord-dark"] .sidebar,
-[data-theme="nord-dark"] .sidepanel {
+[data-theme='nord-dark'] .main,
+[data-theme='nord-dark'] .sidebar,
+[data-theme='nord-dark'] .sidepanel {
     --bg: color-mix(in srgb, #2e3440 96%, transparent);
 }
 
-[data-theme="nord-dark"] .dialog .floating,
-[data-theme="nord-dark"] .popover .floating {
+[data-theme='nord-dark'] .dialog .floating,
+[data-theme='nord-dark'] .popover .floating {
     --border: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(80px);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
         0 20px 25px -5px rgb(0 0 0 / 0.2),
         0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-[data-theme="nord-dark"] .dialog {
+[data-theme='nord-dark'] .dialog {
     --overlay: color-mix(in srgb, #2e3440 40%, transparent);
 }
 
-[data-theme="nord-dark"] .tooltip {
+[data-theme='nord-dark'] .tooltip {
     --bg: color-mix(in oklab, var(--fg) 10%, transparent);
 }
 
-[data-theme="nord-dark"] ::selection {
+[data-theme='nord-dark'] ::selection {
     color: var(--fg-accent);
     background: var(--bg-accent);
 }
