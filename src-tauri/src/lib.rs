@@ -2,7 +2,6 @@ use lofty::config::WriteOptions;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::tag::{Accessor, Tag};
 use new_mime_guess::from_path;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use ring::digest::{Context, SHA256};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -49,56 +48,25 @@ struct TagUpdate {
     disk_nr: Option<u32>,
 }
 
-#[tauri::command(async)]
-fn parse_audio_metadata(file_paths: Vec<String>) -> Vec<AudioMetadata> {
-    file_paths
-        .par_iter()
-        .map(|file_path| -> Option<AudioMetadata> {
-            match lofty::read_from_path(&file_path) {
-                Ok(tagged_file) => {
-                    let tag = tagged_file.primary_tag()?;
-                    let props = tagged_file.properties();
-                    let filehash = hash_file(&file_path)?;
-                    let mimetype = from_path(&file_path).first_or_octet_stream();
+#[tauri::command]
+async fn parse_audio_metadata(file_paths: Vec<String>) -> Vec<AudioMetadata> {
+    let mut handles = Vec::with_capacity(file_paths.len());
 
-                    let metadata = fs::metadata(&file_path);
-                    let size = match metadata {
-                        Ok(metadata) => metadata.size(),
-                        Err(_) => 0,
-                    };
+    for file_path in file_paths {
+        handles.push(tauri::async_runtime::spawn_blocking(move || {
+            parse_file(&file_path)
+        }));
+    }
 
-                    let mut title = tag.title().unwrap_or_default().trim().to_owned();
+    let mut results = Vec::new();
 
-                    if title.is_empty() {
-                        title = Path::new(&file_path)
-                            .with_extension("")
-                            .file_name()
-                            .and_then(|t| t.to_str())
-                            .unwrap_or_default()
-                            .to_owned()
-                    }
+    for handle in handles {
+        if let Ok(Some(data)) = handle.await {
+            results.push(data)
+        }
+    }
 
-                    Some(AudioMetadata {
-                        path: file_path.to_owned(),
-                        filehash: filehash,
-                        title: title,
-                        artist: tag.artist().unwrap_or_default().trim().to_owned(),
-                        album: tag.album().unwrap_or_default().trim().to_owned(),
-                        size: size,
-                        mimetype: mimetype.to_string(),
-                        duration: u32::try_from(props.duration().as_secs()).unwrap_or_default(),
-                        year: tag.year(),
-                        track_nr: tag.track(),
-                        disk_nr: tag.disk(),
-                        sample_rate: props.sample_rate(),
-                        bitrate: props.audio_bitrate(),
-                    })
-                }
-                Err(_) => None,
-            }
-        })
-        .flatten()
-        .collect::<Vec<AudioMetadata>>()
+    results
 }
 
 fn hash_file(file_path: &str) -> Option<String> {
@@ -106,7 +74,7 @@ fn hash_file(file_path: &str) -> Option<String> {
     let mut reader = BufReader::new(file);
     let mut context = Context::new(&SHA256);
 
-    let mut buffer = [0; 4096];
+    let mut buffer = [0; 256 * 1024];
     while let Ok(n) = reader.read(&mut buffer) {
         if n == 0 {
             break;
@@ -120,9 +88,54 @@ fn hash_file(file_path: &str) -> Option<String> {
         .as_ref()
         .iter()
         .map(|b| format!("{:02x}", b))
-        .collect::<String>();
+        .collect();
 
     Some(hex_digest)
+}
+
+fn parse_file(file_path: &str) -> Option<AudioMetadata> {
+    match lofty::read_from_path(&file_path) {
+        Ok(tagged_file) => {
+            let tag = tagged_file.primary_tag()?;
+            let props = tagged_file.properties();
+            let filehash = hash_file(&file_path)?;
+            let mimetype = from_path(&file_path).first_or_octet_stream();
+
+            let metadata = fs::metadata(&file_path);
+            let size = match metadata {
+                Ok(metadata) => metadata.size(),
+                Err(_) => 0,
+            };
+
+            let mut title = tag.title().unwrap_or_default().trim().to_owned();
+
+            if title.is_empty() {
+                title = Path::new(&file_path)
+                    .with_extension("")
+                    .file_name()
+                    .and_then(|t| t.to_str())
+                    .unwrap_or_default()
+                    .to_owned()
+            }
+
+            Some(AudioMetadata {
+                path: file_path.to_owned(),
+                filehash: filehash,
+                title: title,
+                artist: tag.artist().unwrap_or_default().trim().to_owned(),
+                album: tag.album().unwrap_or_default().trim().to_owned(),
+                size: size,
+                mimetype: mimetype.to_string(),
+                duration: u32::try_from(props.duration().as_secs()).unwrap_or_default(),
+                year: tag.year(),
+                track_nr: tag.track(),
+                disk_nr: tag.disk(),
+                sample_rate: props.sample_rate(),
+                bitrate: props.audio_bitrate(),
+            })
+        }
+        Err(_) => None,
+    }
 }
 
 #[tauri::command(async)]
@@ -176,7 +189,7 @@ fn save_tags(path: String, tags: TagUpdate) -> Option<AudioMetadata> {
         .save_to_path(&path, WriteOptions::default())
         .ok()?;
 
-    parse_audio_metadata(vec![path]).into_iter().nth(0)
+    parse_file(&path)
 }
 
 #[tauri::command(async)]
