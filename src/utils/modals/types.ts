@@ -1,4 +1,4 @@
-import type { ReadonlySignal, Signal } from '@monstermann/signals'
+import type { ReadonlySignal, WritableSignal } from '@monstermann/signals'
 
 export type ModalStatus =
     | 'opening'
@@ -26,19 +26,19 @@ export type PopoverOptions = {
 export type Popover = {
     type: 'popover'
     id: string
-    isOpen: Signal<boolean>
-    status: Signal<ModalStatus>
-    offset: Signal<number>
-    borderWidth: Signal<number>
-    paddingTop: Signal<number>
-    paddingLeft: Signal<number>
-    paddingRight: Signal<number>
-    paddingBottom: Signal<number>
-    arrowWidth: Signal<number>
-    arrowHeight: Signal<number>
-    arrowRadius: Signal<number>
-    anchorElement: Signal<HTMLElement | null>
-    floatingElement: Signal<HTMLElement | null>
+    isOpen: WritableSignal<boolean>
+    status: WritableSignal<ModalStatus>
+    offset: WritableSignal<number>
+    borderWidth: WritableSignal<number>
+    paddingTop: WritableSignal<number>
+    paddingLeft: WritableSignal<number>
+    paddingRight: WritableSignal<number>
+    paddingBottom: WritableSignal<number>
+    arrowWidth: WritableSignal<number>
+    arrowHeight: WritableSignal<number>
+    arrowRadius: WritableSignal<number>
+    anchorElement: WritableSignal<HTMLElement | null>
+    floatingElement: WritableSignal<HTMLElement | null>
     maxHeight: ReadonlySignal<number>
     placement: ReadonlySignal<PopoverPlacement>
     x: ReadonlySignal<number>
@@ -63,15 +63,15 @@ export type TooltipOptions = {
 export type Tooltip = {
     type: 'tooltip'
     id: string
-    isOpen: Signal<boolean>
-    status: Signal<ModalStatus>
-    offset: Signal<number>
-    paddingTop: Signal<number>
-    paddingLeft: Signal<number>
-    paddingRight: Signal<number>
-    paddingBottom: Signal<number>
-    anchorElement: Signal<HTMLElement | null>
-    floatingElement: Signal<HTMLElement | null>
+    isOpen: WritableSignal<boolean>
+    status: WritableSignal<ModalStatus>
+    offset: WritableSignal<number>
+    paddingTop: WritableSignal<number>
+    paddingLeft: WritableSignal<number>
+    paddingRight: WritableSignal<number>
+    paddingBottom: WritableSignal<number>
+    anchorElement: WritableSignal<HTMLElement | null>
+    floatingElement: WritableSignal<HTMLElement | null>
     maxHeight: ReadonlySignal<number>
     placement: ReadonlySignal<PopoverPlacement>
     x: ReadonlySignal<number>
@@ -86,9 +86,9 @@ export type Tooltip = {
 export type Dialog = {
     type: 'dialog'
     id: string
-    isOpen: Signal<boolean>
-    status: Signal<ModalStatus>
-    floatingElement: Signal<HTMLElement | null>
+    isOpen: WritableSignal<boolean>
+    status: WritableSignal<ModalStatus>
+    floatingElement: WritableSignal<HTMLElement | null>
     open: () => Promise<void>
     close: () => Promise<void>
 }

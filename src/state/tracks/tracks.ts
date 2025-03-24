@@ -1,10 +1,10 @@
 import type { Track } from '@app/types'
 import { onDeleteTracks } from '@app/events'
-import { changeEffect, signal } from '@monstermann/signals'
+import { onChange, signal } from '@monstermann/signals'
 
 export const $tracks = signal<Track[]>([])
 
-changeEffect($tracks, (tracksAfter, tracksBefore) => {
+onChange($tracks, (tracksAfter, tracksBefore) => {
     const trackIdsBefore = new Set(tracksBefore.map(t => t.id))
     const trackIdsAfter = new Set(tracksAfter.map(t => t.id))
     const removedTrackIds = trackIdsBefore.difference(trackIdsAfter)

@@ -2,11 +2,11 @@ import { $nextPlayedTrackIds } from '@app/state/tracks/nextPlayedTrackIds'
 import { $playingTrackId } from '@app/state/tracks/playingTrackId'
 import { $prevPlayedTrackIds } from '@app/state/tracks/prevPlayedTrackIds'
 import { uniq } from '@app/utils/data/uniq'
-import { changeEffect } from '@monstermann/signals'
+import { onChange } from '@monstermann/signals'
 
 const MAX_SIZE = 100
 
-changeEffect($playingTrackId, (trackId) => {
+onChange($playingTrackId, (trackId) => {
     if (!trackId) return
 
     const prevIds = $prevPlayedTrackIds()

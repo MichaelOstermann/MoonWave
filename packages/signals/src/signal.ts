@@ -1,6 +1,8 @@
-import type { InternalMeta, Meta } from './types'
+import type { InternalMeta } from './internals/types'
+import type { WritableSignal } from './types'
 import { signal as createSignal, pauseTracking, resumeTracking } from 'alien-signals'
-import { getMeta } from './getMeta'
+import { onCreateSignalCallbacks } from './internals/events'
+import { getMeta } from './internals/getMeta'
 import { SIGNAL } from './types'
 
 export type SignalOptions<T> = {
@@ -10,23 +12,14 @@ export type SignalOptions<T> = {
     meta?: InternalMeta
 }
 
-export interface Signal<T> {
-    (): T
-    meta: Meta
-    kind: typeof SIGNAL
-    peek: () => T
-    set: (value: T) => Signal<T>
-    map: (transform: (value: T) => T) => Signal<T>
-}
-
-export function signal<T>(value: T, options?: SignalOptions<NoInfer<T>>): Signal<T>
-export function signal<T>(value: T | null, options?: SignalOptions<NoInfer<T> | null>): Signal<T | null>
-export function signal<T>(value: T | undefined, options?: SignalOptions<NoInfer<T> | undefined>): Signal<T | undefined>
+export function signal<T>(value: T, options?: SignalOptions<NoInfer<T>>): WritableSignal<T>
+export function signal<T>(value: T | null, options?: SignalOptions<NoInfer<T> | null>): WritableSignal<T | null>
+export function signal<T>(value: T | undefined, options?: SignalOptions<NoInfer<T> | undefined>): WritableSignal<T | undefined>
 export function signal<T>(value: T, options?: SignalOptions<T>) {
     const rawSignal = createSignal(value)
     const equals = options?.equals
 
-    const signal = (() => rawSignal()) as Signal<T>
+    const signal: WritableSignal<T> = () => rawSignal()
 
     signal.meta = getMeta(options)
     signal.kind = SIGNAL
@@ -38,17 +31,19 @@ export function signal<T>(value: T, options?: SignalOptions<T>) {
         return value
     }
 
-    signal.set = function (next: T) {
+    signal.set = function (next: T): void {
         const prev = signal.peek()
-        if (prev === next) return signal
-        if (equals?.(next, prev)) return signal
+        if (prev === next) return
+        if (equals?.(next, prev)) return
         rawSignal(next)
-        return signal
     }
 
-    signal.map = function (transform: (value: T) => T) {
-        return signal.set(transform(signal.peek()))
+    signal.map = function (transform: (value: T) => T): void {
+        signal.set(transform(signal.peek()))
     }
+
+    for (const cb of onCreateSignalCallbacks)
+        cb(signal)
 
     return signal
 }

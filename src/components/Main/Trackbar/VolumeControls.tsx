@@ -41,7 +41,7 @@ export function VolumeControls(): ReactNode {
                 onContextMenu={evt => evt.preventDefault()}
             >
                 <div
-                    ref={el => void seeker.$element.set(el)}
+                    ref={seeker.$element.set}
                     data-seeking={isSeeking}
                     className="group relative flex h-[--bar-height] items-center justify-end rounded-full bg-[--bg-hover]"
                     style={{

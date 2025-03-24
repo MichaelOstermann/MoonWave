@@ -11,7 +11,7 @@ import { sleep } from '@app/utils/data/sleep'
 import { readJSON } from '@app/utils/fs/readJSON'
 import { writeJSON } from '@app/utils/fs/writeJSON'
 import { checkForUpdates, periodicallyCheckForUpdates } from '@app/utils/updater'
-import { action, batch, changeEffect, onEvent, onKeyDown, onMediaSessionNextTrack, onMediaSessionPause, onMediaSessionPlay, onMediaSessionPreviousTrack, onMediaSessionStop } from '@monstermann/signals'
+import { action, batch, onChange, onEvent, onKeyDown, onMediaSessionNextTrack, onMediaSessionPause, onMediaSessionPlay, onMediaSessionPreviousTrack, onMediaSessionStop } from '@monstermann/signals'
 import { homeDir } from '@tauri-apps/api/path'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { BaseDirectory } from '@tauri-apps/plugin-fs'
@@ -79,8 +79,8 @@ export const bootstrap = action(async () => {
     })
 
     if (import.meta.env.PROD) {
-        changeEffect($config, saveConfig)
-        changeEffect(() => ({ tracks: $tracks(), playlists: $playlists() }), saveLibrary)
+        onChange($config, saveConfig)
+        onChange(() => ({ tracks: $tracks(), playlists: $playlists() }), saveLibrary)
         syncLibrary()
     }
 

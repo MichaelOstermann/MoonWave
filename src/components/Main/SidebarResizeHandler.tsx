@@ -18,7 +18,7 @@ const resizer = createSeeker<HTMLDivElement>({
 export function SidebarResizeHandler(): ReactNode {
     return (
         <div
-            ref={el => void resizer.$element.set(el)}
+            ref={resizer.$element.set}
             className="absolute left-[-2px] z-20 h-full w-[4px] cursor-col-resize"
         />
     )

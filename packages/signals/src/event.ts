@@ -1,11 +1,9 @@
-import type { InternalMeta, Meta } from './types'
+import type { InternalMeta } from './internals/types'
+import type { Event, EventCallback } from './types'
 import { endBatch, pauseTracking, resumeTracking, startBatch } from 'alien-signals'
-import { getMeta } from './getMeta'
+import { onCreateEventCallbacks } from './internals/events'
+import { getMeta } from './internals/getMeta'
 import { EVENT } from './types'
-
-export interface EventCallback<T = void> {
-    (value: T): void
-}
 
 export type EventOptions = {
     name?: string
@@ -13,21 +11,16 @@ export type EventOptions = {
     meta?: InternalMeta
 }
 
-export interface Event<T = void> {
-    (value: T): void
-    meta: Meta
-    kind: typeof EVENT
-    cbs: Set<EventCallback<T>>
-}
-
 export function event<T = void>(
     options?: EventOptions,
 ): Event<T> {
-    const event: Event<T> = function (value) {
+    const cbs = new Set<EventCallback<T>>()
+
+    const dispose: Event<T> = function (value: T): void {
         pauseTracking()
         startBatch()
         try {
-            event.cbs.forEach(cb => cb(value))
+            cbs.forEach(cb => cb(value))
         }
         finally {
             endBatch()
@@ -35,9 +28,14 @@ export function event<T = void>(
         }
     }
 
-    event.cbs = new Set()
-    event.kind = EVENT
-    event.meta = getMeta(options)
+    dispose.kind = EVENT
+    dispose.meta = getMeta(options)
+    dispose.hasListeners = () => cbs.size > 0
+    dispose.subscribe = cb => void cbs.add(cb)
+    dispose.unsubscribe = cb => void cbs.delete(cb)
 
-    return event
+    for (const cb of onCreateEventCallbacks)
+        cb(dispose as Event<unknown>)
+
+    return dispose
 }

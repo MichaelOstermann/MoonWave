@@ -33,7 +33,7 @@ export function Wavesurfer(): ReactNode {
 
     useEffect(() => {
         $wavesurfer.set(wavesurfer)
-        return () => void ($wavesurfer.set(null))
+        return () => $wavesurfer.set(null)
     }, [wavesurfer])
 
     return (

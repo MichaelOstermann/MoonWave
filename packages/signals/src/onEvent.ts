@@ -1,19 +1,14 @@
-import type { Event, EventCallback } from './event'
-import type { InternalMeta, Meta } from './types'
-import { createCleanupContext, doCleanup, endCleanupContext, startCleanupContext } from './cleanupContexts'
-import { createDisposeContext, endDisposeContext, startDisposeContext } from './disposeContexts'
-import { getMeta } from './getMeta'
+import type { InternalMeta } from './internals/types'
+import type { Event, EventCallback, OnEvent } from './types'
+import { createCleanupContext, doCleanup, endCleanupContext, startCleanupContext } from './internals/cleanupContexts'
+import { createDisposeContext, endDisposeContext, startDisposeContext } from './internals/disposeContexts'
+import { getMeta } from './internals/getMeta'
 
 export type OnEventOptions = {
     name?: string
     internal?: boolean
     abort?: AbortSignal
     meta?: InternalMeta
-}
-
-export interface OnEvent {
-    (): void
-    meta: Meta
 }
 
 export function onEvent<T = void>(
@@ -38,20 +33,23 @@ export function onEvent<T = void>(
         }
     }
 
-    const disposeEvent: OnEvent = function () {
+    const dispose: OnEvent = function () {
         doCleanup(cleanupCtx)
-        event.cbs.delete(exec)
-        options?.meta?.dispose?.delete(disposeEvent)
-        options?.abort?.removeEventListener('abort', disposeEvent)
+        event.unsubscribe(exec)
+        options?.meta?.dispose?.delete(dispose)
+        options?.abort?.removeEventListener('abort', dispose)
     }
 
-    disposeEvent.meta = getMeta(disposeEvent)
+    dispose.meta = getMeta(options)
+    event.subscribe(exec)
 
-    event.cbs.add(exec)
+    if (disposeCtx.value) {
+        dispose()
+        return dispose
+    }
 
-    if (options?.meta?.dispose) options.meta.dispose.add(disposeEvent)
-    if (options?.abort) options.abort.addEventListener('abort', disposeEvent)
-    if (disposeCtx.value) disposeEvent()
+    if (options?.meta?.dispose) options.meta.dispose.add(dispose)
+    if (options?.abort) options.abort.addEventListener('abort', dispose)
 
-    return disposeEvent
+    return dispose
 }

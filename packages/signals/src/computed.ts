@@ -1,20 +1,14 @@
-import type { InternalMeta, Meta } from './types'
+import type { InternalMeta } from './internals/types'
 import { computed as createComputed, pauseTracking, resumeTracking } from 'alien-signals'
-import { getMeta } from './getMeta'
-import { SIGNAL } from './types'
+import { onCreateSignalCallbacks } from './internals/events'
+import { getMeta } from './internals/getMeta'
+import { type ReadonlySignal, SIGNAL } from './types'
 
 export type ReadonlySignalOptions<T> = {
     name?: string
     internal?: boolean
     equals?: (after: T, before: T) => boolean
     meta?: InternalMeta
-}
-
-export interface ReadonlySignal<T> {
-    (): T
-    meta: Meta
-    kind: typeof SIGNAL
-    peek: () => T
 }
 
 export function computed<T>(
@@ -39,13 +33,12 @@ export function computed<T>(
         return next
     })
 
-    const computed = function () {
+    const computed: ReadonlySignal<T> = function () {
         return rawComputed()
-    } as ReadonlySignal<T>
+    }
 
     computed.meta = getMeta(options)
     computed.kind = SIGNAL
-
     computed.peek = function () {
         pauseTracking()
         try {
@@ -55,6 +48,9 @@ export function computed<T>(
             resumeTracking()
         }
     }
+
+    for (const cb of onCreateSignalCallbacks)
+        cb(computed)
 
     return computed
 }

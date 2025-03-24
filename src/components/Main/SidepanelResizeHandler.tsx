@@ -23,7 +23,7 @@ export function SidepanelResizeHandler(): ReactNode {
 
     return (
         <div
-            ref={el => void resizer.$element.set(el)}
+            ref={resizer.$element.set}
             className="absolute right-[-2px] z-20 h-full w-[4px] cursor-col-resize"
         />
     )

@@ -19,7 +19,7 @@ export function PopoverTarget({
     return (
         <Comp
             {...rest}
-            ref={el => void popover.anchorElement.set(el)}
+            ref={popover.anchorElement.set}
             className={twMerge('popover-target', className)}
         />
     )

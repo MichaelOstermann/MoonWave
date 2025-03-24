@@ -1,4 +1,4 @@
-import { getDisposeContext } from './disposeContexts'
+import { getDisposeContext } from '../internals/disposeContexts'
 
 export function dispose(): void {
     const ctx = getDisposeContext()

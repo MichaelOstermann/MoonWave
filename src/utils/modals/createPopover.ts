@@ -1,5 +1,5 @@
 import type { ModalStatus, Popover, PopoverOptions } from './types'
-import { $winHeight, $winWidth, changeEffect, computed, effect, onCleanup, signal, waitFor } from '@monstermann/signals'
+import { $winHeight, $winWidth, computed, effect, onChange, onCleanup, signal, waitFor } from '@monstermann/signals'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
 import { observeDimensions } from '../dom/observeDimensions'
@@ -141,12 +141,12 @@ export function createPopover(
         onCleanup(observeDimensions(floating, floatingRect.set))
     }, { abort: ac.signal })
 
-    changeEffect(isOpen, (isOpen) => {
+    onChange(isOpen, (isOpen) => {
         if (isOpen) onOpenModal(popover)
         else onCloseModal(popover)
     }, { abort: ac.signal })
 
-    changeEffect(status, (status) => {
+    onChange(status, (status) => {
         if (status === 'opening') onOpeningModal(popover)
         else if (status === 'opened') onOpenedModal(popover)
         else if (status === 'closing') onClosingModal(popover)

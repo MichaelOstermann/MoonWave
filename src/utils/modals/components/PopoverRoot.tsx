@@ -45,7 +45,7 @@ export function PopoverRoot({
     return (
         <Portal asChild>
             <div
-                ref={el => void popover.floatingElement.set(el)}
+                ref={popover.floatingElement.set}
                 onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
                 onContextMenu={evt => evt.stopPropagation()}

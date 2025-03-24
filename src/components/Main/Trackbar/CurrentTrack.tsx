@@ -27,7 +27,7 @@ export function CurrentTrack(): ReactNode {
 
     return (
         <div
-            ref={el => void seeker.$element.set(el)}
+            ref={seeker.$element.set}
             data-show-logo={!hasTrack}
             data-show-track={hasTrack && !iSeeking}
             data-show-waveform={hasTrack && iSeeking}

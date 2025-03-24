@@ -1,8 +1,8 @@
 import { $isMinimized } from '@app/state/app/isMinimized'
-import { changeEffect } from '@monstermann/signals'
+import { onChange } from '@monstermann/signals'
 import { getCurrentWindow, LogicalSize } from '@tauri-apps/api/window'
 
-changeEffect($isMinimized, (isMinimized) => {
+onChange($isMinimized, (isMinimized) => {
     if (isMinimized) return
     invalidateWindowShadows()
 })

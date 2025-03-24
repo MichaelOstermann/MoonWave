@@ -35,7 +35,7 @@ export function DialogRoot({
             )}
         >
             <div
-                ref={el => void dialog.floatingElement.set(el)}
+                ref={dialog.floatingElement.set}
                 style={{
                     ...transition.style({
                         open: { transform: 'scale(1)' },

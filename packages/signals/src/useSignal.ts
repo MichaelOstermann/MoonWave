@@ -1,27 +1,32 @@
-import type { Signal } from './signal'
-import { effect } from 'alien-signals'
+import { computed as com, effect as eff, pauseTracking, resumeTracking } from 'alien-signals'
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
-import { computed } from './computed'
+import { SIGNAL, type Signal } from './types'
 
-const e = effect
-
-export function useSignal<T>(signal: Signal<T>): T
-export function useSignal<T>(fn: () => T): T
 export function useSignal<T>(signalOrFn: Signal<T> | (() => T)): T {
-    const signal = useMemo(() => {
-        return typeof signalOrFn === 'function'
-            ? computed(signalOrFn)
-            : signalOrFn
+    const sig = useMemo(() => {
+        return ('kind' in signalOrFn && signalOrFn.kind === SIGNAL)
+            ? signalOrFn
+            : com(signalOrFn)
     }, [signalOrFn])
 
     const subscribe = useCallback((cb: () => void) => {
         let isFirst = true
-        return e(() => {
-            signal()
+        return eff(() => {
+            sig()
             if (!isFirst) cb()
             isFirst = false
         })
-    }, [signal])
+    }, [sig])
 
-    return useSyncExternalStore(subscribe, signal.peek)
+    const getSnapshot = useCallback(() => {
+        try {
+            pauseTracking()
+            return sig()
+        }
+        finally {
+            resumeTracking()
+        }
+    }, [sig])
+
+    return useSyncExternalStore(subscribe, getSnapshot)
 }

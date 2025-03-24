@@ -1,3 +1,6 @@
+/* eslint-disable perfectionist/sort-imports */
+import '@monstermann/signals/src/globals'
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'

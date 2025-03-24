@@ -1,5 +1,5 @@
 import type { ModalStatus, Tooltip, TooltipOptions } from './types'
-import { $winHeight, $winWidth, changeEffect, computed, effect, onCleanup, signal, waitFor } from '@monstermann/signals'
+import { $winHeight, $winWidth, computed, effect, onChange, onCleanup, signal, waitFor } from '@monstermann/signals'
 import debounce from 'debounce'
 import { clamp } from '../data/clamp'
 import { observeDimensions } from '../dom/observeDimensions'
@@ -130,12 +130,12 @@ export function createTooltip(
         onCleanup(onAncestorScroll(anchor, close))
     }, { abort: ac.signal })
 
-    changeEffect(isOpen, (isOpen) => {
+    onChange(isOpen, (isOpen) => {
         if (isOpen) onOpenModal(tooltip)
         else onCloseModal(tooltip)
     }, { abort: ac.signal })
 
-    changeEffect(status, (status) => {
+    onChange(status, (status) => {
         if (status === 'opening') onOpeningModal(tooltip)
         else if (status === 'opened') onOpenedModal(tooltip)
         else if (status === 'closing') onClosingModal(tooltip)

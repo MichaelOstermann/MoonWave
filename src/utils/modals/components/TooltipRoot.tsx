@@ -37,7 +37,7 @@ export function TooltipRoot({
     return (
         <Portal asChild>
             <div
-                ref={el => void tooltip.floatingElement.set(el)}
+                ref={tooltip.floatingElement.set}
                 onClick={evt => evt.stopPropagation()}
                 onPointerDown={evt => evt.stopPropagation()}
                 onContextMenu={evt => evt.stopPropagation()}

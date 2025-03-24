@@ -1,4 +1,5 @@
-import { $mouseX, computed, effect, type ReadonlySignal, signal, type Signal } from '@monstermann/signals'
+import type { ReadonlySignal, WritableSignal } from '@monstermann/signals'
+import { $mouseX, computed, effect, signal } from '@monstermann/signals'
 import { pipe } from './data/pipe'
 
 type Position = {
@@ -17,8 +18,8 @@ type SeekerOptions = {
 }
 
 interface Seeker<T extends Element> {
-    $element: Signal<T | null>
-    $enabled: Signal<boolean>
+    $element: WritableSignal<T | null>
+    $enabled: WritableSignal<boolean>
     $relX: ReadonlySignal<number>
     $absX: ReadonlySignal<number>
     $dragging: ReadonlySignal<boolean>

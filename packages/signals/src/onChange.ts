@@ -1,12 +1,13 @@
-import type { ReadonlySignal } from './computed'
-import type { Effect } from './effect'
+import type { InternalMeta } from './internals/types'
+import type { Effect } from './types'
 import { effect as createEffect, pauseTracking, resumeTracking } from 'alien-signals'
-import { createCleanupContext, doCleanup, endCleanupContext, startCleanupContext } from './cleanupContexts'
-import { createDisposeContext, endDisposeContext, startDisposeContext } from './disposeContexts'
-import { getMeta } from './getMeta'
-import { EFFECT, type InternalMeta } from './types'
+import { createCleanupContext, doCleanup, endCleanupContext, startCleanupContext } from './internals/cleanupContexts'
+import { createDisposeContext, endDisposeContext, startDisposeContext } from './internals/disposeContexts'
+import { onCreateEffectCallbacks } from './internals/events'
+import { getMeta } from './internals/getMeta'
+import { EFFECT } from './types'
 
-export type ChangeEffectOptions<T> = {
+export type OnChangeOptions<T> = {
     name?: string
     internal?: boolean
     abort?: AbortSignal
@@ -14,10 +15,10 @@ export type ChangeEffectOptions<T> = {
     meta?: InternalMeta
 }
 
-export function changeEffect<T>(
-    dependencies: ReadonlySignal<T> | (() => T),
+export function onChange<T>(
+    dependencies: () => T,
     computation: (after: T, before: T) => void,
-    options?: ChangeEffectOptions<T>,
+    options?: OnChangeOptions<T>,
 ): Effect {
     let current: undefined | { value: T }
     const equals = options?.equals
@@ -46,19 +47,24 @@ export function changeEffect<T>(
         }
     })
 
-    const disposeEffect: Effect = function () {
+    const dispose = function () {
         doCleanup(cleanupCtx)
         disposeRawEffect()
-        options?.meta?.dispose?.delete(disposeEffect)
-        options?.abort?.removeEventListener('abort', disposeEffect)
+        options?.meta?.dispose?.delete(dispose)
+        options?.abort?.removeEventListener('abort', dispose)
     }
 
-    disposeEffect.meta = getMeta(options)
-    disposeEffect.kind = EFFECT
+    dispose.meta = getMeta(options)
+    dispose.kind = EFFECT
 
-    if (options?.meta?.dispose) options.meta.dispose.add(disposeEffect)
-    if (options?.abort) options.abort.addEventListener('abort', disposeEffect)
-    if (disposeCtx.value) disposeEffect()
+    if (disposeCtx.value) {
+        dispose()
+        return dispose
+    }
 
-    return disposeEffect
+    if (options?.meta?.dispose) options.meta.dispose.add(dispose)
+    if (options?.abort) options.abort.addEventListener('abort', dispose)
+    for (const cb of onCreateEffectCallbacks) cb(dispose)
+
+    return dispose
 }

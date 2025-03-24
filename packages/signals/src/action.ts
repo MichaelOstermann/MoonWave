@@ -1,11 +1,8 @@
-import type { InternalMeta, Meta } from './types'
+import type { InternalMeta } from './internals/types'
 import { endBatch, pauseTracking, resumeTracking, startBatch } from 'alien-signals'
-import { getMeta } from './getMeta'
-
-export interface Action<T = never, U = void> {
-    (...args: ([T] extends [never] ? [] : [payload: T])): U
-    meta: Meta
-}
+import { onCreateActionCallbacks } from './internals/events'
+import { getMeta } from './internals/getMeta'
+import { ACTION, type Action } from './types'
 
 export type ActionOptions = {
     name?: string
@@ -17,7 +14,7 @@ export function action<T = never, U = void>(
     fn: (payload: T) => U,
     options?: ActionOptions,
 ): Action<T, U> {
-    const action: any = function (payload: any) {
+    const action: Action<T, U> = function (payload?: any) {
         pauseTracking()
         startBatch()
         try {
@@ -30,6 +27,10 @@ export function action<T = never, U = void>(
     }
 
     action.meta = getMeta(options)
+    action.kind = ACTION
+
+    for (const cb of onCreateActionCallbacks)
+        cb(action as Action<unknown, unknown>)
 
     return action
 }

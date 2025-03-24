@@ -7,7 +7,7 @@ const identifiers = new Set([
     'computed',
     'action',
     'effect',
-    'changeEffect',
+    'onChange',
 ])
 
 const arities = {
@@ -17,7 +17,7 @@ const arities = {
     computed: 2,
     action: 2,
     effect: 2,
-    changeEffect: 3,
+    onChange: 3,
 }
 
 // eslint-disable-next-line node/prefer-global/process

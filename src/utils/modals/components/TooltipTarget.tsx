@@ -25,7 +25,7 @@ export function TooltipTarget({
     return (
         <Comp
             {...rest}
-            ref={el => void tooltip.anchorElement.set(el)}
+            ref={tooltip.anchorElement.set}
             className={twMerge('tooltip-target', className)}
             onMouseDown={() => clearTimeout(timerRef.current)}
             onMouseMove={() => {

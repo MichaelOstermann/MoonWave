@@ -1,7 +1,7 @@
 import { clearSelection } from '@app/utils/lsm/utils/clearSelection'
 import { createLSM } from '@app/utils/lsm/utils/createLSM'
 import { setSelectables } from '@app/utils/lsm/utils/setSelectables'
-import { changeEffect, effect, signal } from '@monstermann/signals'
+import { effect, onChange, signal } from '@monstermann/signals'
 import { $view } from '../sidebar/view'
 import { $tracksFilter } from './tracksFilter'
 import { $viewingTracks } from './viewingTracks'
@@ -13,5 +13,5 @@ effect(() => {
     $tracksLSM.map(lsm => setSelectables(lsm, selectables))
 })
 
-changeEffect($view, () => $tracksLSM.map(clearSelection))
-changeEffect($tracksFilter, () => $tracksLSM.map(clearSelection))
+onChange($view, () => $tracksLSM.map(clearSelection))
+onChange($tracksFilter, () => $tracksLSM.map(clearSelection))
