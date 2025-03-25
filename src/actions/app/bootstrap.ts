@@ -84,17 +84,6 @@ export const bootstrap = action(async () => {
         syncLibrary()
     }
 
-    tauri.onFocusChanged(async () => {
-        const [isFocused, isMinimized] = await Promise.all([
-            tauri.isFocused(),
-            tauri.isMinimized(),
-        ])
-        batch(() => {
-            $isFocused.set(isFocused)
-            $isMinimized.set(isMinimized)
-        })
-    })
-
     await sleep(100)
     await getCurrentWindow().show()
 
