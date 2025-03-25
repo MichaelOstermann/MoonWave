@@ -50,7 +50,7 @@ function IconColor({
     return (
         <div {...rest}>
             <div
-                className="easing-glide relative flex size-6 items-center justify-center rounded-full bg-[--outer] transition-transform duration-300 active:scale-[0.8]"
+                className="relative flex size-6 items-center justify-center rounded-full bg-[--outer] transition-transform duration-300 ease-in-out active:scale-[0.8]"
                 style={{
                     '--inner': value ? `var(--fg-${value.value})` : 'var(--fg)',
                     '--outer': value ? `var(--bg-${value.value})` : 'var(--bg-hover)',
@@ -58,7 +58,7 @@ function IconColor({
             >
                 <div
                     data-active={isActive}
-                    className="easing-glide absolute size-full scale-[0.3] rounded-full bg-[--inner] transition-transform duration-300 data-[active=true]:scale-100"
+                    className="absolute size-full scale-[0.3] rounded-full bg-[--inner] transition-transform duration-300 ease-in-out data-[active=true]:scale-100"
                 />
             </div>
         </div>

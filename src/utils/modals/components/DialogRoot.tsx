@@ -18,8 +18,8 @@ export function DialogRoot({
 
     const transition = useTransition({
         isOpen,
-        openDuration: 500,
-        closeDuration: 300,
+        openDuration: 250,
+        closeDuration: 200,
         onChange: dialog.status.set,
     })
 

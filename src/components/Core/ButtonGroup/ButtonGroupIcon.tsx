@@ -19,7 +19,7 @@ export function ButtonGroupIcon({ children, className, ...props }: ButtonGroupIc
                 {...props}
                 data-active={index === active}
                 className={twMerge(
-                    'easing-glide flex aspect-square h-full items-center justify-center rounded-md transition-transform duration-300 active:scale-[0.8] data-[active=true]:text-[--fg-blue]',
+                    'flex aspect-square h-full items-center justify-center rounded-md transition-transform duration-300 ease-in-out active:scale-[0.8] data-[active=true]:text-[--fg-blue]',
                     className,
                 )}
             >

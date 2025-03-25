@@ -36,8 +36,8 @@ export function FadeInOut({
     const transition = useTransition({
         isOpen: show,
         animateMount,
-        openDuration: fadeInDuration ?? 500,
-        closeDuration: fadeOutDuration ?? 500,
+        openDuration: fadeInDuration ?? 300,
+        closeDuration: fadeOutDuration ?? 300,
         closingDelay: fadeOutDelay,
         onChange: onChangeStatus,
     })

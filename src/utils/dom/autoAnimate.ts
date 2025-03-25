@@ -1,4 +1,4 @@
-import { glide } from '@app/config/easings'
+import { easeInOut } from '@app/config/easings'
 
 export async function autoAnimate({
     target,
@@ -75,7 +75,7 @@ export async function autoAnimate({
             animate(element, [
                 { transform: 'scale(.9)', opacity: 0 },
                 { transform: 'scale(1)', opacity: 1 },
-            ], { duration, delay, easing: glide, fill: 'forwards' })
+            ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
         const fadeOut = function (element: HTMLElement, duration: number, delay: number): void {
@@ -84,7 +84,7 @@ export async function autoAnimate({
             animate(element, [
                 { transform: 'scale(1)', opacity: 1 },
                 { transform: 'scale(.9)', opacity: 0 },
-            ], { duration, delay, easing: glide, fill: 'forwards' })
+            ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
         const move = function (element: HTMLElement, y: number, duration: number, delay: number): void {
@@ -93,7 +93,7 @@ export async function autoAnimate({
             animate(element, [
                 { transform: `translateY(${y}px)` },
                 { transform: 'translateY(0px)' },
-            ], { duration, delay, easing: glide, fill: 'forwards' })
+            ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
         // Collect added, moved and remaining elements.
@@ -112,16 +112,16 @@ export async function autoAnimate({
         }
 
         // First get removed elements out of the way, then start moving others in after they have some breathing room.
-        const moveDelay = removedElements.length > 0 || movedElements.length > 0 ? 100 : 0
+        const moveDelay = removedElements.length > 0 || movedElements.length > 0 ? 50 : 0
         // Once the moved elements got out of the way a bit, start fading in new elements.
-        const fadeInDelay = moveDelay + (remainingElements.length > 0 ? 100 : 0)
+        const fadeInDelay = moveDelay + (remainingElements.length > 0 ? 50 : 0)
 
         // Execute animations.
-        for (const element of removedElements) fadeOut(insertClone(element), 500, 0)
-        for (const element of movedElements) fadeOut(insertClone(element), 500, 0)
-        for (const element of remainingElements) move(element, getDeltaY(element), 500, moveDelay)
-        for (const element of movedElements) fadeIn(element, 600, fadeInDelay)
-        for (const element of addedElements) fadeIn(element, 600, fadeInDelay)
+        for (const element of removedElements) fadeOut(insertClone(element), 200, 0)
+        for (const element of movedElements) fadeOut(insertClone(element), 200, 0)
+        for (const element of remainingElements) move(element, getDeltaY(element), 200, moveDelay)
+        for (const element of movedElements) fadeIn(element, 200, fadeInDelay)
+        for (const element of addedElements) fadeIn(element, 200, fadeInDelay)
 
         // Wait until all animations finished, reset the styles and do cleanups.
         await Promise.all(animations.map(animation => animation.finished))

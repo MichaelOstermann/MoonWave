@@ -14,8 +14,8 @@ export function TrackDragGhost(): ReactNode {
 
     const transition = useTransition({
         isOpen: isDragging,
-        openDuration: 300,
-        closeDuration: 300,
+        openDuration: 200,
+        closeDuration: 100,
     })
 
     if (!transition.mounted) return null

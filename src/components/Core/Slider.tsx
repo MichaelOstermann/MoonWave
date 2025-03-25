@@ -25,7 +25,7 @@ export function Slider({
     })
 
     useEffect(() => {
-        const timer = setTimeout(() => setVisible([active]), 500)
+        const timer = setTimeout(() => setVisible([active]), 300)
         return () => clearTimeout(timer)
     }, [active])
 
@@ -83,7 +83,7 @@ function SliderSection({
         <div
             ref={ref}
             style={style}
-            className="easing-glide absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-500"
+            className="absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-300 ease-in-out"
         >
             {isMounted && children}
         </div>

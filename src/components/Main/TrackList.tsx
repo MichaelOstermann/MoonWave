@@ -1,7 +1,6 @@
 import type { VListHandle } from 'virtua'
 import type { Column, Row } from './types'
 import { syncLibrary } from '@app/actions/app/syncLibrary'
-import { glide } from '@app/config/easings'
 import { useTable } from '@app/hooks/useTable'
 import { $mainWidth } from '@app/state/app/mainWidth'
 import { $focusedView } from '@app/state/sidebar/focusedView'
@@ -75,7 +74,7 @@ export function TrackList() {
         gap,
         outerPadding,
         innerPadding,
-        colStyles: isTogglingSidepanel ? { transition: `width 500ms ${glide}` } : undefined,
+        colStyles: isTogglingSidepanel ? { transition: 'width 300ms var(--ease-in-out)' } : undefined,
     })
 
     const headerGap = <div key="header" style={{ height: 0 }} />

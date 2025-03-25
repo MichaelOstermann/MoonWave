@@ -67,7 +67,7 @@ export function ButtonGroupRoot({
                 ))}
                 {hasMeasurements && (
                     <div
-                        className="easing-glide absolute inset-y-0 left-0 rounded-md bg-[--bg-blue] transition-[transform,width] duration-500"
+                        className="absolute inset-y-0 left-0 rounded-md bg-[--bg-blue] transition-[transform,width] duration-300 ease-in-out"
                         style={{
                             width,
                             transform: `translateX(${left}px)`,

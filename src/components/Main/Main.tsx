@@ -24,7 +24,7 @@ export function Main() {
         <div
             className={twJoin(
                 'main absolute inset-y-0 flex flex-nowrap bg-[--bg] text-[--fg]',
-                isTogglingSidepanel && 'easing-glide transition-[right] duration-500',
+                isTogglingSidepanel && 'transition-[right] duration-300 ease-in-out',
             )}
             style={{
                 'left': sidebarWidth,

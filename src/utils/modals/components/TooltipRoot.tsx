@@ -27,8 +27,8 @@ export function TooltipRoot({
 
     const transition = useTransition({
         isOpen,
-        openDuration: 300,
-        closeDuration: 300,
+        openDuration: 200,
+        closeDuration: 200,
         onChange: tooltip.status.set,
     })
 

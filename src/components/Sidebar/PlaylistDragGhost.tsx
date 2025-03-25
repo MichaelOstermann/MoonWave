@@ -13,8 +13,8 @@ export function PlaylistDragGhost(): ReactNode {
 
     const transition = useTransition({
         isOpen: isDraggingPlaylists,
-        openDuration: 300,
-        closeDuration: 300,
+        openDuration: 200,
+        closeDuration: 100,
     })
 
     if (!transition.mounted) return null

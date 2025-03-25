@@ -1,4 +1,4 @@
-import { glide } from '@app/config/easings'
+import { easeInOut } from '@app/config/easings'
 import { $dropPlaylistId } from '@app/state/playlists/dropPlaylistId'
 import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
 import { $tracksLSM } from '@app/state/tracks/tracksLSM'
@@ -18,6 +18,6 @@ export const onDragEndTracks = action(() => {
             { transform: 'scale(1)' },
             { transform: 'scale(.96)' },
             { transform: 'scale(1)' },
-        ], { duration: 1000, easing: glide })
+        ], { duration: 400, easing: easeInOut })
     }
 })

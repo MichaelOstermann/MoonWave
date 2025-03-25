@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { glide } from '@app/config/easings'
+import { easeInOut } from '@app/config/easings'
 import { useUpdateEffect } from '@react-hookz/web'
 import { useEffect, useState } from 'react'
 
@@ -37,7 +37,7 @@ export type UseTransition = {
 
 export function useTransition({
     isOpen,
-    easing = glide,
+    easing = easeInOut,
     animateMount = true,
     openDuration,
     closeDuration,

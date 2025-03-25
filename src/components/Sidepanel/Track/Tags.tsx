@@ -53,7 +53,7 @@ export function Tags(): ReactNode {
                 </FadeInOut>
                 <div
                     data-fade-out={isSavingTags || isSyncing}
-                    className="easing-glide flex flex-col gap-y-3 transition-opacity duration-700 data-[fade-out=true]:opacity-40"
+                    className="flex flex-col gap-y-3 transition-opacity duration-300 ease-in-out data-[fade-out=true]:opacity-40"
                 >
                     <div className="flex flex-col gap-y-3">
                         {groupA.map(name => (

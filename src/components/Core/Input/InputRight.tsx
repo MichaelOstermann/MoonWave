@@ -19,7 +19,7 @@ export function InputRight({
             {...rest}
             data-show={show}
             className={twMerge(
-                'easing-glide absolute right-0 flex scale-0 items-center justify-center transition-transform duration-300 data-[show=true]:scale-100',
+                'absolute right-0 flex scale-0 items-center justify-center transition-transform duration-300 ease-in-out data-[show=true]:scale-100',
                 className,
             )}
             onPointerDown={(evt) => {

@@ -157,7 +157,7 @@ function Icon({
         >
             <div
                 data-active={isActive}
-                className="easing-glide flex size-[--cell-size] items-center justify-center rounded transition duration-300 active:scale-[0.8] data-[active=true]:bg-[--bg-accent] data-[active=true]:text-[--fg-accent]"
+                className="flex size-[--cell-size] items-center justify-center rounded transition duration-150 ease-in-out active:scale-[0.8] data-[active=true]:bg-[--bg-accent] data-[active=true]:text-[--fg-accent]"
             >
                 {createElement(icon, { className: 'size-4' })}
             </div>
