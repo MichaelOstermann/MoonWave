@@ -3,6 +3,7 @@ import { $sidebarWidth } from '@app/state/sidebar/sidebarWidth'
 import { $isSidepanelOpen } from '@app/state/sidepanel/isSidepanelOpen'
 import { $isSidepanelVisible } from '@app/state/sidepanel/isSidepanelVisible'
 import { $isTogglingSidepanel } from '@app/state/sidepanel/isTogglingSidepanel'
+import { $prepareSidepanel } from '@app/state/sidepanel/prepareSidepanel'
 import { $sidepanelWidth } from '@app/state/sidepanel/sidepanelWidth'
 import { useSignal } from '@monstermann/signals'
 import { twJoin } from 'tailwind-merge'
@@ -17,6 +18,7 @@ export function Main() {
     const isSidepanelVisible = useSignal($isSidepanelVisible)
     const isSidepanelOpen = useSignal($isSidepanelOpen)
     const isTogglingSidepanel = useSignal($isTogglingSidepanel)
+    const prepareSidepanel = useSignal($prepareSidepanel)
     const sidebarWidth = useSignal($sidebarWidth)
     const sidepanelWidth = useSignal($sidepanelWidth)
 
@@ -41,7 +43,7 @@ export function Main() {
                 <TrackList />
             </div>
             <div className="flex shrink-0" style={{ width: sidepanelWidth }}>
-                {isSidepanelVisible && <Sidepanel />}
+                {(prepareSidepanel || isSidepanelVisible) && <Sidepanel />}
             </div>
         </div>
     )
