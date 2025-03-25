@@ -10,7 +10,7 @@ export function getPrevTrackId(): string | undefined {
     if (mode === 'SINGLE') return playingTrackId
     if ($currentTrackPosition() >= 5) return playingTrackId
     if ($prevPlayedTrackIds().length)
-        return $prevPlayedTrackIds()[0]
+        return $prevPlayedTrackIds().at(-1)
 
     return playingTrackId
 }
