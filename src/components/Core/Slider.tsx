@@ -1,19 +1,19 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { setEntry } from '@app/utils/data/setEntry'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twJoin, twMerge } from 'tailwind-merge'
 
 export function Slider({
     active,
     children,
     className,
-    dynamicHeight = true,
+    autoHeight = true,
 }: {
     active: number
     children: ReactNode[]
     className?: string
     height?: number
-    dynamicHeight?: boolean
+    autoHeight?: boolean
 }): ReactNode {
     const [visible, setVisible] = useState<number[]>([])
     const [heights, setHeights] = useState(new Map<number, number>())
@@ -29,7 +29,7 @@ export function Slider({
         return () => clearTimeout(timer)
     }, [active])
 
-    const height = dynamicHeight
+    const height = autoHeight
         ? heights.get(active)
         : undefined
 
@@ -44,7 +44,7 @@ export function Slider({
                         key={idx}
                         isActive={idx === active}
                         isVisible={visible.includes(idx)}
-                        measureHeight={dynamicHeight}
+                        autoHeight={autoHeight}
                         style={styles[idx]}
                         onResize={height => setHeights(setEntry(idx, height))}
                     >
@@ -60,14 +60,14 @@ function SliderSection({
     style,
     isActive,
     isVisible,
-    measureHeight,
+    autoHeight,
     children,
     onResize,
 }: {
     style?: CSSProperties
     isActive: boolean
     isVisible: boolean
-    measureHeight: boolean
+    autoHeight: boolean
     children: ReactNode
     onResize: (height: number) => void
 }): ReactNode {
@@ -75,15 +75,18 @@ function SliderSection({
     const isMounted = isVisible || isActive
 
     useEffect(() => {
-        if (!measureHeight || !isMounted || !ref.current) return
+        if (!autoHeight || !isMounted || !ref.current) return
         onResize(ref.current.scrollHeight)
-    }, [measureHeight, isMounted, onResize])
+    }, [autoHeight, isMounted, onResize])
 
     return (
         <div
             ref={ref}
             style={style}
-            className="absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-300 ease-in-out"
+            className={twJoin(
+                'absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-300 ease-in-out',
+                !autoHeight && 'h-full',
+            )}
         >
             {isMounted && children}
         </div>

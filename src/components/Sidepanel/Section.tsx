@@ -5,7 +5,7 @@ export function Section({ className, ...rest }: ComponentProps<'div'>): ReactNod
     return (
         <div
             {...rest}
-            className={twMerge('flex flex-col border-b border-[--border]', className)}
+            className={twMerge('flex flex-col', className)}
         />
     )
 }

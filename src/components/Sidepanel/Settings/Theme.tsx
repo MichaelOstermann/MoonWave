@@ -105,7 +105,7 @@ function ThemeOption({
             >
                 {titleCase(name.replace(/(-dark|-light)$/, ''))}
             </div>
-            {isActive && <div className="absolute -inset-1 rounded-md border-2 border-[--accent]" />}
+            {isActive && <div className="absolute inset-0 rounded-md border-2 border-[--accent]" />}
         </div>
     )
 }

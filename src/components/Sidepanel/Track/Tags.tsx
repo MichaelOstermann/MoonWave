@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Spinner } from '@app/components/Core/Spinner/Spinner'
 import { FadeInOut } from '@app/components/FadeInOut'
 import { $isSyncing } from '@app/state/app/isSyncing'
+import { $hasEditableTags } from '@app/state/sidepanel/hasEditableTags'
 import { $isSavingTags } from '@app/state/sidepanel/isSavingTags'
 import { $showSavingTagsDone } from '@app/state/sidepanel/showSavingTagsDone'
 import { $showSavingTagsSpinner } from '@app/state/sidepanel/showSavingTagsSpinner'
@@ -22,6 +23,7 @@ export function Tags(): ReactNode {
     const isSavingTags = useSignal($isSavingTags)
     const showSpinner = useSignal($showSavingTagsSpinner)
     const showDone = useSignal($showSavingTagsDone)
+    const hasEditableTags = useSignal($hasEditableTags)
 
     return (
         <Section>
@@ -31,7 +33,10 @@ export function Tags(): ReactNode {
             >
                 <SaveButton />
             </SectionHeader>
-            <SectionBody className="relative items-center justify-center">
+            <SectionBody
+                className="relative items-center justify-center"
+                disabled={!hasEditableTags}
+            >
                 <FadeInOut
                     show={showSpinner}
                     className="absolute"

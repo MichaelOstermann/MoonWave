@@ -43,7 +43,8 @@ export function Sidepanel(): ReactNode {
             </div>
             <Slider
                 active={activeTab}
-                dynamicHeight={false}
+                autoHeight={false}
+                className="shrink grow"
             >
                 <Track />
                 <Playlist />

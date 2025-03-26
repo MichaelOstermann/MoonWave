@@ -19,7 +19,7 @@ export function SectionHeader({
         <div
             {...rest}
             className={twMerge(
-                'flex h-12 items-center gap-x-2 border-b border-[--border] px-3 text-xs font-medium text-[--fg]',
+                'flex h-14 items-center gap-x-2 px-3 text-xs font-medium text-[--fg]',
                 className,
             )}
         >

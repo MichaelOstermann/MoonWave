@@ -80,7 +80,7 @@ function WaveformOption({
                 ref={container}
                 className="h-16 overflow-hidden rounded-md border border-[--border]"
             />
-            {isActive && <div className="absolute -inset-1 rounded-md border-2 border-[--accent]" />}
+            {isActive && <div className="absolute inset-0 rounded-md border-2 border-[--accent]" />}
         </div>
     )
 }

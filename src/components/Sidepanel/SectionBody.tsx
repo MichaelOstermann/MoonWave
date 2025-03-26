@@ -14,7 +14,7 @@ export function SectionBody({
         <div
             {...rest}
             className={twMerge(
-                'flex px-3 py-5',
+                'flex px-3',
                 disabled && 'pointer-events-none opacity-50',
                 className,
             )}

@@ -30,13 +30,13 @@ export function Details(): ReactNode {
                 title="Details"
                 icon={LucideInfo}
             />
-            <SectionBody className="py-3">
-                <div className="grid w-full grid-cols-[auto_1fr] items-start gap-x-2">
+            <SectionBody>
+                <div className="grid w-full grid-cols-[auto_1fr] items-start gap-x-2 gap-y-4">
                     {order.map((name) => {
                         const value = details[name]
                         return (
                             <Fragment key={name}>
-                                <div className="flex h-8 items-center gap-x-2 text-xs font-medium text-[--fg-soft]">
+                                <div className="flex h-4 items-center gap-x-2 text-xs font-medium text-[--fg-soft]">
                                     {createElement(icons[name], { className: 'size-4' })}
                                     {titles[name]}
                                 </div>
@@ -58,7 +58,7 @@ function Detail({ value }: { value: string }): ReactNode {
 
 function Placeholder({ value }: { value: ReactNode }): ReactNode {
     return (
-        <div className="flex h-8 items-center justify-end text-sm text-[--fg-soft]">
+        <div className="flex h-4 items-center justify-end text-sm text-[--fg-soft]">
             {value}
         </div>
     )
@@ -66,7 +66,7 @@ function Placeholder({ value }: { value: ReactNode }): ReactNode {
 
 function Value({ value }: { value: ReactNode }): ReactNode {
     return (
-        <div className="flex h-8 select-text items-center justify-end text-sm">
+        <div className="flex h-4 select-text items-center justify-end text-sm">
             {value}
         </div>
     )

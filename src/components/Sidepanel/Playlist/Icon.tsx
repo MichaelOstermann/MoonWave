@@ -38,9 +38,9 @@ export function Icon(): ReactNode {
                 disabled={!playlistId}
             >
                 <Icons
-                    rowCount={8}
+                    rowCount={6}
                     paddingX={8}
-                    className="gap-y-3 py-4"
+                    className="gap-y-3"
                     activeIcon={activeIcon}
                     onSelectIcon={(icon) => {
                         if (!playlistId) return
