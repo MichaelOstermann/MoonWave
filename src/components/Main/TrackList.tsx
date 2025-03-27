@@ -26,23 +26,23 @@ const $rows = computed<Row[]>(() => $viewingTracks().map((track, idx) => {
     return trackToRow(track, idx)
 }))
 
+const fontFamily = getComputedStyle(document.body).fontFamily
+const rowFont = `400 14px ${fontFamily}`
+const headerFont = `400 12px ${fontFamily}`
+
 const $measurements = computed(() => {
     const rows = $rows()
-    const fontFamily = getComputedStyle(document.body).fontFamily
 
     return columns.reduce((acc, col) => {
         acc[col] = rows.map(row => measureText(row[col], {
-            fontSize: '14px',
-            fontWeight: '400',
-            fontFamily,
+            font: rowFont,
             monospace: col === 'position' || col === 'duration',
         }))
         // Measure the header as well, excluding the duration column since it displays an icon and not text.
         if (col !== 'duration') {
             acc[col].push(measureText(header[col], {
-                fontSize: '12px',
-                fontWeight: '400',
-                fontFamily,
+                font: headerFont,
+                monospace: false,
             }))
         }
         return acc

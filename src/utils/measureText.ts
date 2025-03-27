@@ -6,35 +6,25 @@ type Canvas = {
 
 const canvases = new Map<string, Canvas>()
 
-export function measureText(text: string | number, opts: {
-    fontSize: string
-    fontWeight: string
-    fontFamily: string
+export function measureText(text: string, opts: {
+    font: string
     monospace?: boolean
 }): number {
     return opts.monospace
-        ? measureMonospace(String(text), opts)
-        : measureRegular(String(text), opts)
+        ? measureMonospace(text, opts.font)
+        : measureRegular(text, opts.font)
 }
 
-function measureRegular(text: string, opts: {
-    fontSize: string
-    fontWeight: string
-    fontFamily: string
-}): number {
-    const { context, cache } = getCanvas(opts)
+function measureRegular(text: string, font: string): number {
+    const { context, cache } = getCanvas(font)
     if (cache.has(text)) return cache.get(text)!
     const value = Math.ceil(context.measureText(text).width)
     cache.set(text, value)
     return value
 }
 
-function measureMonospace(text: string, opts: {
-    fontSize: string
-    fontWeight: string
-    fontFamily: string
-}): number {
-    const { cache } = getCanvas(opts)
+function measureMonospace(text: string, font: string): number {
+    const { cache } = getCanvas(font)
     if (cache.has(text)) return cache.get(text)!
 
     const chars = [...text]
@@ -42,7 +32,7 @@ function measureMonospace(text: string, opts: {
     let charWidth = 0
 
     for (const char of uniqueChars) {
-        charWidth = Math.max(charWidth, measureRegular(char, opts))
+        charWidth = Math.max(charWidth, measureRegular(char, font))
     }
 
     const value = charWidth * chars.length
@@ -50,13 +40,7 @@ function measureMonospace(text: string, opts: {
     return value
 }
 
-function getCanvas(opts: {
-    fontSize: string
-    fontWeight: string
-    fontFamily: string
-}) {
-    const font = `${opts.fontWeight} ${opts.fontSize} ${opts.fontFamily}`
-
+function getCanvas(font: string) {
     if (!canvases.has(font)) {
         const canvas = new OffscreenCanvas(0, 0)
         const context = canvas.getContext('2d')!
