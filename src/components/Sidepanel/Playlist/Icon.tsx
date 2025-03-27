@@ -38,7 +38,7 @@ export function Icon(): ReactNode {
                 disabled={!playlistId}
             >
                 <Icons
-                    rowCount={6}
+                    rowCount={8}
                     paddingX={8}
                     className="gap-y-3"
                     activeIcon={activeIcon}
