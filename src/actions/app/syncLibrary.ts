@@ -6,8 +6,11 @@ import { $syncGoal } from '@app/state/app/syncGoal'
 import { $syncProgress } from '@app/state/app/syncProgress'
 import { $tracks } from '@app/state/tracks/tracks'
 import { append } from '@app/utils/data/append'
-import { findAndMapOr } from '@app/utils/data/findAndMapOr'
 import { findAndRemoveAll } from '@app/utils/data/findAndRemoveAll'
+import { indexBy } from '@app/utils/data/indexBy'
+import { withMutations } from '@app/utils/data/mutations'
+import { pipe } from '@app/utils/data/pipe'
+import { replace } from '@app/utils/data/replace'
 import { parseAudioFiles } from '@app/utils/parseAudioFile'
 import { action, batch } from '@monstermann/signals'
 import { audioDir } from '@tauri-apps/api/path'
@@ -43,15 +46,22 @@ export const syncLibrary = action(async () => {
             buffer.add(track)
             timer ??= setTimeout(() => {
                 timer = undefined
-                $tracks.map(ts => applyUpdates(ts, buffer))
+                $tracks.map(tracks => withMutations(() => {
+                    return applyUpdates(tracks, buffer)
+                }))
             }, debounce)
         },
     })
 
     batch(() => {
         clearTimeout(timer)
-        $tracks.map(ts => applyUpdates(ts, buffer))
-        $tracks.map(findAndRemoveAll(t => !trackIds.has(t.id)))
+        $tracks.map(tracks => withMutations(() => {
+            return pipe(
+                tracks,
+                tracks => applyUpdates(tracks, buffer),
+                tracks => findAndRemoveAll(tracks, t => !trackIds.has(t.id)),
+            )
+        }))
     })
 
     // Give the sidebar animations room to settle.
@@ -90,13 +100,12 @@ async function getAudioFilePaths(libraryPath: string): Promise<string[]> {
 }
 
 function applyUpdates(oldTracks: Track[], newTracks: Set<Track>): Track[] {
+    const idx = indexBy(oldTracks, t => t.id)
     for (const newTrack of newTracks) {
-        oldTracks = findAndMapOr(
-            oldTracks,
-            oldTrack => oldTrack.id === newTrack.id,
-            _oldTrack => newTrack,
-            append(newTrack),
-        )
+        const oldTrack = idx[newTrack.id]
+        oldTracks = oldTrack
+            ? replace(oldTracks, oldTrack, newTrack)
+            : append(oldTracks, newTrack)
     }
     newTracks.clear()
     return oldTracks
