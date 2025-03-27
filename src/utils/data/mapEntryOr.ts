@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneMap } from './mutations'
 
 export const mapEntryOr: {
     <T, U>(key: T, transform: (value: U) => U, or: (target: Map<T, U>) => Map<T, U>): (target: Map<T, U>) => Map<T, U>
@@ -8,5 +9,7 @@ export const mapEntryOr: {
     const prev = target.get(key)!
     const next = transform(prev)
     if (prev === next) return target
-    return new Map(target).set(key, next)
+    const clone = cloneMap(target)
+    clone.set(key, next)
+    return clone
 }, 4)

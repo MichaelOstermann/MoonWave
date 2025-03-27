@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneArray } from './mutations'
 
 export const replace: {
     <T>(before: T, after: T): (target: T[]) => T[]
@@ -7,5 +8,7 @@ export const replace: {
     if (before === after) return target
     const idx = target.indexOf(before)
     if (idx === -1) return target
-    return target.toSpliced(idx, 1, after)
+    const clone = cloneArray(target)
+    clone.splice(idx, 1, after)
+    return clone
 }, 3)

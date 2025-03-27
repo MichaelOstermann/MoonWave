@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { markAsMutable } from './mutations'
 
 export const merge: {
     <T extends object>(source: Partial<NoInfer<T>>): (target: T) => T
@@ -6,7 +7,7 @@ export const merge: {
 } = dfdl((target, source) => {
     for (const key in source) {
         if (target[key] !== source[key]) {
-            return { ...target, ...source }
+            return markAsMutable({ ...target, ...source })
         }
     }
     return target

@@ -1,10 +1,12 @@
+import { cloneArray } from './mutations'
+
 export function without<T>(target: T[], values: NoInfer<T>[]): T[] {
-    let copy
+    let clone
     for (const value of values) {
-        const idx = (copy ?? target).indexOf(value)
+        const idx = (clone ?? target).indexOf(value)
         if (idx < 0) continue
-        copy ??= [...target]
-        copy.splice(idx, 1)
+        clone ??= cloneArray(target)
+        clone.splice(idx, 1)
     }
-    return copy ?? target
+    return clone ?? target
 }

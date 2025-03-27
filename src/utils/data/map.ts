@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneArray, skipMutations } from './mutations'
 
 export const map: {
     <T, U>(transform: (item: T) => U): (target: T[]) => U[]
@@ -8,9 +9,9 @@ export const map: {
 
     for (let i = 0; i < target.length; i++) {
         const prev = target[i]
-        const next = transform(prev)
+        const next = skipMutations(() => transform(prev))
         if (prev === next) continue
-        clone ??= [...target]
+        clone ??= cloneArray(target)
         clone[i] = next
     }
 

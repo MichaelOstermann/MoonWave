@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneMap } from './mutations'
 
 export const setEntry: {
     <T, U>(key: T, value: NoInfer<U>): (target: Map<T, U>) => Map<T, U>
@@ -6,5 +7,7 @@ export const setEntry: {
 } = dfdl((target, key, value) => {
     const prev = target.get(key)
     if (prev === value) return target
-    return new Map(target).set(key, value)
+    const clone = cloneMap(target)
+    clone.set(key, value)
+    return clone
 }, 3)

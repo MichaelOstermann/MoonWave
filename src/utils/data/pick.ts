@@ -1,5 +1,6 @@
 import type { Simplify } from 'type-fest'
 import { dfdl } from './dfdl'
+import { markAsMutable } from './mutations'
 
 export const pick: {
     <T extends object, K extends keyof T>(keys: readonly K[]): (target: T) => Simplify<Pick<T, K>>
@@ -8,5 +9,5 @@ export const pick: {
     const result: any = {}
     for (const key of keys)
         result[key] = target[key]
-    return result
+    return markAsMutable(result)
 }, 2)

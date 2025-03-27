@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneArray, skipMutations } from './mutations'
 
 export const findAllAndMap: {
     <T>(find: (item: T) => boolean, transform: (item: T) => T): (target: T[]) => T[]
@@ -9,9 +10,9 @@ export const findAllAndMap: {
     for (let i = 0; i < target.length; i++) {
         const prev = target[i]
         if (!find(prev)) continue
-        const next = transform(prev)
+        const next = skipMutations(() => transform(prev))
         if (prev === next) continue
-        clone ??= [...target]
+        clone ??= cloneArray(target)
         clone[i] = next
     }
 

@@ -1,4 +1,5 @@
 import type { Exact, RequiredKeysOf, SetRequired } from 'type-fest'
+import { cloneObject } from './mutations'
 
 type Nil = undefined | null
 
@@ -18,9 +19,15 @@ export function defaults<T extends object, U extends Partial<Exact<T, U>>>(
     target: T,
     defaults: U,
 ): WithDefaults<T, U> {
-    const result = { ...target } as any
+    let clone: any
+
     for (const key in defaults) {
-        result[key] ??= (defaults as any)[key]
+        const before = (target as any)[key]
+        const after = before ?? (defaults as any)[key]
+        if (before === after) continue
+        clone ??= cloneObject(target)
+        clone[key] = after
     }
-    return result
+
+    return clone ?? target
 }

@@ -1,4 +1,5 @@
 import { dfdl } from './dfdl'
+import { cloneArray } from './mutations'
 
 export const findAndReplace: {
     <T, U>(find: (item: T) => boolean, item: U): (target: T[]) => (T | U)[]
@@ -8,5 +9,7 @@ export const findAndReplace: {
     if (idx === -1) return target
     const prev = target[idx]!
     if (prev === next) return target
-    return target.toSpliced(idx, 1, next)
+    const clone = cloneArray(target)
+    clone.splice(idx, 1, next)
+    return clone
 }, 3)
