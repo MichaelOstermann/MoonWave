@@ -84,6 +84,7 @@ export function Library(): ReactNode {
             <FadeInOut show={isSyncing}>
                 <Badge>
                     <NumberFlow
+                        trend={1}
                         willChange
                         suffix="%"
                         value={syncProgress}
