@@ -8,7 +8,8 @@ import { $showSavingTagsSpinner } from '@app/state/sidepanel/showSavingTagsSpinn
 import { $trackTags } from '@app/state/sidepanel/trackTags'
 import { $selectedTracks } from '@app/state/tracks/selectedTracks'
 import { $tracks } from '@app/state/tracks/tracks'
-import { findAndMap } from '@app/utils/data/findAndMap'
+import { indexBy } from '@app/utils/data/indexBy'
+import { map } from '@app/utils/data/map'
 import { merge } from '@app/utils/data/merge'
 import { pick } from '@app/utils/data/pick'
 import { sleep } from '@app/utils/data/sleep'
@@ -68,13 +69,15 @@ export const saveTags = action(async () => {
 
     batch(() => {
         $showSavingTagsDone.set(true)
-        $tracks.map(tracks => updates.reduce((tracks, updatedTrack) => {
-            return findAndMap(
-                tracks,
-                track => updatedTrack.path === track.path,
-                track => merge(track, updatedTrack),
-            )
-        }, tracks))
+        $tracks.map((tracks) => {
+            const idx = indexBy(updates, t => t.path)
+            return map(tracks, (oldTrack) => {
+                const newTrack = idx[oldTrack.path]
+                return newTrack
+                    ? merge(oldTrack, newTrack)
+                    : oldTrack
+            })
+        })
     })
 
     await sleep(1000)
