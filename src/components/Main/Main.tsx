@@ -29,14 +29,18 @@ export function Main() {
                 isTogglingSidepanel && 'transition-[right] duration-300 ease-in-out',
             )}
             style={{
-                'left': sidebarWidth,
-                'right': isSidepanelOpen ? 0 : -sidepanelWidth,
-                '--accent': color ? `var(--accent-${color.value})` : undefined,
-                '--fg-accent': color ? `var(--fg-${color.value})` : undefined,
-                '--bg-accent': color ? `var(--bg-${color.value})` : undefined,
+                left: sidebarWidth,
+                right: isSidepanelOpen ? 0 : -sidepanelWidth,
             }}
         >
-            <div className="relative flex size-full flex-col">
+            <div
+                className="relative flex size-full flex-col"
+                style={{
+                    '--accent': color ? `var(--accent-${color.value})` : undefined,
+                    '--fg-accent': color ? `var(--fg-${color.value})` : undefined,
+                    '--bg-accent': color ? `var(--bg-${color.value})` : undefined,
+                }}
+            >
                 <SidebarResizeHandler />
                 <SidepanelResizeHandler />
                 <Trackbar />
