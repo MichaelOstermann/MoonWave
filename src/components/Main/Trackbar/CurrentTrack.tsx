@@ -27,7 +27,6 @@ export function CurrentTrack(): ReactNode {
 
     return (
         <div
-            ref={seeker.$element.set}
             data-show-logo={!hasTrack}
             data-show-track={hasTrack && !iSeeking}
             data-show-waveform={hasTrack && iSeeking}
@@ -42,7 +41,10 @@ export function CurrentTrack(): ReactNode {
                 <TrackDuration />
                 <TrackPosition />
             </div>
-            <div className="absolute inset-0 flex size-full group-data-[show-waveform=true]:cursor-crosshair group-data-[show-waveform=false]:opacity-0">
+            <div
+                ref={seeker.$element.set}
+                className="absolute inset-0 top-[3px] flex size-full group-data-[show-waveform=true]:cursor-crosshair group-data-[show-waveform=false]:opacity-0"
+            >
                 <WavesurferSeeker position={position} />
                 <Wavesurfer />
             </div>
