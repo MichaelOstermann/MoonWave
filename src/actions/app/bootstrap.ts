@@ -13,7 +13,7 @@ import { writeJSON } from '@app/utils/fs/writeJSON'
 import { checkForUpdates, periodicallyCheckForUpdates } from '@app/utils/updater'
 import { action, batch, onChange, onEvent, onKeyDown, onMediaSessionNextTrack, onMediaSessionPause, onMediaSessionPlay, onMediaSessionPreviousTrack, onMediaSessionStop } from '@monstermann/signals'
 import { homeDir } from '@tauri-apps/api/path'
-import { getCurrentWindow } from '@tauri-apps/api/window'
+import { Effect, EffectState, getCurrentWindow } from '@tauri-apps/api/window'
 import { BaseDirectory } from '@tauri-apps/plugin-fs'
 import pDebounce from 'p-debounce'
 import { onAudioChangeDuration } from '../audio/onAudioChangeDuration'
@@ -39,6 +39,12 @@ export const bootstrap = action(async () => {
     didBootstrap = true
 
     const tauri = getCurrentWindow()
+
+    tauri.setEffects({
+        radius: 10,
+        state: EffectState.Active,
+        effects: [Effect.HudWindow],
+    })
 
     audio.addEventListener('play', onAudioPlay)
     audio.addEventListener('pause', onAudioPause)

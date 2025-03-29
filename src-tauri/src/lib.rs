@@ -9,10 +9,8 @@ use std::fs::File;
 use std::io::{BufReader, Read};
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
-use tauri::Manager;
 use tauri_plugin_window_state::StateFlags;
 use trash;
-use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
 
 #[derive(Serialize)]
 struct AudioMetadata {
@@ -212,20 +210,6 @@ pub fn run() {
                 )
                 .build(),
         )
-        .setup(|app| {
-            let window = app.get_webview_window("main").unwrap();
-
-            #[cfg(target_os = "macos")]
-            apply_vibrancy(
-                &window,
-                NSVisualEffectMaterial::HudWindow,
-                Some(NSVisualEffectState::Active),
-                Some(10.0),
-            )
-            .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
-
-            Ok(())
-        })
         .invoke_handler(tauri::generate_handler![
             parse_audio_metadata,
             trash_files,

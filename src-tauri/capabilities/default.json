@@ -19,6 +19,7 @@
         "core:window:allow-set-fullscreen",
         "core:window:allow-show",
         "core:window:allow-set-focus",
+        "core:window:allow-set-effects",
         "fs:allow-temp-write",
         "fs:allow-appdata-write-recursive",
         "fs:allow-audio-read-recursive",
