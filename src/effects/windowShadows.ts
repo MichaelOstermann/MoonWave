@@ -2,7 +2,7 @@ import { $isFocused } from '@app/state/app/isFocused'
 import { $isMinimized } from '@app/state/app/isMinimized'
 import { sleep } from '@app/utils/data/sleep'
 import { effect, onChange, onCleanup } from '@monstermann/signals'
-import { getCurrentWindow, LogicalSize } from '@tauri-apps/api/window'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 
 onChange($isMinimized, (isMinimized) => {
     if (isMinimized) return
@@ -17,10 +17,8 @@ effect(() => {
 
 async function invalidateWindowShadows() {
     const appWindow = getCurrentWindow()
-    const oldSize = await appWindow.outerSize()
-    const newSize = new LogicalSize(oldSize.width + 1, oldSize.height)
-    await appWindow.setSize(newSize)
-    await appWindow.setSize(oldSize)
+    await appWindow.setShadow(false)
+    await appWindow.setShadow(true)
 }
 
 function pollIsMinimized(cb: (isMinimized: boolean) => void): () => void {

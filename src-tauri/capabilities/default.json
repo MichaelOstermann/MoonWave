@@ -20,6 +20,7 @@
         "core:window:allow-show",
         "core:window:allow-set-focus",
         "core:window:allow-set-effects",
+        "core:window:allow-set-shadow",
         "fs:allow-temp-write",
         "fs:allow-appdata-write-recursive",
         "fs:allow-audio-read-recursive",
