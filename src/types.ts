@@ -64,6 +64,8 @@ export type Playlist = {
     mode?: Mode
     icon?: PlaylistIcon
     color?: PlaylistColor
+    parentId?: string
+    expanded?: true
 }
 
 export type Library = {

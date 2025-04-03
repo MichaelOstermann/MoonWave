@@ -1,12 +1,15 @@
-import { cloneArray } from './mutations'
+import { markAsMutable } from './mutations'
 
 export function without<T>(target: T[], values: NoInfer<T>[]): T[] {
-    let clone
-    for (const value of values) {
-        const idx = (clone ?? target).indexOf(value)
-        if (idx < 0) continue
-        clone ??= cloneArray(target)
-        clone.splice(idx, 1)
-    }
-    return clone ?? target
+    let hasChanges = false
+
+    const result = target.filter((value) => {
+        if (!values.includes(value)) return true
+        hasChanges = true
+        return false
+    })
+
+    return hasChanges
+        ? markAsMutable(result)
+        : target
 }

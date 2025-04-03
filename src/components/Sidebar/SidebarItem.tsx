@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { twJoin } from 'tailwind-merge'
 
-type DropTarget = 'above' | 'below' | boolean | undefined
+type DropTarget = 'above' | 'below' | 'inside' | undefined
 
 interface SidebarItemProps extends Omit<ComponentProps<'div'>, 'color'> {
     isSelected: boolean
@@ -13,6 +13,7 @@ interface SidebarItemProps extends Omit<ComponentProps<'div'>, 'color'> {
     isEditing?: boolean
     showBorder?: boolean
     dropTarget?: DropTarget
+    depth?: number
 }
 
 export function SidebarItem({
@@ -22,13 +23,15 @@ export function SidebarItem({
     isPlaying,
     isEditing = false,
     showBorder = false,
-    dropTarget = false,
+    dropTarget,
+    depth = 0,
     children,
     style,
     className,
     ...rest
 }: SidebarItemProps): ReactNode {
     const ref = useRef<HTMLDivElement>(null)
+    const depthPadding = depth * 12
 
     useEffect(() => {
         if (!isEditing && !isSelected) return
@@ -40,9 +43,10 @@ export function SidebarItem({
             {...rest}
             ref={ref}
             className="relative flex shrink-0 py-px"
+            style={{ paddingLeft: depthPadding }}
         >
-            {dropTarget === 'above' && <div className="absolute inset-x-2 -top-px h-[2px] bg-[--accent]" />}
-            {dropTarget === 'below' && <div className="absolute inset-x-2 -bottom-px h-[2px] bg-[--accent]" />}
+            {dropTarget === 'above' && <div className="absolute inset-x-2 -top-px h-[2px] bg-[--accent]" style={{ marginLeft: depthPadding }} />}
+            {dropTarget === 'below' && <div className="absolute inset-x-2 -bottom-px h-[2px] bg-[--accent]" style={{ marginLeft: depthPadding }} />}
             <div
                 style={{
                     ...style,

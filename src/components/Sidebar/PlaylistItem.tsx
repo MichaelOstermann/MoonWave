@@ -12,7 +12,6 @@ import { setPlaylistColor } from '@app/actions/playlists/setPlaylistColor'
 import { setPlaylistIcon } from '@app/actions/playlists/setPlaylistIcon'
 import { icons } from '@app/config/icons'
 import { $isPlaying } from '@app/state/audio/isPlaying'
-import { $draggingPlaylistIds } from '@app/state/playlists/draggingPlaylistIds'
 import { $dropPlaylistId } from '@app/state/playlists/dropPlaylistId'
 import { $dropPlaylistSide } from '@app/state/playlists/dropPlaylistSide'
 import { $editingPlaylistId } from '@app/state/playlists/editingPlaylistId'
@@ -24,29 +23,33 @@ import { $playingView } from '@app/state/sidebar/playingView'
 import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
 import { useMenu } from '@app/utils/menu'
 import { PopoverRoot } from '@app/utils/modals/components/PopoverRoot'
-import { PopoverTarget } from '@app/utils/modals/components/PopoverTarget'
 import { usePopover } from '@app/utils/modals/usePopover'
+import { getPlaylistDepth } from '@app/utils/playlist/getPlaylistDepth'
 import { useSignal } from '@monstermann/signals'
 import { confirm } from '@tauri-apps/plugin-dialog'
 import { LucideListMusic } from 'lucide-react'
-import { createElement, type ReactNode } from 'react'
-import { AudioWaveIcon } from '../AudioWaveIcon'
-import { FadeInOut } from '../FadeInOut'
+import { memo, type ReactNode } from 'react'
 import { IconPicker } from './IconPicker'
-import { LibraryItemIcon } from './LibraryItemIcon'
 import { LibraryItemTitle } from './LibraryItemTitle'
+import { PlaylistItemIcon } from './PlaylistItemIcon'
 import { SidebarItem } from './SidebarItem'
 
-export function PlaylistItem({ id }: { id: string }): ReactNode {
-    const playlist = useSignal($playlistsById(id))!
+// Requires a memo, see: https://github.com/reactwg/react-compiler/discussions/58
+export const PlaylistItem = memo(({ id }: { id: string }): ReactNode => {
+    const playlistTitle = useSignal(() => $playlistsById(id)()?.title || '')
+    const playlistIcon = useSignal(() => $playlistsById(id)()?.icon)
+    const playlistColor = useSignal(() => $playlistsById(id)()?.color)
+    const depth = useSignal(() => getPlaylistDepth(id))
     const isEditing = useSignal(() => $editingPlaylistId() === id)
     const isFocused = useSignal(() => $focusedView() === 'SIDEBAR')
     const isSelected = useSignal(() => $viewingPlaylistId() === id)
     const isActive = isFocused && isSelected
-    const isDragging = useSignal(() => $draggingPlaylistIds().includes(id))
     const isDropTarget = useSignal(() => $dropPlaylistId() === id)
-    const dropTarget = useSignal(() => isDropTarget && $isDraggingPlaylists() ? $dropPlaylistSide() : isDropTarget)
-
+    const dropTarget = useSignal(() => {
+        if (!isDropTarget) return undefined
+        if ($isDraggingPlaylists()) return $dropPlaylistSide()
+        return 'inside'
+    })
     const isPlaying = useSignal(() => {
         if (!$isPlaying()) return false
         const view = $playingView()
@@ -60,7 +63,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
     const menu = useMenu([
         { text: 'Edit Title', action: () => editPlaylistTitle(id) },
         { text: 'Edit Icon', action: popover.open },
-        () => playlist.icon || playlist.color
+        () => playlistIcon || playlistColor
             ? { text: 'Reset Icon', action: () => resetPlaylistIcon(id) }
             : undefined,
         { item: 'Separator' },
@@ -68,7 +71,7 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
         { text: 'Sync Library', action: syncLibrary },
         { item: 'Separator' },
         { text: 'Delete Playlist', action: async () => {
-            const answer = await confirm(`Are you sure you want to delete the playlist "${playlist.title}"?`, {
+            const answer = await confirm(`Are you sure you want to delete the playlist "${playlistTitle}"?`, {
                 title: '',
                 kind: 'warning',
                 okLabel: 'Delete',
@@ -79,16 +82,16 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
         } },
     ])
 
-    const showAudioWaveIcon = !isPopoverOpen && isPlaying
-    const showBorder = menu.isOpen || isDragging || isPopoverOpen || isEditing || dropTarget === true
-    const icon = playlist.icon
-        ? icons[playlist.icon.value] ?? LucideListMusic
+    const showBorder = menu.isOpen || isPopoverOpen || isEditing || dropTarget === 'inside'
+    const icon = playlistIcon
+        ? icons[playlistIcon.value] ?? LucideListMusic
         : LucideListMusic
 
     return (
         <SidebarItem
             draggable
-            color={playlist.color}
+            depth={depth}
+            color={playlistColor}
             isSelected={isSelected}
             isActive={isActive}
             isPlaying={isPlaying}
@@ -113,32 +116,29 @@ export function PlaylistItem({ id }: { id: string }): ReactNode {
             }}
             onContextMenu={menu.show}
         >
-            <PopoverTarget asChild popover={popover}>
-                <LibraryItemIcon>
-                    <FadeInOut show={showAudioWaveIcon} className="absolute">
-                        <AudioWaveIcon className="mb-1 size-4" />
-                    </FadeInOut>
-                    <FadeInOut show={!showAudioWaveIcon} className="absolute">
-                        {createElement(icon, { className: 'size-4' })}
-                    </FadeInOut>
-                </LibraryItemIcon>
-            </PopoverTarget>
+            <PlaylistItemIcon
+                id={id}
+                icon={icon}
+                popover={popover}
+                isPlaying={isPlaying}
+                isEditing={isEditing}
+            />
             <PopoverRoot
                 popover={popover}
                 render={() => (
                     <IconPicker
-                        activeIcon={playlist.icon}
-                        activeColor={playlist.color}
+                        activeIcon={playlistIcon}
+                        activeColor={playlistColor}
                         onSelectIcon={icon => setPlaylistIcon({ playlistId: id, icon })}
                         onSelectColor={color => setPlaylistColor({ playlistId: id, color })}
                     />
                 )}
             />
             <LibraryItemTitle
-                title={playlist.title}
+                title={playlistTitle}
                 isEditing={isEditing}
                 onSubmit={savePlaylistTitle}
             />
         </SidebarItem>
     )
-}
+})

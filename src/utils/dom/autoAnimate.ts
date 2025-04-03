@@ -1,4 +1,8 @@
+import type { CSSProperties } from 'react'
 import { easeInOut } from '@app/config/easings'
+import { shallowEqualObjects } from 'shallow-equal'
+
+type Style = Partial<CSSProperties>
 
 export async function autoAnimate({
     target,
@@ -19,6 +23,7 @@ export async function autoAnimate({
     // or how things moved around.
     const elementsBefore = Array.from(target.children).filter(filter) as HTMLElement[]
     const measurementsBefore = elementsBefore.reduce((acc, element) => acc.set(element, element.getBoundingClientRect()), new Map<Element, DOMRect>())
+    const stylesBefore = elementsBefore.reduce((acc, element) => acc.set(element, getStyle(element)), new Map<Element, Style>())
 
     const observer = new MutationObserver(async () => {
         observer.disconnect()
@@ -26,6 +31,7 @@ export async function autoAnimate({
 
         const elementsAfter = Array.from(target.children).filter(filter) as HTMLElement[]
         const measurementsAfter = elementsAfter.reduce((acc, element) => acc.set(element, element.getBoundingClientRect()), new Map<Element, DOMRect>())
+        const stylesAfter = elementsAfter.reduce((acc, element) => acc.set(element, getStyle(element)), new Map<Element, Style>())
 
         const animations: Animation[] = []
         const onAnimationsDone: (() => void)[] = []
@@ -45,54 +51,69 @@ export async function autoAnimate({
 
         // Apply styles directly to an element and reset it after everything is done.
         // This is necessary because some animations run after a delay and we get FOUC otherwise.
-        const setStyle = function <T extends keyof CSSStyleDeclaration>(element: HTMLElement, key: T, value: CSSStyleDeclaration[T]): void {
-            const style = element.style as any
-            style[key] = value
-            onAnimationsDone.push(() => style[key] = null)
+        const setStyles = function (element: HTMLElement, styles: Style): void {
+            for (const key in styles) {
+                const k = key as any
+                const style = element.style
+                const before = style[k] ?? ''
+                const after = styles[k] ?? ''
+                style[k] = String(after)
+                onAnimationsDone.push(() => style[k] = before)
+            }
         }
 
-        const animate = function (element: HTMLElement, keyframes: Keyframe[], options: KeyframeAnimationOptions): void {
-            animations.push(element.animate(keyframes, options))
+        const animate = function (element: HTMLElement, [fromFrame, toFrame]: [Style, Style], options: KeyframeAnimationOptions): void {
+            if (shallowEqualObjects(fromFrame, toFrame)) return
+            setStyles(element, fromFrame)
+            animations.push(element.animate([fromFrame, toFrame] as Keyframe[], options))
         }
 
         // Used to reinsert removed elements back into the DOM, at the same position.
         const insertClone = function (element: HTMLElement): HTMLElement {
             const clone = element.cloneNode(true) as HTMLElement
             const measurement = measurementsBefore.get(element)!
-            clone.style.position = 'fixed'
-            clone.style.pointerEvents = 'none'
-            clone.style.top = `${measurement.top}px`
-            clone.style.left = `${measurement.left}px`
-            clone.style.width = `${measurement.width}px`
+            const style = stylesBefore.get(element)!
+
+            measurementsBefore.set(clone, measurement)
+            measurementsAfter.set(clone, measurementsAfter.get(clone)!)
+            stylesBefore.set(clone, style)
+            stylesAfter.set(clone, stylesAfter.get(clone)!)
+
+            Object.assign(clone.style, {
+                ...style,
+                position: 'fixed',
+                pointerEvents: 'none',
+                top: `${measurement.top}px`,
+                left: `${measurement.left}px`,
+                width: `${measurement.width}px`,
+            })
+
             target.appendChild(clone)
             onAnimationsDone.push(() => clone.remove())
             return clone
         }
 
         const fadeIn = function (element: HTMLElement, duration: number, delay: number): void {
-            setStyle(element, 'opacity', '0')
-            setStyle(element, 'transform', 'scale(.9)')
             animate(element, [
-                { transform: 'scale(.9)', opacity: 0 },
+                { transform: 'scale(0.9)', opacity: 0 },
                 { transform: 'scale(1)', opacity: 1 },
             ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
         const fadeOut = function (element: HTMLElement, duration: number, delay: number): void {
-            setStyle(element, 'opacity', '1')
-            setStyle(element, 'transform', 'scale(1)')
             animate(element, [
                 { transform: 'scale(1)', opacity: 1 },
-                { transform: 'scale(.9)', opacity: 0 },
+                { transform: 'scale(0.9)', opacity: 0 },
             ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
         const move = function (element: HTMLElement, y: number, duration: number, delay: number): void {
-            if (y === 0) return
-            setStyle(element, 'transform', `translateY(${y}px)`)
+            const styleBefore = stylesBefore.get(element)
+            const styleAfter = stylesAfter.get(element)
+
             animate(element, [
-                { transform: `translateY(${y}px)` },
-                { transform: 'translateY(0px)' },
+                { ...styleBefore, transform: `translateY(${y}px)` },
+                { ...styleAfter, transform: 'translateY(0px)' },
             ], { duration, delay, easing: easeInOut, fill: 'forwards' })
         }
 
@@ -139,4 +160,10 @@ export async function autoAnimate({
     })
 
     return deferred
+}
+
+function getStyle(element: HTMLElement): Style {
+    return {
+        paddingLeft: element.style.paddingLeft,
+    }
 }
