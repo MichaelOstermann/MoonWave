@@ -2018,7 +2018,7 @@ dependencies = [
 
 [[package]]
 name = "moonwave"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "lofty",
  "new_mime_guess",
