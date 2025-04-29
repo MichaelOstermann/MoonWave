@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { TrackArtistAlbum } from './TrackArtistAlbum'
-import { TrackTitle } from './TrackTitle'
+import type { ReactNode } from "react"
+import { TrackArtistAlbum } from "./TrackArtistAlbum"
+import { TrackTitle } from "./TrackTitle"
 
 export function TrackInfo(): ReactNode {
     return (

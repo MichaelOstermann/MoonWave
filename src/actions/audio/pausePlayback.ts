@@ -1,6 +1,6 @@
-import { audio } from '@app/state/audio/audio'
-import { action } from '@monstermann/signals'
+import { action } from "@monstermann/signals"
+import { invoke } from "@tauri-apps/api/core"
 
 export const pausePlayback = action(() => {
-    audio.pause()
+    invoke("pause_audio")
 })

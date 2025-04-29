@@ -1,7 +1,6 @@
-import { audio } from '@app/state/audio/audio'
-import { action } from '@monstermann/signals'
+import { action } from "@monstermann/signals"
+import { invoke } from "@tauri-apps/api/core"
 
 export const stopPlayback = action(() => {
-    audio.pause()
-    audio.currentTime = 0
+    invoke("stop_audio")
 })

@@ -1,10 +1,9 @@
 {
+    "extends": "@monstermann/tsconfig",
     "compilerOptions": {
         "composite": true,
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "allowSyntheticDefaultImports": true,
-        "skipLibCheck": true
+        "noEmit": false,
+        "allowSyntheticDefaultImports": true
     },
     "include": ["vite.config.ts"]
 }

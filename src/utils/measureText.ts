@@ -1,7 +1,7 @@
 type Canvas = {
+    cache: Map<string, number>
     canvas: OffscreenCanvas
     context: OffscreenCanvasRenderingContext2D
-    cache: Map<string, number>
 }
 
 const canvases = new Map<string, Canvas>()
@@ -16,7 +16,7 @@ export function measureText(text: string, opts: {
 }
 
 function measureRegular(text: string, font: string): number {
-    const { context, cache } = getCanvas(font)
+    const { cache, context } = getCanvas(font)
     if (cache.has(text)) return cache.get(text)!
     const value = Math.ceil(context.measureText(text).width)
     cache.set(text, value)
@@ -43,12 +43,12 @@ function measureMonospace(text: string, font: string): number {
 function getCanvas(font: string) {
     if (!canvases.has(font)) {
         const canvas = new OffscreenCanvas(0, 0)
-        const context = canvas.getContext('2d')!
+        const context = canvas.getContext("2d")!
         context.font = font
         const entry: Canvas = {
+            cache: new Map(),
             canvas,
             context,
-            cache: new Map(),
         }
         canvases.set(font, entry)
         return entry

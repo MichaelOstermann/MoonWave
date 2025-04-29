@@ -1,22 +1,22 @@
-import type { WaveformTheme, WaveformThemeName } from '@app/types'
+import type { WaveformTheme, WaveformThemeName } from "#src/features/Theme"
 
 export const waveformThemes = {
-    'bars-center': {
-        barWidth: 2,
-        barRadius: undefined,
+    "bars-bottom": {
+        barAlign: "bottom",
         barGap: 1,
+        barRadius: undefined,
+        barWidth: 2,
+    },
+    "bars-center": {
         barAlign: undefined,
-    },
-    'bars-bottom': {
-        barWidth: 2,
-        barRadius: undefined,
         barGap: 1,
-        barAlign: 'bottom',
-    },
-    'hifi': {
-        barWidth: undefined,
         barRadius: undefined,
+        barWidth: 2,
+    },
+    "hifi": {
+        barAlign: undefined,
         barGap: undefined,
-        barAlign: undefined,
+        barRadius: undefined,
+        barWidth: undefined,
     },
 } satisfies Record<WaveformThemeName, WaveformTheme>

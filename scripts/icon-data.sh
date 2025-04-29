@@ -1,7 +1,7 @@
-curl -LO https://github.com/lucide-icons/lucide/archive/refs/heads/main.zip
-unzip main.zip
+curl -LO https://github.com/lucide-icons/lucide/releases/download/0.561.0/lucide-icons-0.561.0.zip
+unzip lucide-icons-0.561.0.zip
 
 bun scripts/icon-data.js
 
-rm -f main.zip
-rm -rf lucide-main
+rm -f lucide-icons-0.561.0.zip
+rm -rf icons

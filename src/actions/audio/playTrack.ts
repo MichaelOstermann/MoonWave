@@ -1,79 +1,48 @@
-import type { Track, View } from '@app/types'
-import { audio } from '@app/state/audio/audio'
-import { $loadedAudioMetadata } from '@app/state/audio/loadedAudioMetadata'
-import { $waveformPeaks } from '@app/state/audio/waveformPeaks'
-import { $playingView } from '@app/state/sidebar/playingView'
-import { $view } from '@app/state/sidebar/view'
-import { $playingTrackId } from '@app/state/tracks/playingTrackId'
-import { $tracksById } from '@app/state/tracks/tracksById'
-import { loadWaveform } from '@app/utils/waveform/loadWaveform'
-import { action } from '@monstermann/signals'
-import { readFile } from '@tauri-apps/plugin-fs'
-import { onPlaybackSuccess } from './onPlaybackSuccess'
-import { seekTo } from './seekTo'
+import type { View } from "#features/Views"
+import { Library } from "#features/Library"
+import { Playback } from "#features/Playback"
+import { Tracks } from "#features/Tracks"
+import { Views } from "#features/Views"
+import { action, peek } from "@monstermann/signals"
+import { invoke } from "@tauri-apps/api/core"
+import { onPlaybackError } from "./onPlaybackError"
+import { seekTo } from "./seekTo"
 
 export const playTrack = action(async ({ trackId, view }: {
     trackId: string
     view?: View
 }): Promise<boolean> => {
-    const track = $tracksById(trackId)()
+    const prevTrackId = Playback.$trackId()
+    const track = Tracks.$byId.get(trackId)
     if (!track) return false
 
     const nextPlayingView = view
-        ?? $playingView()
-        ?? $view()
+        ?? Views.$playing()
+        ?? Views.$selected()
 
-    if ($playingTrackId() === trackId) {
+    if (prevTrackId === trackId) {
         seekTo(0)
-        audio.play()
-        onPlaybackSuccess({ track, view: nextPlayingView })
+        Views.$playing(nextPlayingView)
+        invoke("resume_audio")
         return true
     }
 
-    $waveformPeaks.set([])
-    $loadedAudioMetadata.set(false)
+    Playback.$peaks([])
 
-    const waveform = loadWaveform(track).catch(() => [])
-    const ok = await playFile(track)
-    if (!ok) return false
+    const waveform = Library.loadWaveform(track).catch(() => [])
+    const err = await invoke("play_audio", { filePath: track.path }).catch(err => err)
 
-    onPlaybackSuccess({ track, view: nextPlayingView })
+    if (err) {
+        onPlaybackError(trackId)
+        return false
+    }
+
+    Views.$playing(nextPlayingView)
 
     waveform.then((peaks) => {
-        if ($playingTrackId.peek() !== trackId) return
-        $waveformPeaks.set([peaks])
+        if (peek(Playback.$trackId) !== trackId) return
+        Playback.$peaks([peaks])
     })
 
     return true
 })
-
-export function playFile(track: Track): Promise<boolean> {
-    return readFile(track.path)
-        .then(file => new Blob([file], { type: track.mimetype }))
-        .then(blob => playBlob(blob))
-        .catch(() => false)
-}
-
-function playBlob(blob: Blob): Promise<boolean> {
-    const prevUrl = audio.src
-    return new Promise((resolve) => {
-        function onSuccess() {
-            if (prevUrl) URL.revokeObjectURL(prevUrl)
-            audio.removeEventListener('loadedmetadata', onSuccess)
-            audio.removeEventListener('error', onError)
-            resolve(true)
-        }
-
-        function onError() {
-            if (prevUrl) URL.revokeObjectURL(prevUrl)
-            audio.removeEventListener('loadedmetadata', onSuccess)
-            audio.removeEventListener('error', onError)
-            resolve(false)
-        }
-
-        audio.addEventListener('loadedmetadata', onSuccess)
-        audio.addEventListener('error', onError)
-        audio.src = URL.createObjectURL(blob)
-        audio.play()
-    })
-}

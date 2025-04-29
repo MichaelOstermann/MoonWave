@@ -1,84 +1,116 @@
-import type { FocusedView } from '@app/types'
-import { CommandMenu } from '@app/components/CommandMenu'
-import { shortcuts } from '@app/config/shortcuts'
-import { createHotkeys } from '@monstermann/hotkeys'
-import { addShortcuts } from '@monstermann/hotkeys/vscode'
-import { focusSearchInput } from './actions/app/focusSearchInput'
-import { syncLibrary } from './actions/app/syncLibrary'
-import { setVolume } from './actions/audio/setVolume'
-import { toggleMode } from './actions/audio/toggleMode'
-import { toggleMute } from './actions/audio/toggleMute'
-import { togglePlayback } from './actions/audio/togglePlayback'
-import { createPlaylist } from './actions/playlists/createPlaylist'
-import { $focusedView } from './state/sidebar/focusedView'
-import { $sidebarLSM } from './state/sidebar/sidebarLSM'
-import { $tracksLSM } from './state/tracks/tracksLSM'
-import { goToBottom } from './utils/lsm/utils/goToBottom'
-import { goToNext } from './utils/lsm/utils/goToNext'
-import { goToPrev } from './utils/lsm/utils/goToPrev'
-import { goToTop } from './utils/lsm/utils/goToTop'
-import { selectAll } from './utils/lsm/utils/selectAll'
-import { selectNext } from './utils/lsm/utils/selectNext'
-import { selectPrev } from './utils/lsm/utils/selectPrev'
-import { selectToBottom } from './utils/lsm/utils/selectToBottom'
-import { selectToTop } from './utils/lsm/utils/selectToTop'
+import { playNext } from "#actions/audio/playNext"
+import { playPrev } from "#actions/audio/playPrev"
+import { seekBackward } from "#actions/audio/seekBackward"
+import { seekForward } from "#actions/audio/seekForward"
+import { onDoubleClickPlaylist } from "#actions/playlists/onDoubleClickPlaylist"
+import { onDoubleClickTrack } from "#actions/tracks/onDoubleClickTrack"
+import { shortcuts } from "#config/shortcuts"
+import { LSM } from "#features/LSM"
+import { Sidebar } from "#features/Sidebar"
+import { TrackList } from "#features/TrackList"
+import { Views } from "#features/Views"
+import { match } from "@monstermann/fn"
+import { Hotkeys } from "@monstermann/hotkeys"
+import { focusSearchInput } from "./actions/app/focusSearchInput"
+import { syncLibrary } from "./actions/app/syncLibrary"
+import { setVolume } from "./actions/audio/setVolume"
+import { toggleMode } from "./actions/audio/toggleMode"
+import { toggleMute } from "./actions/audio/toggleMute"
+import { togglePlayback } from "./actions/audio/togglePlayback"
+import { createPlaylist } from "./actions/playlists/createPlaylist"
+import { Modals } from "./features/Modals"
 
-export const hotkeys = createHotkeys(config => config
-    .bindingContext<{ allowInDialogs?: boolean }>()
-    .bindingContext<{ allowInInputs?: boolean }>()
-    .bindingContext<{ view?: FocusedView }>()
-    .resolveBindings(bindings => bindings.filter((binding) => {
-        return binding.context.allowInDialogs !== false
-            || !CommandMenu.isOpen()
-    }))
-    .resolveBindings(bindings => bindings.filter((binding) => {
-        return binding.context.allowInInputs !== false
-            || !['INPUT', 'TEXTAREA'].includes(document.activeElement?.nodeName as any)
-    }))
-    .resolveBindings(bindings => bindings.filter((binding) => {
-        return binding.context.view === undefined
-            || ($focusedView() === binding.context.view && !CommandMenu.isOpen())
-    })))
+Hotkeys.bindings.clear()
 
-addShortcuts(hotkeys, ['cmd+shift+r'], () => window.location.reload())
+function bind(shortcuts: string[], callback: () => void): void {
+    for (const shortcut of shortcuts) {
+        Hotkeys.bind(shortcut, callback)
+    }
+}
 
-addShortcuts(hotkeys, shortcuts.showCmdMenu, CommandMenu.open)
-addShortcuts(hotkeys, shortcuts.createPlaylist, () => createPlaylist())
-addShortcuts(hotkeys, shortcuts.syncLibrary, syncLibrary)
-addShortcuts(hotkeys, shortcuts.toggleMute, toggleMute)
-addShortcuts(hotkeys, shortcuts.setVolume10, () => setVolume(0.1))
-addShortcuts(hotkeys, shortcuts.setVolume20, () => setVolume(0.2))
-addShortcuts(hotkeys, shortcuts.setVolume30, () => setVolume(0.3))
-addShortcuts(hotkeys, shortcuts.setVolume40, () => setVolume(0.4))
-addShortcuts(hotkeys, shortcuts.setVolume50, () => setVolume(0.5))
-addShortcuts(hotkeys, shortcuts.setVolume60, () => setVolume(0.6))
-addShortcuts(hotkeys, shortcuts.setVolume70, () => setVolume(0.7))
-addShortcuts(hotkeys, shortcuts.setVolume80, () => setVolume(0.8))
-addShortcuts(hotkeys, shortcuts.setVolume90, () => setVolume(0.9))
-addShortcuts(hotkeys, shortcuts.setVolume100, () => setVolume(1))
-addShortcuts(hotkeys, shortcuts.toggleMode, toggleMode)
-addShortcuts(hotkeys, shortcuts.togglePlayback, togglePlayback, { allowInDialogs: false, allowInInputs: false })
+bind(shortcuts.createPlaylist, () => createPlaylist())
+bind(shortcuts.focusSearchInput, focusSearchInput)
+bind(shortcuts.playNext, playNext)
+bind(shortcuts.playPrev, playPrev)
+bind(shortcuts.reload, () => window.location.reload())
+bind(shortcuts.seekBackward, () => seekBackward(undefined))
+bind(shortcuts.seekForward, () => seekForward(undefined))
+bind(shortcuts.setVolume10, () => setVolume(0.1))
+bind(shortcuts.setVolume20, () => setVolume(0.2))
+bind(shortcuts.setVolume30, () => setVolume(0.3))
+bind(shortcuts.setVolume40, () => setVolume(0.4))
+bind(shortcuts.setVolume50, () => setVolume(0.5))
+bind(shortcuts.setVolume60, () => setVolume(0.6))
+bind(shortcuts.setVolume70, () => setVolume(0.7))
+bind(shortcuts.setVolume80, () => setVolume(0.8))
+bind(shortcuts.setVolume90, () => setVolume(0.9))
+bind(shortcuts.setVolume100, () => setVolume(1))
+bind(shortcuts.showCmdMenu, () => Modals.CommandMenu.open())
+bind(shortcuts.showCmdMenu, () => Modals.CommandMenu.open())
+bind(shortcuts.syncLibrary, syncLibrary)
+bind(shortcuts.toggleMode, toggleMode)
+bind(shortcuts.toggleMute, toggleMute)
+bind(shortcuts.togglePlayback, togglePlayback)
 
-addShortcuts(hotkeys, shortcuts.focusSearchInput, focusSearchInput)
-addShortcuts(hotkeys, shortcuts.switchFocus, () => $focusedView.set('SIDEBAR'), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.switchFocus, () => $focusedView.set('MAIN'), { view: 'SIDEBAR' })
+bind(shortcuts.playSelected, () => match(Views.$focused())
+    .onCase("MAIN", () => {
+        const tid = LSM.getLastSelection(TrackList.$LSM())
+        if (!tid) return
+        onDoubleClickTrack(tid)
+    })
+    .onCase("SIDEBAR", () => {
+        const view = LSM.getLastSelection(Sidebar.$LSM())
+        if (!view) return
+        onDoubleClickPlaylist(view)
+    })
+    .orThrow())
 
-addShortcuts(hotkeys, shortcuts.goToPrev, () => $tracksLSM.map(goToPrev), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.goToNext, () => $tracksLSM.map(goToNext), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.selectPrev, () => $tracksLSM.map(selectPrev), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.selectNext, () => $tracksLSM.map(selectNext), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.selectAll, () => $tracksLSM.map(selectAll), { view: 'MAIN', allowInInputs: false })
-addShortcuts(hotkeys, shortcuts.goToTop, () => $tracksLSM.map(goToTop), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.goToBottom, () => $tracksLSM.map(goToBottom), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.selectToTop, () => $tracksLSM.map(selectToTop), { view: 'MAIN' })
-addShortcuts(hotkeys, shortcuts.selectToBottom, () => $tracksLSM.map(selectToBottom), { view: 'MAIN' })
+bind(shortcuts.switchFocus, () => match(Views.$focused())
+    .onCase("MAIN", () => Views.$focused("SIDEBAR"))
+    .onCase("SIDEBAR", () => Views.$focused("MAIN"))
+    .orThrow())
 
-addShortcuts(hotkeys, shortcuts.goToPrev, () => $sidebarLSM.map(goToPrev), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.goToNext, () => $sidebarLSM.map(goToNext), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.selectPrev, () => $sidebarLSM.map(selectPrev), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.selectNext, () => $sidebarLSM.map(selectNext), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.selectAll, () => $sidebarLSM.map(selectAll), { view: 'SIDEBAR', allowInInputs: false })
-addShortcuts(hotkeys, shortcuts.goToTop, () => $sidebarLSM.map(goToTop), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.goToBottom, () => $sidebarLSM.map(goToBottom), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.selectToTop, () => $sidebarLSM.map(selectToTop), { view: 'SIDEBAR' })
-addShortcuts(hotkeys, shortcuts.selectToBottom, () => $sidebarLSM.map(selectToBottom), { view: 'SIDEBAR' })
+bind(shortcuts.goToPrev, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.goToPrev))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.goToPrev))
+    .orThrow())
+
+bind(shortcuts.goToNext, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.goToNext))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.goToNext))
+    .orThrow())
+
+bind(shortcuts.goToTop, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.goToTop))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.goToTop))
+    .orThrow())
+
+bind(shortcuts.goToBottom, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.goToBottom))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.goToBottom))
+    .orThrow())
+
+bind(shortcuts.selectPrev, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.selectPrev))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.selectPrev))
+    .orThrow())
+
+bind(shortcuts.selectNext, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.selectNext))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.selectNext))
+    .orThrow())
+
+bind(shortcuts.selectAll, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.selectAll))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.selectAll))
+    .orThrow())
+
+bind(shortcuts.selectToTop, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.selectToTop))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.selectToTop))
+    .orThrow())
+
+bind(shortcuts.selectToBottom, () => match(Views.$focused())
+    .onCase("MAIN", () => TrackList.$LSM(LSM.selectToBottom))
+    .onCase("SIDEBAR", () => Sidebar.$LSM(LSM.selectToBottom))
+    .orThrow())

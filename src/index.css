@@ -1,22 +1,24 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@import './themes/colors.css';
+@import "tailwindcss";
+@import "./themes/colors.css" layer(utilities);
+@import "./themes/catppuccin-dark.css" layer(utilities);
+@import "./themes/catppuccin-light.css" layer(utilities);
+@import "./themes/dusk-dark.css" layer(utilities);
+@import "./themes/dust-light.css" layer(utilities);
+@import "./themes/gruvbox-dark.css" layer(utilities);
+@import "./themes/gruvbox-light.css" layer(utilities);
+@import "./themes/kanagawa-dark.css" layer(utilities);
+@import "./themes/moon-dark.css" layer(utilities);
+@import "./themes/nord-dark.css" layer(utilities);
+@import "./themes/rose-pine-dark.css" layer(utilities);
+@import "./themes/rose-pine-light.css" layer(utilities);
+@import "./themes/tokyo-night-dark.css" layer(utilities);
+@import "./themes/tokyo-night-light.css" layer(utilities);
+@import "./themes/wave-light.css" layer(utilities);
 
-@import './themes/catppuccin-dark.css';
-@import './themes/catppuccin-light.css';
-@import './themes/dusk-dark.css';
-@import './themes/dust-light.css';
-@import './themes/gruvbox-dark.css';
-@import './themes/gruvbox-light.css';
-@import './themes/kanagawa-dark.css';
-@import './themes/moon-dark.css';
-@import './themes/nord-dark.css';
-@import './themes/rose-pine-dark.css';
-@import './themes/rose-pine-light.css';
-@import './themes/tokyo-night-dark.css';
-@import './themes/tokyo-night-light.css';
-@import './themes/wave-light.css';
+@theme {
+    --text-xxs: 0.625rem;
+    --text-xxs--line-height: 0.875rem;
+}
 
 body {
     cursor: default;
@@ -47,4 +49,24 @@ number-flow-react::part(left)::after,
 number-flow-react::part(right)::after,
 number-flow-react::part(symbol) {
     padding: calc(var(--number-flow-mask-height, 0.25em) / 2) 0;
+}
+
+/* Modals */
+body.has-popover #root {
+    * {
+        pointer-events: none;
+    }
+
+    input,
+    textarea,
+    [contenteditable="true"],
+    .popover-trigger {
+        pointer-events: auto;
+    }
+}
+.modal.closing,
+.modal.closed,
+.modal.closing *,
+.modal.closed * {
+    pointer-events: none;
 }

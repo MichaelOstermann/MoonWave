@@ -1,7 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react'
-import type { Column } from './types'
-import { twJoin } from 'tailwind-merge'
-import { header } from './config'
+import type { CSSProperties, ReactNode } from "react"
+import type { Column } from "./types"
+import { twJoin } from "tailwind-merge"
+import { header } from "./config"
 
 export function TrackListHeaderColumn({ col, style }: {
     col: Column
@@ -9,12 +9,12 @@ export function TrackListHeaderColumn({ col, style }: {
 }): ReactNode {
     return (
         <div
-            style={style}
             data-column={col}
+            style={style}
             className={twJoin(
-                'flex items-center',
-                col === 'position' && 'justify-end',
-                col === 'duration' && 'justify-end',
+                "flex items-center",
+                col === "position" && "justify-end",
+                col === "duration" && "justify-end",
             )}
         >
             <span className="truncate">

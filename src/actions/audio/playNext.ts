@@ -1,15 +1,16 @@
-import { getNextTrackId } from '@app/utils/getNextTrackId'
-import { action } from '@monstermann/signals'
-import { playTrack } from './playTrack'
-import { stopPlayback } from './stopPlayback'
+import { TrackHistory } from "#features/TrackHistory"
+import { Array } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
+import { playTrack } from "./playTrack"
+import { stopPlayback } from "./stopPlayback"
 
 export const playNext = action(async () => {
-    const failedTrackIds: string[] = []
+    const queue = TrackHistory.$nextQueue()
 
-    while (true) {
-        const trackId = getNextTrackId(failedTrackIds)
-        if (!trackId) return stopPlayback()
+    for (let i = 0; i < queue.length; i++) {
+        const trackId = Array.atOrThrow(queue, i)
         if (await playTrack({ trackId })) return
-        failedTrackIds.push(trackId)
     }
+
+    stopPlayback()
 })

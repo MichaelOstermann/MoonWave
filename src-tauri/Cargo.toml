@@ -42,6 +42,10 @@ ring = "0.17.14"
 lofty = "0.22.2"
 new_mime_guess = "4.0.4"
 trash = "5.2.2"
+rodio = { version = "0.21.1", features = [ "symphonia-all" ] }
+unicode-normalization = "0.1"
+souvlaki = "0.8.3"
+symphonia = { version = "0.5.5", features = [ "all" ] }
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.
@@ -51,4 +55,4 @@ codegen-units = 1 # Allows LLVM to perform better optimization.
 lto = true # Enables link-time-optimizations.
 opt-level = "s" # Prioritizes small binary size. Use `3` if you prefer speed.
 panic = "abort" # Higher performance by disabling panic handlers.
-strip = true # Ensures debug symbols are removed.
+strip = "debuginfo" # Strip debug info but keep symbols needed by Tauri.

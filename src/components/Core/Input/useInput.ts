@@ -1,19 +1,19 @@
-import type { ComponentProps, KeyboardEvent } from 'react'
-import { useState } from 'react'
+import type { ComponentProps, KeyboardEvent } from "react"
+import { useState } from "react"
 
-interface UseInputOpts extends ComponentProps<'input'> {
-    onUpdate?: (value: string) => void
+interface UseInputOpts extends ComponentProps<"input"> {
     onEscape?: (evt: KeyboardEvent<HTMLInputElement>) => void
+    onUpdate?: (value: string) => void
 }
 
 export type UseInput = {
-    props: ComponentProps<'input'>
     input: HTMLInputElement | null
+    props: ComponentProps<"input">
 }
 
 export function useInput({
-    onUpdate,
     onEscape,
+    onUpdate,
     ...props
 }: UseInputOpts): UseInput {
     const [input, setInput] = useState<HTMLInputElement | null>(null)
@@ -22,9 +22,6 @@ export function useInput({
         input,
         props: {
             ...props,
-            ref: (input) => {
-                setInput(input)
-            },
             onChange: (evt) => {
                 props.onChange?.(evt)
                 onUpdate?.(evt.target.value)
@@ -35,7 +32,10 @@ export function useInput({
             },
             onKeyDown: (evt) => {
                 props.onKeyDown?.(evt)
-                if (evt.key === 'Escape') onEscape?.(evt)
+                if (evt.key === "Escape") onEscape?.(evt)
+            },
+            ref: (input) => {
+                setInput(input)
             },
         },
     }

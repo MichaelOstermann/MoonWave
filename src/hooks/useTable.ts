@@ -1,42 +1,42 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties } from "react"
 
 type ColumnName = string
 
 type Column<T extends ColumnName = any> = {
-    name: T
-    reserved: boolean
-    originalWidth: number
     minWidth: number
-    width: number
+    name: T
+    originalWidth: number
     paddingLeft: number
     paddingRight: number
+    reserved: boolean
+    width: number
 }
 
 type Config<T extends ColumnName> = {
-    columns: readonly T[]
     availableWidth: number
+    colStyles?: CSSProperties
+    columns: readonly T[]
+    gap?: number
+    innerPadding?: number
     measurements: Record<T, number[]>
-    reservedColumns?: Partial<Record<T, boolean>>
     minWidths?: Partial<Record<T, number>>
     outerPadding?: number
-    innerPadding?: number
-    gap?: number
-    colStyles?: CSSProperties
+    reservedColumns?: Partial<Record<T, boolean>>
 }
 
 export function useTable<T extends ColumnName>(config: Config<T>): {
+    colStyles: Record<T, CSSProperties>
     outerStyles: CSSProperties
     varStyles: Record<string, string>
-    colStyles: Record<T, CSSProperties>
 } {
     const cols = useCols(config)
 
     const outerPadding = config.outerPadding ?? 0
     const hasMeasurements = config.availableWidth !== 0
     const outerStyles = {
+        opacity: hasMeasurements ? 100 : 0,
         paddingLeft: outerPadding,
         paddingRight: outerPadding,
-        opacity: hasMeasurements ? 100 : 0,
     }
 
     const varStyles = cols.reduce((acc, col, idx) => {
@@ -50,17 +50,17 @@ export function useTable<T extends ColumnName>(config: Config<T>): {
     const colStyles = config.columns.reduce((acc, col) => {
         acc[col] = {
             order: `var(--table-${col}-order)`,
-            width: `var(--table-${col}-width)`,
             paddingLeft: `var(--table-${col}-padding-left)`,
             paddingRight: `var(--table-${col}-padding-right)`,
+            width: `var(--table-${col}-width)`,
             ...config.colStyles,
         }
         return acc
     }, {} as Record<T, CSSProperties>)
 
     return {
-        outerStyles,
         colStyles,
+        outerStyles,
         varStyles,
     }
 }
@@ -84,13 +84,13 @@ function useCols<T extends ColumnName>(config: Config<T>): Column<T>[] {
         const width = reserved ? originalWidth : max(removeOutliers(measurements))
 
         return {
-            name: col,
-            reserved,
-            originalWidth,
             minWidth,
-            width: Math.max(width, minWidth),
+            name: col,
+            originalWidth,
             paddingLeft,
             paddingRight,
+            reserved,
+            width: Math.max(width, minWidth),
         }
     })
 

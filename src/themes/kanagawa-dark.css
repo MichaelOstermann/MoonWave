@@ -1,11 +1,11 @@
 /* Reference: https://github.com/barklan/kanagawa.vscode */
 
-[data-theme-preview='kanagawa-dark'] {
+[data-theme-preview="kanagawa-dark"] {
     --fg: #dcd7ba;
     --bg: #1f1f28;
 }
 
-[data-theme='kanagawa-dark'] {
+[data-theme="kanagawa-dark"] {
     --border: #16161d;
     --fg: #dcd7ba;
     --fg-soft: #727169;
@@ -18,30 +18,25 @@
     --fg-accent: var(--fg-blue);
 }
 
-[data-theme='kanagawa-dark'] .main,
-[data-theme='kanagawa-dark'] .sidebar,
-[data-theme='kanagawa-dark'] .sidepanel {
-    --bg: color-mix(in srgb, #1f1f28 96%, transparent);
+[data-theme="kanagawa-dark"] .main,
+[data-theme="kanagawa-dark"] .sidebar,
+[data-theme="kanagawa-dark"] .sidepanel {
+    --bg: #1f1f28;
 }
 
-[data-theme='kanagawa-dark'] .dialog .floating,
-[data-theme='kanagawa-dark'] .popover .floating {
-    backdrop-filter: blur(80px);
-    box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 20px 25px -5px rgb(0 0 0 / 0.2),
-        0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-[data-theme='kanagawa-dark'] .dialog {
+[data-theme="kanagawa-dark"] .modal {
     --overlay: color-mix(in srgb, #1f1f28 40%, transparent);
+    --blur: 80px;
+    --shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-[data-theme='kanagawa-dark'] .tooltip {
+[data-theme="kanagawa-dark"] .tooltip {
     --bg: color-mix(in oklab, var(--fg) 10%, transparent);
 }
 
-[data-theme='kanagawa-dark'] ::selection {
+[data-theme="kanagawa-dark"] ::selection {
     color: var(--fg-accent);
     background: var(--bg-accent);
 }

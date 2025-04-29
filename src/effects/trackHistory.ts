@@ -1,46 +1,34 @@
-import { $nextPlayedTrackIds } from '@app/state/tracks/nextPlayedTrackIds'
-import { $playingTrackId } from '@app/state/tracks/playingTrackId'
-import { $prevPlayedTrackIds } from '@app/state/tracks/prevPlayedTrackIds'
-import { append } from '@app/utils/data/append'
-import { pipe } from '@app/utils/data/pipe'
-import { prepend } from '@app/utils/data/prepend'
-import { remove } from '@app/utils/data/remove'
-import { onChange } from '@monstermann/signals'
+import { Playback } from "#features/Playback"
+import { TrackHistory } from "#features/TrackHistory"
+import { Array, flow } from "@monstermann/fn"
+import { watch } from "@monstermann/signals"
 
-const MAX_SIZE = 100
+watch(Playback.$trackId, (nextTrackId, prevTrackId) => {
+    if (!nextTrackId || !prevTrackId) return
+    if (nextTrackId === prevTrackId) return
 
-onChange($playingTrackId, (currentTrackId, prevTrackId) => {
-    if (!currentTrackId || !prevTrackId) return
-
-    const prevId = $prevPlayedTrackIds().at(-1)
-    const nextId = $nextPlayedTrackIds().at(0)
-
-    if (prevId === currentTrackId) {
-        $prevPlayedTrackIds.map(ids => ids.slice(0, -1))
-        $nextPlayedTrackIds.map(ids => pipe(
-            ids,
-            ids => remove(ids, prevTrackId),
-            ids => prepend(ids, prevTrackId),
+    if (nextTrackId === TrackHistory.$nextIds().at(0)) {
+        TrackHistory.$prevIds(flow(
+            Array.removeAll([prevTrackId]),
+            Array.append(prevTrackId),
+            Array.takeLast(100),
         ))
+
+        TrackHistory.$nextIds(Array.drop(1))
+        return
     }
 
-    else if (nextId === currentTrackId) {
-        $prevPlayedTrackIds.map(ids => pipe(
-            ids,
-            ids => remove(ids, prevTrackId),
-            ids => append(ids, prevTrackId),
-            ids => ids.slice(-MAX_SIZE),
-        ))
-        $nextPlayedTrackIds.map(ids => ids.slice(1))
+    if (nextTrackId === TrackHistory.$prevIds().at(-1)) {
+        TrackHistory.$prevIds(Array.dropLast(1))
+        TrackHistory.$nextIds(Array.prepend(prevTrackId))
+        return
     }
 
-    else {
-        $prevPlayedTrackIds.map(ids => pipe(
-            ids,
-            ids => remove(ids, prevTrackId),
-            ids => append(ids, prevTrackId),
-            ids => ids.slice(-MAX_SIZE),
-        ))
-        $nextPlayedTrackIds.set([])
-    }
+    TrackHistory.$prevIds(flow(
+        Array.removeAll([prevTrackId]),
+        Array.append(prevTrackId),
+        Array.takeLast(100),
+    ))
+
+    TrackHistory.$nextIds(Array.empty)
 })

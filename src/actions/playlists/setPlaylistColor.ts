@@ -1,14 +1,16 @@
-import type { PlaylistColor } from '@app/types'
-import { $playlists } from '@app/state/playlists/playlists'
-import { findAndMap } from '@app/utils/data/findAndMap'
-import { merge } from '@app/utils/data/merge'
-import { action } from '@monstermann/signals'
+import type { PlaylistColor } from "#features/Playlists"
+import { Playlists } from "#features/Playlists"
+import { Array, Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
-export const setPlaylistColor = action(({ playlistId, color }: { playlistId: string, color: PlaylistColor | undefined }) => {
-    $playlists.map(findAndMap(
+export const setPlaylistColor = action(({ color, playlistId }: {
+    color: PlaylistColor | undefined
+    playlistId: string
+}) => {
+    Playlists.$all(Array.findMap(
         p => p.id === playlistId,
         p => p.color?.type === color?.type && p.color?.value === color?.value
-            ? merge(p, { color: undefined })
-            : merge(p, { color }),
+            ? Object.merge(p, { color: undefined })
+            : Object.merge(p, { color }),
     ))
 })

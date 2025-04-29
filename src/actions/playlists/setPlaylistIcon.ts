@@ -1,14 +1,16 @@
-import type { PlaylistIcon } from '@app/types'
-import { $playlists } from '@app/state/playlists/playlists'
-import { findAndMap } from '@app/utils/data/findAndMap'
-import { merge } from '@app/utils/data/merge'
-import { action } from '@monstermann/signals'
+import type { PlaylistIcon } from "#features/Playlists"
+import { Playlists } from "#features/Playlists"
+import { Array, Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
-export const setPlaylistIcon = action(({ playlistId, icon }: { playlistId: string, icon: PlaylistIcon | undefined }) => {
-    $playlists.map(findAndMap(
+export const setPlaylistIcon = action(({ icon, playlistId }: {
+    icon: PlaylistIcon | undefined
+    playlistId: string
+}) => {
+    Playlists.$all(Array.findMap(
         p => p.id === playlistId,
         p => p.icon?.type === icon?.type && p.icon?.value === icon?.value
-            ? merge(p, { icon: undefined })
-            : merge(p, { icon }),
+            ? Object.merge(p, { icon: undefined })
+            : Object.merge(p, { icon }),
     ))
 })

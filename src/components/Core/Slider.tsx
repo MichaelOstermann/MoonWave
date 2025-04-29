@@ -1,31 +1,31 @@
-import type { CSSProperties, ReactNode } from 'react'
-import { setEntry } from '@app/utils/data/setEntry'
-import { useEffect, useRef, useState } from 'react'
-import { twJoin, twMerge } from 'tailwind-merge'
+import type { CSSProperties, ReactNode } from "react"
+import { Map } from "@monstermann/fn"
+import { useEffect, useRef, useState } from "react"
+import { twJoin, twMerge } from "tailwind-merge"
 
 export function Slider({
     active,
+    autoHeight = true,
     children,
     className,
-    autoHeight = true,
 }: {
     active: number
+    autoHeight?: boolean
     children: ReactNode[]
     className?: string
     height?: number
-    autoHeight?: boolean
 }): ReactNode {
     const [visible, setVisible] = useState<number[]>([])
-    const [heights, setHeights] = useState(new Map<number, number>())
+    const [heights, setHeights] = useState(() => Map.create<number, number>())
 
     const styles = children.map((_, idx) => {
         return idx === active
-            ? { opacity: 1, transform: 'translateX(0)' }
-            : { opacity: 0, transform: active < idx ? 'translateX(100%)' : 'translateX(-100%)' }
+            ? { opacity: 1, transform: "translateX(0)" }
+            : { opacity: 0, transform: active < idx ? "translateX(100%)" : "translateX(-100%)" }
     })
 
     useEffect(() => {
-        const timer = setTimeout(() => setVisible([active]), 300)
+        const timer = setTimeout(() => setVisible([active]), 200)
         return () => clearTimeout(timer)
     }, [active])
 
@@ -35,18 +35,18 @@ export function Slider({
 
     return (
         <div
+            className={twMerge("relative flex", className)}
             style={{ height }}
-            className={twMerge('relative flex', className)}
         >
             {children.map((child, idx) => {
                 return (
                     <SliderSection
-                        key={idx}
+                        autoHeight={autoHeight}
                         isActive={idx === active}
                         isVisible={visible.includes(idx)}
-                        autoHeight={autoHeight}
+                        key={idx}
+                        onResize={height => setHeights(Map.set(idx, height))}
                         style={styles[idx]}
-                        onResize={height => setHeights(setEntry(idx, height))}
                     >
                         {child}
                     </SliderSection>
@@ -57,18 +57,18 @@ export function Slider({
 }
 
 function SliderSection({
-    style,
-    isActive,
-    isVisible,
     autoHeight,
     children,
+    isActive,
+    isVisible,
     onResize,
+    style,
 }: {
-    style?: CSSProperties
-    isActive: boolean
-    isVisible: boolean
     autoHeight: boolean
     children: ReactNode
+    isActive: boolean
+    isVisible: boolean
+    style?: CSSProperties
     onResize: (height: number) => void
 }): ReactNode {
     const ref = useRef<HTMLDivElement>(null)
@@ -84,8 +84,8 @@ function SliderSection({
             ref={ref}
             style={style}
             className={twJoin(
-                'absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-300 ease-in-out',
-                !autoHeight && 'h-full',
+                "absolute inset-x-0 top-0 flex transition-[opacity,transform] duration-200 ease-in-out",
+                !autoHeight && "h-full",
             )}
         >
             {isMounted && children}

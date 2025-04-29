@@ -1,37 +1,36 @@
-import { $playlists } from '@app/state/playlists/playlists'
-import { $playlistsById } from '@app/state/playlists/playlistsById'
-import { findAllAndMap } from '@app/utils/data/findAllAndMap'
-import { merge } from '@app/utils/data/merge'
-import { pipe } from '@app/utils/data/pipe'
-import { remove } from '@app/utils/data/remove'
-import { autoAnimate } from '@app/utils/dom/autoAnimate'
-import { closeEmptyPlaylists } from '@app/utils/playlist/closeEmptyPlaylists'
-import { getPlaylistChildren } from '@app/utils/playlist/getPlaylistChildren'
-import { action } from '@monstermann/signals'
+import { Playlists } from "#features/Playlists"
+import { PlaylistTree } from "#features/PlaylistTree"
+import { autoAnimate } from "#utils/autoAnimate"
+import { Array, Object, pipe } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
 export const deletePlaylist = action(async (playlistId: string) => {
-    const playlist = $playlistsById(playlistId)()
-    const children = getPlaylistChildren(playlistId)
+    const playlist = Playlists.$byId.get(playlistId)
     if (!playlist) return
 
+    const children = pipe(
+        Playlists.$all(),
+        PlaylistTree.create,
+        tree => PlaylistTree.children(tree, playlistId),
+    )
+
     autoAnimate({
-        target: document.querySelector('.sidebar .playlists'),
-        filter: element => element.hasAttribute('data-playlist-id'),
+        target: document.querySelector(".sidebar .playlists"),
+        filter: element => element.hasAttribute("data-playlist-id"),
     })
 
-    $playlists.map((ps) => {
+    Playlists.$all((ps) => {
         return pipe(
             ps,
             // Remove playlist.
-            ps => remove(ps, playlist),
+            Array.remove(playlist),
             // Reparent children.
-            ps => findAllAndMap(
-                ps,
-                p => children.includes(p),
-                p => merge(p, { parentId: playlist.parentId }),
+            Array.findMapAll(
+                p => Array.includes(children, p),
+                Object.merge({ parentId: playlist.parentId }),
             ),
             // Close parent if this was the last child.
-            ps => closeEmptyPlaylists(ps),
+            ps => Playlists.closeEmpty(ps),
         )
     })
 })

@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
-import { CurrentTrack } from './CurrentTrack'
-import { PlaybackControls } from './PlaybackControls'
-import { SidepanelToggle } from './SidepanelToggle'
-import { VolumeControls } from './VolumeControls'
+import type { ReactNode } from "react"
+import { CurrentTrack } from "./CurrentTrack"
+import { PlaybackControls } from "./PlaybackControls"
+import { SidepanelToggle } from "./SidepanelToggle"
+import { VolumeControls } from "./VolumeControls"
 
 export function Trackbar(): ReactNode {
     return (

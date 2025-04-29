@@ -1,21 +1,18 @@
 {
-    "extends": "@sindresorhus/tsconfig",
+    "extends": "@monstermann/tsconfig",
     "compilerOptions": {
-        "target": "ES2020",
-        "jsx": "react-jsx",
-        "lib": [
-            "ES2020",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "module": "ESNext",
-        "moduleResolution": "bundler",
         "paths": {
-            "@app/*": ["./src/*"],
-            "@monstermann/signals": ["./packages/signals/index.ts"]
+            "#actions/*": ["./src/actions/*"],
+            "#components/*": ["./src/components/*"],
+            "#config/*": ["./src/config/*"],
+            "#features/*": ["./src/features/*/index.ts"],
+            "#hooks/*": ["./src/hooks/*"],
+            "#types": ["./src/types/index.ts"],
+            "#utils/*": ["./src/utils/*"],
+            "#src/*": ["./src/*"]
         },
         "allowImportingTsExtensions": true,
-        "noEmit": true,
+        "declaration": false,
         "isolatedModules": true
     },
     "references": [
@@ -25,6 +22,7 @@
     ],
     "include": [
         "src",
-        "packages/**/*"
+        "packages/**/*",
+        "@types"
     ]
 }

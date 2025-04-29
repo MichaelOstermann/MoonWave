@@ -1,21 +1,19 @@
-import { $draggingPlaylistIds } from '@app/state/playlists/draggingPlaylistIds'
-import { $dropPlaylistElement } from '@app/state/playlists/dropPlaylistElement'
-import { $dropPlaylistId } from '@app/state/playlists/dropPlaylistId'
-import { $playlistTree } from '@app/state/playlists/playlistTree'
-import { collectPlaylistIds } from '@app/utils/playlist/collectPlaylistIds'
-import { action } from '@monstermann/signals'
+import { PlaylistTree } from "#features/PlaylistTree"
+import { Sidebar } from "#features/Sidebar"
+import { Array } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
 export const onDragEnterPlaylist = action((playlistId: string) => {
-    if ($dropPlaylistId() === playlistId)
-        return
+    if (Sidebar.$dropId() === playlistId) return
 
-    const tree = $playlistTree()
-    const forbiddenPlaylistIds = $draggingPlaylistIds()
-        .flatMap(pid => collectPlaylistIds(pid, tree))
+    const tree = PlaylistTree.$tree()
+    const forbiddenPlaylistIds = Array.flatMap(
+        Sidebar.$draggingIds(),
+        pid => PlaylistTree.collectIds(tree, pid),
+    )
 
-    if (forbiddenPlaylistIds.includes(playlistId))
-        return $dropPlaylistId.set(null)
+    if (Array.includes(forbiddenPlaylistIds, playlistId))
+        return Sidebar.$dropId(null)
 
-    $dropPlaylistId.set(playlistId)
-    $dropPlaylistElement.set(document.querySelector(`[data-playlist-id="${playlistId}"]`))
+    Sidebar.$dropId(playlistId)
 })

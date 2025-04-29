@@ -1,17 +1,15 @@
-import { $playlists } from '@app/state/playlists/playlists'
-import { findAndMap } from '@app/utils/data/findAndMap'
-import { merge } from '@app/utils/data/merge'
-import { without } from '@app/utils/data/without'
-import { action } from '@monstermann/signals'
+import { Playlists } from "#features/Playlists"
+import { Array, Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
-export const removeTracksFromPlaylist = action(({ trackIds, playlistId }: {
-    trackIds: string[]
+export const removeTracksFromPlaylist = action(({ playlistId, trackIds }: {
     playlistId: string
+    trackIds: string[]
 }) => {
-    return $playlists.map(findAndMap(
+    return Playlists.$all(Array.findMap(
         p => p.id === playlistId,
-        p => merge(p, {
-            trackIds: without(p.trackIds, trackIds),
+        p => Object.merge(p, {
+            trackIds: Array.removeAll(p.trackIds, trackIds),
         }),
     ))
 })

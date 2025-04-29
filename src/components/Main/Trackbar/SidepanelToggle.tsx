@@ -1,21 +1,18 @@
-import type { ReactNode } from 'react'
-import { toggleSidepanel } from '@app/actions/app/toggleSidepanel'
-import { Button } from '@app/components/Button'
-import { FadeInOut } from '@app/components/FadeInOut'
-import { $isSidepanelOpen } from '@app/state/sidepanel/isSidepanelOpen'
-import { $prepareSidepanel } from '@app/state/sidepanel/prepareSidepanel'
-import { useSignal } from '@monstermann/signals'
-import { LucidePanelRightOpen } from 'lucide-react'
+import type { ReactNode } from "react"
+import { toggleSidepanel } from "#actions/app/toggleSidepanel"
+import { Button } from "#components/Button"
+import { FadeInOut } from "#components/FadeInOut"
+import { Sidepanel } from "#features/Sidepanel"
+import { LucidePanelRightOpen } from "lucide-react"
 
 export function SidepanelToggle(): ReactNode {
-    const isSidePanelOpen = useSignal($isSidepanelOpen)
+    const isSidePanelOpen = Sidepanel.$isOpen()
 
     return (
-        <FadeInOut show={!isSidePanelOpen} keepMounted>
+        <FadeInOut keepMounted show={!isSidePanelOpen}>
             <Button
-                onPointerDown={() => $prepareSidepanel.set(true)}
-                onClick={toggleSidepanel}
                 className="size-7"
+                onClick={toggleSidepanel}
             >
                 <LucidePanelRightOpen className="size-4" />
             </Button>

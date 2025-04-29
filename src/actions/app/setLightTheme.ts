@@ -1,8 +1,8 @@
-import type { ThemeNameLight } from '@app/types'
-import { $config } from '@app/state/app/config'
-import { merge } from '@app/utils/data/merge'
-import { action } from '@monstermann/signals'
+import type { ThemeNameLight } from "#src/features/Theme"
+import { Config } from "#features/Config"
+import { Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
 export const setLightTheme = action((lightThemeName: ThemeNameLight) => {
-    $config.map(merge({ lightThemeName }))
+    Config.$config(Object.merge({ lightThemeName }))
 })

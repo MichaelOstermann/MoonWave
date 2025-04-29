@@ -1,4 +1,4 @@
-[data-mode='light'] {
+[data-mode="light"] {
     --fg-red: oklch(53% 0.2 20);
     --bg-red: oklch(68% 0.12 20 / 20%);
     --accent-red: oklch(62% 0.2 20);
@@ -36,7 +36,7 @@
     --accent-pink: oklch(68% 0.2 326);
 }
 
-[data-mode='dark'] {
+[data-mode="dark"] {
     --fg-red: oklch(68% 0.16 10);
     --bg-red: oklch(67% 0.1 10 / 18%);
     --accent-red: oklch(62% 0.12 10);

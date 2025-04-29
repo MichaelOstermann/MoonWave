@@ -1,6 +1,6 @@
-import { $editingPlaylistId } from '@app/state/playlists/editingPlaylistId'
-import { action } from '@monstermann/signals'
+import { Sidebar } from "#features/Sidebar"
+import { action } from "@monstermann/signals"
 
 export const editPlaylistTitle = action((playlistId: string) => {
-    $editingPlaylistId.set(playlistId)
+    Sidebar.$editingId(playlistId)
 })

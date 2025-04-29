@@ -1,18 +1,18 @@
-import { $isFocused } from '@app/state/app/isFocused'
-import { $isMinimized } from '@app/state/app/isMinimized'
-import { sleep } from '@app/utils/data/sleep'
-import { effect, onChange, onCleanup } from '@monstermann/signals'
-import { getCurrentWindow } from '@tauri-apps/api/window'
+import { App } from "#features/App"
+import { Promise } from "@monstermann/fn"
+import { effect, onCleanup, watch } from "@monstermann/signals"
 
-onChange($isMinimized, (isMinimized) => {
+import { getCurrentWindow } from "@tauri-apps/api/window"
+
+watch(App.$isMinimized, (isMinimized) => {
     if (isMinimized) return
     invalidateWindowShadows()
 })
 
 effect(() => {
-    if ($isFocused()) return
-    if ($isMinimized()) return
-    onCleanup(pollIsMinimized($isMinimized.set))
+    if (App.$isFocused()) return
+    if (App.$isMinimized()) return
+    onCleanup(pollIsMinimized(App.$isMinimized))
 })
 
 async function invalidateWindowShadows() {
@@ -27,7 +27,7 @@ function pollIsMinimized(cb: (isMinimized: boolean) => void): () => void {
 
     ;(async () => {
         while (true) {
-            await sleep(1000)
+            await Promise.wait(1000)
             if (ac.signal.aborted) return
             cb(await tauri.isMinimized())
         }

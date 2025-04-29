@@ -26,7 +26,6 @@ Requirements:
 - [Bun](https://bun.sh/)
 
 ```sh
-bun run install-ffmpeg
 bun install --frozen-lockfile
 bun run tauri build
 ```

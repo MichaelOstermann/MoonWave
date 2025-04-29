@@ -1,36 +1,36 @@
-import type { ReactNode } from 'react'
-import { seekTo } from '@app/actions/audio/seekTo'
-import { Logo } from '@app/components/Logo'
-import { $currentTrackDuration } from '@app/state/audio/currentTrackDuration'
-import { $playingTrackId } from '@app/state/tracks/playingTrackId'
-import { createSeeker } from '@app/utils/seeker'
-import { useSignal } from '@monstermann/signals'
-import { TrackDuration } from './TrackDuration'
-import { TrackElapsedTime } from './TrackElapsedTime'
-import { TrackInfo } from './TrackInfo'
-import { TrackPosition } from './TrackPosition'
-import { Wavesurfer } from './Wavesurfer'
-import { WavesurferSeeker } from './WavesurferSeeker'
+import type { ReactNode } from "react"
+import { seekTo } from "#actions/audio/seekTo"
+import { Logo } from "#components/Logo"
+import { Playback } from "#features/Playback"
+import { createSeeker } from "#utils/seeker"
+import { TrackDuration } from "./TrackDuration"
+import { TrackElapsedTime } from "./TrackElapsedTime"
+import { TrackInfo } from "./TrackInfo"
+import { TrackPosition } from "./TrackPosition"
+import { Wavesurfer } from "./Wavesurfer"
+import { WavesurferSeeker } from "./WavesurferSeeker"
 
 const seeker = createSeeker<HTMLDivElement>({
+    cursor: "cursor-crosshair!",
     useHoverPreview: true,
-    cursor: '!cursor-crosshair',
     onSeekEnd(pos) {
-        seekTo($currentTrackDuration() * pos.relX)
+        seekTo(Playback.$duration() * pos.relX)
     },
 })
 
 export function CurrentTrack(): ReactNode {
-    const hasTrack = useSignal(() => $playingTrackId() != null)
-    const iSeeking = useSignal(seeker.$seeking)
-    const position = useSignal(seeker.$relX)
+    const hasTrack = Playback.$hasTrack()
+    const position = seeker.$relX()
+    const isHovering = seeker.$hovering()
+    const isDragging = seeker.$dragging()
+    const isSeeking = isHovering || isDragging
 
     return (
         <div
+            className="group relative flex size-full max-w-[1000px] rounded-b-md bg-(--bg-soft)"
             data-show-logo={!hasTrack}
-            data-show-track={hasTrack && !iSeeking}
-            data-show-waveform={hasTrack && iSeeking}
-            className="group relative flex size-full max-w-[1000px] rounded-b-md bg-[--bg-soft]"
+            data-show-track={hasTrack && !isSeeking}
+            data-show-waveform={hasTrack && isSeeking}
         >
             <div className="absolute inset-0 flex items-center justify-center group-data-[show-logo=false]:opacity-0">
                 <Logo className="size-6" />
@@ -42,8 +42,8 @@ export function CurrentTrack(): ReactNode {
                 <TrackPosition />
             </div>
             <div
-                ref={seeker.$element.set}
                 className="absolute inset-0 top-[3px] flex size-full group-data-[show-waveform=true]:cursor-crosshair group-data-[show-waveform=false]:opacity-0"
+                ref={el => seeker.$element(el)}
             >
                 <WavesurferSeeker position={position} />
                 <Wavesurfer />

@@ -1,12 +1,8 @@
-import type { ReactNode } from 'react'
-import { $playingTrack } from '@app/state/tracks/playingTrack'
-import { useSignal } from '@monstermann/signals'
+import type { ReactNode } from "react"
+import { Playback } from "#features/Playback"
 
 export function TrackTitle(): ReactNode {
-    const title = useSignal(() => {
-        const track = $playingTrack()
-        return track?.title || ''
-    })
+    const title = Playback.$track()?.title || ""
 
     return (
         <div className="flex max-w-full text-xs font-medium">

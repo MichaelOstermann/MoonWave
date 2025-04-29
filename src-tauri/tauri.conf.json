@@ -20,8 +20,7 @@
                 "trafficLightPosition": { "x": 11, "y": 20 },
                 "hiddenTitle": true,
                 "transparent": true,
-                "visible": false,
-                "dragDropEnabled": false
+                "visible": false
             }
         ],
         "security": {
@@ -31,16 +30,13 @@
     "bundle": {
         "active": true,
         "createUpdaterArtifacts": true,
-        "targets": "all",
+        "targets": ["dmg", "appimage", "deb", "rpm"],
         "category": "Music",
         "icon": [
             "icons/32x32.png",
             "icons/128x128.png",
             "icons/128x128@2x.png",
             "icons/icon.icns"
-        ],
-        "externalBin": [
-            "bin/ffmpeg"
         ]
     },
     "plugins": {

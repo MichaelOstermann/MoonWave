@@ -1,13 +1,13 @@
-import type { Color } from '@app/types'
+import type { Color } from "#src/features/Theme"
 
 export const colors: Color[] = [
-    'red',
-    'orange',
-    'yellow',
-    'green',
-    'teal',
-    'cyan',
-    'blue',
-    'purple',
-    'pink',
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "teal",
+    "cyan",
+    "blue",
+    "purple",
+    "pink",
 ]

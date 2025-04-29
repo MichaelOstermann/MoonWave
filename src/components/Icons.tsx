@@ -1,73 +1,61 @@
-import type { PlaylistIcon } from '@app/types'
-import { iconData, icons } from '@app/config/icons'
-import { Tooltip } from '@app/utils/modals/components/Tooltip'
-import { useResizeObserver } from '@react-hookz/web'
-import fuzzysort from 'fuzzysort'
-import { LucideSearch, LucideX } from 'lucide-react'
-import { createElement, type ReactNode, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-import { VList } from 'virtua'
-import { Input } from './Core/Input/Input'
-import { InputLeft } from './Core/Input/InputLeft'
-import { InputRight } from './Core/Input/InputRight'
-import { InputRoot } from './Core/Input/InputRoot'
-import { useInput } from './Core/Input/useInput'
+import type { PlaylistIcon } from "#src/features/Playlists"
+import type { ReactNode } from "react"
+import { iconData, icons } from "#config/icons"
+import { Array, pipe, withMutations } from "@monstermann/fn"
+import fuzzysort from "fuzzysort"
+import { LucideSearch, LucideX } from "lucide-react"
+import { createElement, useMemo, useState } from "react"
+import { twMerge } from "tailwind-merge"
+import { Input, useInput } from "./Core/Input"
+import { List } from "./Core/List"
 
 const baseIcons: PlaylistIcon[] = iconData
     .toSorted((a, b) => a.name.localeCompare(b.name))
-    .map(icon => ({ type: 'LUCIDE', value: icon.name }))
+    .map(icon => ({ type: "LUCIDE", value: icon.name }))
 
 const preparedIcons = iconData.map(icon => ({
-    name: icon.name,
     haystack: [icon.name, ...icon.tags].map(str => fuzzysort.prepare(str)),
+    name: icon.name,
 }))
 
 interface IconsProps {
-    rowCount: number
-    paddingX: number
-    heightModifier?: number
-    paddingBottom?: number
+    activeIcon: PlaylistIcon | undefined
     cellSize?: number
     className?: string
-    activeIcon: PlaylistIcon | undefined
+    colCount: number
+    heightModifier?: number
+    paddingBottom?: number
+    paddingX: number
+    rowCount: number
     onSelectIcon?: (name: PlaylistIcon) => void
 }
 
 export function Icons({
-    rowCount,
-    paddingX,
-    paddingBottom,
-    heightModifier = 0,
+    activeIcon,
     cellSize = 32,
     className,
-    activeIcon,
+    colCount = 13,
+    heightModifier = 0,
     onSelectIcon,
+    paddingBottom,
+    paddingX,
+    rowCount,
 }: IconsProps): ReactNode {
-    const ref = useRef<HTMLDivElement>(null)
-    const [value, setValue] = useState('')
-    const [width, setWidth] = useState(0)
-
-    useResizeObserver(ref as any, (entry) => {
-        setWidth(entry.contentRect.width)
-    })
+    const [value, setValue] = useState("")
+    const scrollHeight = (rowCount * cellSize) + heightModifier
 
     const icons = value
         ? searchIcons(value)
         : baseIcons
 
     const input = useInput({
-        value,
-        placeholder: 'Search',
-        onEscape: () => setValue(''),
         onUpdate: setValue,
+        placeholder: "Search",
+        value,
+        onEscape: () => setValue(""),
     })
 
-    const availableWidth = width - paddingX * 2
-    const colCount = Math.floor(availableWidth / cellSize)
-    const colWidth = availableWidth / colCount
-    const scrollHeight = (rowCount * cellSize) + heightModifier
-
-    const rows = icons.reduce((acc, name) => {
+    const rows = useMemo(() => icons.reduce((acc, name) => {
         const prev = acc.at(-1)
         if (prev && prev.length < colCount) {
             prev.push(name)
@@ -75,113 +63,108 @@ export function Icons({
         }
         acc.push([name])
         return acc
-    }, [] as PlaylistIcon[][])
+    }, [] as PlaylistIcon[][]), [icons, colCount])
 
     return (
         <div
-            ref={ref}
-            className={twMerge('flex shrink grow flex-col', className)}
+            className={twMerge("flex shrink grow flex-col", className)}
             style={{
-                '--px': `${paddingX}px`,
-                '--col-width': `${colWidth}px`,
-                '--cell-size': `${cellSize}px`,
+                "--cell-size": `${cellSize}px`,
+                "--px": `${paddingX}px`,
             }}
         >
-            <div className="flex px-[--px]">
-                <InputRoot input={input} className="h-8">
-                    <InputLeft className="size-8">
+            <div className="flex px-(--px)">
+                <Input.Root className="h-8" input={input}>
+                    <Input.Left className="size-8">
                         <LucideSearch className="size-4" />
-                    </InputLeft>
-                    <Input className="px-8" />
-                    <InputRight
+                    </Input.Left>
+                    <Input.Field className="px-8" />
+                    <Input.Right
                         className="size-8"
-                        onClick={() => setValue('')}
-                        show={value !== ''}
+                        onClick={() => setValue("")}
+                        show={value !== ""}
                     >
                         <LucideX className="size-4" />
-                    </InputRight>
-                </InputRoot>
+                    </Input.Right>
+                </Input.Root>
             </div>
-            <VList
-                overscan={10}
-                className="flex flex-col px-[--px]"
-                style={{ height: scrollHeight }}
-            >
-                {rows.length === 0 && (
-                    <div className="flex h-[--cell-size] items-center justify-center text-sm">
-                        No results found.
-                    </div>
-                )}
-                {rows.map((icons, idx) => {
-                    return (
-                        <div
-                            key={idx}
-                            className="flex shrink-0"
-                        >
-                            {icons.map(icon => (
-                                <Icon
-                                    key={icon.value}
-                                    value={icon}
-                                    activeIcon={activeIcon}
-                                    onSelectIcon={onSelectIcon}
-                                />
-                            ))}
-                        </div>
-                    )
-                })}
-                <div style={{ height: paddingBottom }} />
-            </VList>
+            {rows.length === 0 && (
+                <div
+                    className="flex items-center justify-center text-sm"
+                    style={{ height: scrollHeight, paddingBottom }}
+                >
+                    No results found.
+                </div>
+            )}
+            {rows.length > 0 && (
+                <List
+                    className="px-(--px)"
+                    height={32}
+                    items={rows}
+                    overscan={10}
+                    style={{ height: scrollHeight, paddingBottom }}
+                    render={function ({ item }) {
+                        return (
+                            <div className="flex w-full shrink-0">
+                                {item.map(icon => (
+                                    <Icon
+                                        activeIcon={activeIcon}
+                                        key={icon.value}
+                                        onSelectIcon={onSelectIcon}
+                                        value={icon}
+                                    />
+                                ))}
+                            </div>
+                        )
+                    }}
+                />
+            )}
         </div>
     )
 }
 
 interface IconProps {
-    value: PlaylistIcon
     activeIcon: PlaylistIcon | undefined
+    value: PlaylistIcon
     onSelectIcon?: (name: PlaylistIcon) => void
 }
 
 function Icon({
-    value,
     activeIcon,
     onSelectIcon,
+    value,
 }: IconProps): ReactNode {
     const isActive = value.type === activeIcon?.type && value.value === activeIcon.value
     const icon = icons[value.value] ?? null
 
     return (
-        <Tooltip
+        <div
+            className="flex w-(--col-width) justify-center"
             onClick={() => onSelectIcon?.(value)}
-            content={formatIconName(value.value)}
-            className="w-[--col-width] justify-center"
         >
             <div
+                className="flex size-(--cell-size) items-center justify-center rounded-sm transition duration-150 ease-in-out active:scale-[0.8] data-[active=true]:bg-(--bg-accent) data-[active=true]:text-(--fg-accent)"
                 data-active={isActive}
-                className="flex size-[--cell-size] items-center justify-center rounded transition duration-150 ease-in-out active:scale-[0.8] data-[active=true]:bg-[--bg-accent] data-[active=true]:text-[--fg-accent]"
             >
-                {createElement(icon, { className: 'size-4' })}
+                {createElement(icon, { className: "size-4" })}
             </div>
-        </Tooltip>
+        </div>
     )
 }
 
 function searchIcons(filter: string): PlaylistIcon[] {
-    return preparedIcons
-        .map(icon => ({
-            name: icon.name,
-            score: icon.haystack.reduce((acc, prep) => {
-                return Math.max(acc, fuzzysort.single(filter, prep)?.score ?? 0)
-            }, 0),
-        }))
-        .filter(icon => icon.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .map(icon => ({ type: 'LUCIDE', value: icon.name }))
-}
-
-function formatIconName(name: string): string {
-    return name
-        .replace(/-\d+$/, '')
-        .split('-')
-        .map(v => v.slice(0, 1).toUpperCase() + v.slice(1))
-        .join(' ')
+    return withMutations(() => {
+        return pipe(
+            preparedIcons,
+            Array.mapEach(icon => ({
+                name: icon.name,
+                score: icon.haystack.reduce((acc, prep) => {
+                    return Math.max(acc, fuzzysort.single(filter, prep)?.score ?? 0)
+                }, 0),
+            })),
+            Array.filter(icon => icon.score > 0),
+            Array.sort((a, b) => b.score - a.score),
+            Array.mapEach(icon => ({ type: "LUCIDE", value: icon.name })),
+        )
+    })
 }

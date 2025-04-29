@@ -1,41 +1,37 @@
-import type { CSSProperties, ReactNode } from 'react'
-import type { Column, Row } from './types'
-import { $isPlaying } from '@app/state/audio/isPlaying'
-import { $playingTrackId } from '@app/state/tracks/playingTrackId'
-import { useSignal } from '@monstermann/signals'
-import { twJoin } from 'tailwind-merge'
-import { AudioWaveIcon } from '../AudioWaveIcon'
-import { FadeInOut } from '../FadeInOut'
-import { iconSize } from './config'
+import type { CSSProperties, ReactNode } from "react"
+import type { Column, Row } from "./types"
+import { Playback } from "#features/Playback"
+import { twJoin } from "tailwind-merge"
+import { AudioWaveIcon } from "../AudioWaveIcon"
+import { FadeInOut } from "../FadeInOut"
+import { iconSize } from "./config"
 
 export function TrackListRowColumn({ col, row, style }: {
     col: Column
     row: Row
     style: CSSProperties
 }): ReactNode {
-    const showAudioWaveIcon = useSignal(() => {
-        return col === 'position'
-            && $isPlaying()
-            && $playingTrackId() === row.id
-    })
+    const showAudioWaveIcon = col === "position"
+        && Playback.$isPlaying()
+        && Playback.$trackId() === row.id
 
     return (
         <div
             key={col}
             style={style}
             className={twJoin(
-                'flex h-full items-center',
-                col === 'position' && 'relative justify-end tabular-nums',
-                col === 'duration' && 'justify-end tabular-nums',
+                "flex h-full items-center",
+                col === "position" && "relative justify-end tabular-nums",
+                col === "duration" && "justify-end tabular-nums",
             )}
         >
-            {col === 'position' && (
+            {col === "position" && (
                 <Position
                     position={row[col]}
                     showAudioWaveIcon={showAudioWaveIcon}
                 />
             )}
-            {col !== 'position' && (
+            {col !== "position" && (
                 <span className="truncate">
                     {row[col]}
                 </span>
@@ -50,10 +46,10 @@ function Position({ position, showAudioWaveIcon }: {
 }): ReactNode {
     return (
         <>
-            <FadeInOut show={!showAudioWaveIcon} className="absolute">
+            <FadeInOut className="absolute" show={!showAudioWaveIcon}>
                 {position}
             </FadeInOut>
-            <FadeInOut show={showAudioWaveIcon} className="absolute">
+            <FadeInOut className="absolute" show={showAudioWaveIcon}>
                 <AudioWaveIcon style={{ width: iconSize }} />
             </FadeInOut>
         </>

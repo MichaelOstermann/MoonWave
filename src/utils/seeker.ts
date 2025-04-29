@@ -1,30 +1,31 @@
-import type { ReadonlySignal, WritableSignal } from '@monstermann/signals'
-import { $mouseX, computed, effect, signal } from '@monstermann/signals'
-import { pipe } from './data/pipe'
+import type { Memo, Signal } from "@monstermann/signals"
+import { App } from "#features/App"
+import { pipe } from "@monstermann/fn"
+import { effect, memo, peek, signal } from "@monstermann/signals"
+import { $pointerX } from "@monstermann/signals-web"
 
 type Position = {
-    relX: number
     absX: number
     diffX: number
+    relX: number
 }
 
 type SeekerOptions = {
-    disabled?: boolean
     cursor?: string
+    disabled?: boolean
     useHoverPreview?: boolean
-    onSeekStart?: (pos: Position) => void
     onSeek?: (pos: Position) => void
     onSeekEnd?: (pos: Position) => void
+    onSeekStart?: (pos: Position) => void
 }
 
 interface Seeker<T extends Element> {
-    $element: WritableSignal<T | null>
-    $enabled: WritableSignal<boolean>
-    $relX: ReadonlySignal<number>
-    $absX: ReadonlySignal<number>
-    $dragging: ReadonlySignal<boolean>
-    $hovering: ReadonlySignal<boolean>
-    $seeking: ReadonlySignal<boolean>
+    $absX: Memo<number>
+    $dragging: Signal<boolean>
+    $element: Signal<T | null>
+    $enabled: Signal<boolean>
+    $hovering: Signal<boolean>
+    $relX: Memo<number>
 }
 
 export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker<T> {
@@ -32,15 +33,14 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     const $dragging = signal(false)
     const $hovering = signal(false)
     const $enabled = signal(opts.disabled !== false)
-    const $seeking = computed(() => $dragging() || $hovering())
 
     const $bounds = signal<DOMRect>(undefined)
-    const $left = computed(() => $bounds()?.left ?? 0)
-    const $width = computed(() => $bounds()?.width ?? 0)
+    const $left = memo(() => $bounds()?.left ?? 0)
+    const $width = memo(() => $bounds()?.width ?? 0)
 
     const $startX = signal(0)
-    const $absX = computed(() => $seeking() ? $mouseX() : 0)
-    const $relX = computed(() => pipe(
+    const $absX = memo(() => $hovering() || $dragging() ? $pointerX() : 0)
+    const $relX = memo(() => pipe(
         $absX(),
         x => x - $left(),
         x => x / $width(),
@@ -50,17 +50,17 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
 
     const getPosition = function (): Position {
         return {
-            absX: $absX.peek(),
-            relX: $relX.peek(),
-            diffX: $startX.peek() - $mouseX.peek(),
+            absX: peek($absX),
+            diffX: peek($startX) - peek($pointerX),
+            relX: peek($relX),
         }
     }
 
     const onElementMouseDown = function (evt: MouseEvent) {
         evt.preventDefault()
-        $startX.set($mouseX.peek())
-        $bounds.set($element()?.getBoundingClientRect())
-        $dragging.set(true)
+        $startX(peek($pointerX))
+        $bounds($element()?.getBoundingClientRect())
+        $dragging(true)
         opts.onSeekStart?.(getPosition())
     }
 
@@ -70,48 +70,59 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
 
     const onDocumentMouseUp = function () {
         opts.onSeekEnd?.(getPosition())
-        $dragging.set(false)
+        $dragging(false)
     }
 
     const onElementMouseEnter = function () {
-        $bounds.set($element()?.getBoundingClientRect())
-        $hovering.set(true)
+        $bounds($element()?.getBoundingClientRect())
+        $hovering(true)
+    }
+
+    const onElementMouseMove = function () {
+        $hovering(true)
     }
 
     const onElementMouseLeave = function () {
-        $hovering.set(false)
+        $hovering(false)
     }
 
     effect(() => {
-        $element()?.removeEventListener('pointerdown', onElementMouseDown)
+        if (!$hovering()) return
+        if (!App.$isFocused()) onElementMouseLeave()
+    })
+
+    effect(() => {
+        const ac = new AbortController()
 
         if ($enabled() && $element())
-            $element()?.addEventListener('pointerdown', onElementMouseDown)
+            $element()?.addEventListener("pointerdown", onElementMouseDown, { signal: ac.signal })
         else
-            $dragging.set(false)
+            $dragging(false)
+
+        return () => ac.abort()
     })
 
     effect(() => {
-        document.removeEventListener('pointermove', onDocumentMouseMove)
-        document.removeEventListener('pointerup', onDocumentMouseUp)
-
-        if ($dragging()) {
-            document.addEventListener('pointermove', onDocumentMouseMove, { passive: true })
-            document.addEventListener('pointerup', onDocumentMouseUp)
-        }
+        if (!$dragging()) return
+        const ac = new AbortController()
+        document.addEventListener("pointermove", onDocumentMouseMove, { passive: true, signal: ac.signal })
+        document.addEventListener("pointerup", onDocumentMouseUp, { signal: ac.signal })
+        return () => ac.abort()
     })
 
     effect(() => {
-        $element()?.removeEventListener('pointerenter', onElementMouseEnter)
-        $element()?.removeEventListener('pointerleave', onElementMouseLeave)
+        const ac = new AbortController()
 
         if (opts.useHoverPreview && $enabled() && $element()) {
-            $element()?.addEventListener('pointerenter', onElementMouseEnter)
-            $element()?.addEventListener('pointerleave', onElementMouseLeave)
+            $element()?.addEventListener("pointerenter", onElementMouseEnter, { signal: ac.signal })
+            $element()?.addEventListener("pointermove", onElementMouseMove, { signal: ac.signal })
+            $element()?.addEventListener("pointerleave", onElementMouseLeave, { signal: ac.signal })
         }
         else {
-            $hovering.set(false)
+            $hovering(false)
         }
+
+        return () => ac.abort()
     })
 
     effect(() => {
@@ -123,12 +134,11 @@ export function createSeeker<T extends HTMLElement>(opts: SeekerOptions): Seeker
     })
 
     return {
-        $element,
-        $enabled,
-        $relX,
         $absX,
         $dragging,
+        $element,
+        $enabled,
         $hovering,
-        $seeking,
+        $relX,
     }
 }

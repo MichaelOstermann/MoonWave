@@ -1,17 +1,14 @@
-import type { ReactNode } from 'react'
-import { playNext } from '@app/actions/audio/playNext'
-import { playPrev } from '@app/actions/audio/playPrev'
-import { toggleMode } from '@app/actions/audio/toggleMode'
-import { togglePlayback } from '@app/actions/audio/togglePlayback'
-import { Button } from '@app/components/Button'
-import { $isPlaying } from '@app/state/audio/isPlaying'
-import { $playingMode } from '@app/state/audio/playingMode'
-import { $hasNextTrack } from '@app/state/tracks/hasNextTrack'
-import { $hasPrevTrack } from '@app/state/tracks/hasPrevTrack'
-import { $hasTrack } from '@app/state/tracks/hasTrack'
-import { useSignal } from '@monstermann/signals'
-import { LucideFastForward, LucidePause, LucidePlay, LucideRepeat, LucideRepeat1, LucideRewind, LucideShuffle } from 'lucide-react'
-import { match } from 'ts-pattern'
+import type { ReactNode } from "react"
+import { playNext } from "#actions/audio/playNext"
+import { playPrev } from "#actions/audio/playPrev"
+import { toggleMode } from "#actions/audio/toggleMode"
+import { togglePlayback } from "#actions/audio/togglePlayback"
+import { Button } from "#components/Button"
+import { Playback } from "#features/Playback"
+import { TrackHistory } from "#features/TrackHistory"
+import { match } from "@monstermann/fn"
+import { LucideFastForward, LucidePause, LucidePlay, LucideRepeat, LucideRepeat1, LucideRewind, LucideShuffle } from "lucide-react"
+import { createElement } from "react"
 
 export function PlaybackControls(): ReactNode {
     return (
@@ -25,62 +22,62 @@ export function PlaybackControls(): ReactNode {
 }
 
 function PlayPrevButton(): ReactNode {
-    const hasPrevTrack = useSignal($hasPrevTrack)
+    const hasPrevTrack = TrackHistory.$hasPrev()
 
     return (
         <Button
-            onClick={playPrev}
             disabled={!hasPrevTrack}
+            onClick={playPrev}
         >
-            <LucideRewind className="size-5 fill-current" />
+            <LucideRewind className="size-5 fill-current stroke-none" />
         </Button>
     )
 }
 
 function PlayPauseButton(): ReactNode {
-    const hasTrack = useSignal($hasTrack)
-    const Icon = useSignal($isPlaying)
+    const canPlay = Playback.$canPlay()
+    const Icon = Playback.$isPlaying()
         ? LucidePause
         : LucidePlay
 
     return (
         <Button
+            disabled={!canPlay}
             onClick={togglePlayback}
-            disabled={!hasTrack}
         >
-            <Icon className="size-6 fill-current" />
+            <Icon className="size-6 fill-current stroke-none" />
         </Button>
     )
 }
 
 function PlayNextButton(): ReactNode {
-    const hasNextTrack = useSignal($hasNextTrack)
+    const hasNextTrack = TrackHistory.$hasNext()
 
     return (
         <Button
-            onClick={playNext}
             disabled={!hasNextTrack}
+            onClick={playNext}
         >
-            <LucideFastForward className="size-5 fill-current" />
+            <LucideFastForward className="size-5 fill-current stroke-none" />
         </Button>
     )
 }
 
 function ModeButton(): ReactNode {
-    const mode = useSignal($playingMode)
+    const mode = Playback.$mode()
 
-    const Icon = match(mode)
-        .with('SINGLE', () => LucideRepeat1)
-        .with('REPEAT', () => LucideRepeat)
-        .with('SHUFFLE', () => LucideShuffle)
-        .exhaustive()
+    const icon = match(mode)
+        .case("SINGLE", LucideRepeat1)
+        .case("REPEAT", LucideRepeat)
+        .case("SHUFFLE", LucideShuffle)
+        .orThrow()
 
     return (
         <Button
-            onClick={toggleMode}
             className="size-7"
+            onClick={toggleMode}
         >
-            <Icon className="size-4" />
+            {createElement(icon, { className: "size-4" })}
         </Button>
     )
 }

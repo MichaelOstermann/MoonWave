@@ -1,6 +1,6 @@
-import { audio } from '@app/state/audio/audio'
-import { action } from '@monstermann/signals'
+import { action } from "@monstermann/signals"
+import { invoke } from "@tauri-apps/api/core"
 
 export const setVolume = action((value: number) => {
-    audio.volume = Math.round(value * 100) / 100
+    invoke("set_volume", { volume: Math.round(value * 100) / 100 })
 })

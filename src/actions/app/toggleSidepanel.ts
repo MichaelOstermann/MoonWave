@@ -1,12 +1,9 @@
-import { $isSidepanelOpen } from '@app/state/sidepanel/isSidepanelOpen'
-import { $isTogglingSidepanel } from '@app/state/sidepanel/isTogglingSidepanel'
-import { $prepareSidepanel } from '@app/state/sidepanel/prepareSidepanel'
-import { action, onCleanup } from '@monstermann/signals'
+import { Sidepanel } from "#features/Sidepanel"
+import { action, onCleanup } from "@monstermann/signals"
 
 export const toggleSidepanel = action(async () => {
-    $isTogglingSidepanel.set(true)
-    $prepareSidepanel.set(false)
-    $isSidepanelOpen.map(isOpen => !isOpen)
-    const tid = setTimeout(() => $isTogglingSidepanel.set(false), 300)
+    Sidepanel.$isToggling(true)
+    Sidepanel.$isOpen(isOpen => !isOpen)
+    const tid = setTimeout(() => Sidepanel.$isToggling(false), 200)
     onCleanup(() => clearTimeout(tid))
 })

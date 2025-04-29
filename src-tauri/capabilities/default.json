@@ -23,16 +23,6 @@
         "core:window:allow-set-shadow",
         "fs:allow-temp-write",
         "fs:allow-appdata-write-recursive",
-        "fs:allow-audio-read-recursive",
-        {
-            "identifier": "shell:allow-execute",
-            "allow": [
-                {
-                    "name": "bin/ffmpeg",
-                    "sidecar": true,
-                    "args": true
-                }
-            ]
-        }
+        "fs:allow-audio-read-recursive"
     ]
 }

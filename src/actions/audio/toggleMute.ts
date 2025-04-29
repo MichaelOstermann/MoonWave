@@ -1,10 +1,10 @@
-import { audio } from '@app/state/audio/audio'
-import { action } from '@monstermann/signals'
-import { mute } from './mute'
-import { unmute } from './unmute'
+import { Playback } from "#features/Playback"
+import { action } from "@monstermann/signals"
+import { mute } from "./mute"
+import { unmute } from "./unmute"
 
 export const toggleMute = action(() => {
-    audio.muted
+    Playback.$volume() === 0
         ? unmute()
         : mute()
 })

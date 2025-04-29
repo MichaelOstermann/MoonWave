@@ -1,15 +1,12 @@
-import { createContext } from 'react'
-
-export const ButtonGroupButtonContext = createContext({
-    index: -1,
-})
+import { noop } from "@monstermann/fn"
+import { createContext } from "react"
 
 export const ButtonGroupContext = createContext<{
-    active: number
-    onSelect: (index: number) => void
-    registerElement: (index: number, element: Element | null) => void
+    isActive: boolean
+    onResize: (width: number) => void
+    setActive: () => void
 }>({
-            active: -1,
-            onSelect: () => {},
-            registerElement: () => {},
-        })
+    isActive: false,
+    onResize: noop,
+    setActive: noop,
+})

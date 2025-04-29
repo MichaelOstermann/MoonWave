@@ -1,38 +1,40 @@
-import type { ReactNode } from 'react'
-import { parseShortcut } from '@monstermann/hotkeys/vscode'
-import { LucideArrowBigUp, LucideArrowDown, LucideArrowLeft, LucideArrowRight, LucideArrowUp, LucideChevronUp, LucideCommand, LucideOption, LucideSpace } from 'lucide-react'
-import { twMerge } from 'tailwind-merge'
-import { match, P } from 'ts-pattern'
+import type { ReactNode } from "react"
+import { match, Object } from "@monstermann/fn"
+import { Hotkeys } from "@monstermann/hotkeys"
+import { LucideArrowBigUp, LucideArrowDown, LucideArrowLeft, LucideArrowRight, LucideArrowUp, LucideChevronUp, LucideCommand, LucideOption, LucideSpace } from "lucide-react"
+import { twMerge } from "tailwind-merge"
 
-export function Kbd({ value, className }: { value: string, className?: string }): ReactNode {
+export function Kbd({ className, value }: { className?: string, value: string }): ReactNode {
     return (
         <kbd
             className={twMerge(
-                'flex items-center gap-x-0.5 text-[--fg-soft]',
+                "flex items-center gap-x-0.5 text-(--fg-soft)",
                 className,
             )}
         >
-            {parseShortcut(value)
+            {Hotkeys
+                .vsc(value)
                 .flatMap(({ key, ...mods }) => [mods, { key }])
                 .map((part, idx) => {
                     const key = idx
 
-                    return match(part)
-                        .with({ meta: true }, () => <LucideCommand key={key} className="size-3" />)
-                        .with({ alt: true }, () => <LucideOption key={key} className="size-3" />)
-                        .with({ ctrl: true }, () => <LucideChevronUp key={key} className="size-3" />)
-                        .with({ shift: true }, () => <LucideArrowBigUp key={key} className="size-3" />)
-                        .with({ key: 'ArrowUp' }, () => <LucideArrowUp key={key} className="size-3" />)
-                        .with({ key: 'ArrowLeft' }, () => <LucideArrowLeft key={key} className="size-3" />)
-                        .with({ key: 'ArrowDown' }, () => <LucideArrowDown key={key} className="size-3" />)
-                        .with({ key: 'ArrowRight' }, () => <LucideArrowRight key={key} className="size-3" />)
-                        .with({ key: 'Space' }, () => <LucideSpace key={key} className="size-3" />)
-                        .with({ key: P.string }, part => (
-                            <span key={key} className="w-3 text-center text-sm">
+                    return match
+                        .shape(part)
+                        .onCase({ meta: true }, () => <LucideCommand className="size-3" key={key} />)
+                        .onCase({ alt: true }, () => <LucideOption className="size-3" key={key} />)
+                        .onCase({ ctrl: true }, () => <LucideChevronUp className="size-3" key={key} />)
+                        .onCase({ shift: true }, () => <LucideArrowBigUp className="size-3" key={key} />)
+                        .onCase({ key: "ArrowUp" }, () => <LucideArrowUp className="size-3" key={key} />)
+                        .onCase({ key: "ArrowLeft" }, () => <LucideArrowLeft className="size-3" key={key} />)
+                        .onCase({ key: "ArrowDown" }, () => <LucideArrowDown className="size-3" key={key} />)
+                        .onCase({ key: "ArrowRight" }, () => <LucideArrowRight className="size-3" key={key} />)
+                        .onCase({ key: "Space" }, () => <LucideSpace className="size-3" key={key} />)
+                        .onCond(Object.hasProp("key"), part => (
+                            <span className="w-3 text-center text-sm" key={key}>
                                 {part.key.toUpperCase()}
                             </span>
                         ))
-                        .otherwise(() => null)
+                        .or(null)
                 })}
         </kbd>
     )

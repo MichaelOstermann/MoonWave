@@ -1,9 +1,9 @@
-[data-theme-preview='wave-light'] {
+[data-theme-preview="wave-light"] {
     --fg: oklch(20% 0.005 286);
     --bg: oklch(99% 0.004 90);
 }
 
-[data-theme='wave-light'] {
+[data-theme="wave-light"] {
     --border: rgba(0, 0, 0, 0.05);
     --fg: oklch(20% 0.005 286);
     --waveform: oklch(82% 0.005 286);
@@ -12,47 +12,40 @@
     --fg-accent: var(--fg-blue);
 }
 
-[data-theme='wave-light'] .main {
+[data-theme="wave-light"] .main,
+[data-theme="wave-light"] .sidepanel {
     --bg: oklch(99% 0.004 90);
     --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
-    --bg-soft: color-mix(in oklab, var(--fg) 2%, var(--bg));
-    --bg-selected: color-mix(in oklab, var(--fg) 8%, var(--bg));
-    --bg-hover: color-mix(in oklab, var(--fg) 8%, var(--bg));
+    --bg-soft: rgba(0, 0, 0, 0.025);
+    --bg-selected: rgba(0, 0, 0, 0.08);
+    --bg-hover: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='wave-light'] .sidebar,
-[data-theme='wave-light'] .sidepanel {
-    --bg: oklch(96% 0.004 90 / 90%);
+[data-theme="wave-light"] .sidebar {
+    --bg: oklch(96% 0.004 90);
     --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
     --bg-soft: rgba(0, 0, 0, 0.04);
     --bg-selected: rgba(0, 0, 0, 0.08);
-    --bg-hover: color-mix(in oklab, var(--fg) 8%, var(--bg));
+    --bg-hover: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme='wave-light'] .modal {
-    --bg: oklch(99% 0.004 90);
+[data-theme="wave-light"] .modal {
+    --bg: oklch(99% 0.004 90 / 60%);
+    --blur: 80px;
     --fg-soft: color-mix(in oklab, var(--fg) 40%, var(--bg));
-    --bg-soft: color-mix(in oklab, var(--fg) 3%, var(--bg));
-    --bg-selected: color-mix(in oklab, var(--fg) 6%, var(--bg));
-    --bg-hover: color-mix(in oklab, var(--fg) 6%, var(--bg));
-}
-
-[data-theme='wave-light'] .dialog .floating,
-[data-theme='wave-light'] .popover .floating {
-    box-shadow:
-        0 20px 25px -5px rgb(0 0 0 / 0.1),
-        0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-[data-theme='wave-light'] .dialog {
+    --bg-soft: rgba(0, 0, 0, 0.03);
+    --bg-selected: rgba(0, 0, 0, 0.06);
+    --bg-hover: rgba(0, 0, 0, 0.06);
     --overlay: oklch(96% 0.004 90 / 40%);
+    --shadow:
+        0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-[data-theme='wave-light'] .tooltip {
+[data-theme="wave-light"] .tooltip {
     --bg: color-mix(in oklab, var(--fg) 4%, transparent);
 }
 
-[data-theme='wave-light'] ::selection {
+[data-theme="wave-light"] ::selection {
     color: var(--fg-accent);
     background: var(--bg-accent);
 }

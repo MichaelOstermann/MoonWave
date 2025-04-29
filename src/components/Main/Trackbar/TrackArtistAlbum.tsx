@@ -1,14 +1,14 @@
-import type { ReactNode } from 'react'
-import { $playingTrack } from '@app/state/tracks/playingTrack'
-import { useSignal } from '@monstermann/signals'
+import type { ReactNode } from "react"
+import { Playback } from "#features/Playback"
+import { useSignal } from "@monstermann/signals-react"
 
 export function TrackArtistAlbum(): ReactNode {
     const content = useSignal(() => {
-        const track = $playingTrack()
-        if (!track) return ''
+        const track = Playback.$track()
+        if (!track) return ""
         return [track.artist, track.album]
             .filter(Boolean)
-            .join(' — ')
+            .join(" — ")
     })
 
     return (

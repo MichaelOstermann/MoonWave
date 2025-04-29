@@ -1,8 +1,8 @@
-import type { ThemeMode } from '@app/types'
-import { $config } from '@app/state/app/config'
-import { merge } from '@app/utils/data/merge'
-import { action } from '@monstermann/signals'
+import type { ThemeMode } from "#src/features/Theme"
+import { Config } from "#features/Config"
+import { Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
 
 export const setThemeMode = action((themeMode: ThemeMode) => {
-    $config.map(merge({ themeMode }))
+    Config.$config(Object.merge({ themeMode }))
 })

@@ -1,45 +1,40 @@
-import type { ReactNode } from 'react'
-import { $currentTrackDuration } from '@app/state/audio/currentTrackDuration'
-import { $waveformPeaks } from '@app/state/audio/waveformPeaks'
-import { $wavesurfer } from '@app/state/audio/wavesurfer'
-import { $waveformProgressColor } from '@app/state/theme/waveformProgressColor'
-import { $waveformTheme } from '@app/state/theme/waveformTheme'
-import { $waveformWaveColor } from '@app/state/theme/waveformWaveColor'
-import { useSignal } from '@monstermann/signals'
-import { useWavesurfer } from '@wavesurfer/react'
-import { useEffect, useRef } from 'react'
+import type { ReactNode } from "react"
+import { Playback } from "#features/Playback"
+import { Theme } from "#features/Theme"
+import { useWavesurfer } from "@wavesurfer/react"
+import { useEffect, useRef } from "react"
 
 export function Wavesurfer(): ReactNode {
     const container = useRef<HTMLDivElement>(null)
-    const theme = useSignal($waveformTheme)
-    const duration = useSignal($currentTrackDuration)
-    const peaks = useSignal($waveformPeaks)
-    const waveColor = useSignal($waveformWaveColor)
-    const progressColor = useSignal($waveformProgressColor)
+    const theme = Theme.$waveform()
+    const duration = Playback.$duration()
+    const peaks = Playback.$peaks()
+    const waveColor = Theme.$waveformWaveColor()
+    const progressColor = Theme.$waveformProgressColor()
 
     const { wavesurfer } = useWavesurfer({
-        container,
-        duration,
-        peaks,
-        height: 'auto',
-        mediaControls: false,
-        hideScrollbar: true,
         barHeight: 0.8,
-        cursorColor: 'rgba(0, 0, 0, 0)',
-        waveColor,
+        container,
+        cursorColor: "rgba(0, 0, 0, 0)",
+        duration,
+        height: "auto",
+        hideScrollbar: true,
+        mediaControls: false,
+        peaks,
         progressColor,
+        waveColor,
         ...theme,
     })
 
     useEffect(() => {
-        $wavesurfer.set(wavesurfer)
-        return () => $wavesurfer.set(null)
+        Playback.$wavesurfer(wavesurfer)
+        return () => Playback.$wavesurfer(null)
     }, [wavesurfer])
 
     return (
         <div
-            ref={container}
             className="absolute inset-0 overflow-hidden rounded-b-md"
+            ref={container}
         />
     )
 }

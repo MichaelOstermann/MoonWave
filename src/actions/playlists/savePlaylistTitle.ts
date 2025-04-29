@@ -1,27 +1,25 @@
-import { $editingPlaylistId } from '@app/state/playlists/editingPlaylistId'
-import { $playlists } from '@app/state/playlists/playlists'
-import { $playlistsById } from '@app/state/playlists/playlistsById'
-import { findAndMap } from '@app/utils/data/findAndMap'
-import { merge } from '@app/utils/data/merge'
-import { action } from '@monstermann/signals'
-import { deletePlaylist } from './deletePlaylist'
+import { Playlists } from "#features/Playlists"
+import { Sidebar } from "#features/Sidebar"
+import { Array, Object } from "@monstermann/fn"
+import { action } from "@monstermann/signals"
+import { deletePlaylist } from "./deletePlaylist"
 
 export const savePlaylistTitle = action((title: string) => {
-    const playlistId = $editingPlaylistId()
+    const playlistId = Sidebar.$editingId()
     if (!playlistId) return
 
-    $editingPlaylistId.set(null)
+    Sidebar.$editingId(null)
 
-    const prevTitle = $playlistsById(playlistId)()?.title || ''
+    const prevTitle = Playlists.$byId.get(playlistId)?.title || ""
     const nextTitle = title || prevTitle
 
-    if (prevTitle === '' && nextTitle === '') {
+    if (prevTitle === "" && nextTitle === "") {
         deletePlaylist(playlistId)
     }
     else {
-        $playlists.map(findAndMap(
+        Playlists.$all(Array.findMap(
             p => p.id === playlistId,
-            p => merge(p, { title: nextTitle }),
+            Object.merge({ title: nextTitle }),
         ))
     }
 })

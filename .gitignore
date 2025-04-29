@@ -1,11 +1,10 @@
 .env
 dist
 node_modules
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 
+notes
 src-tauri/bin/
 src-tauri/target/
 src-tauri/gen/schemas

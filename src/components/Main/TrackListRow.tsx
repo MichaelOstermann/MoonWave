@@ -1,52 +1,42 @@
-import type { MenuItem } from '@app/utils/menu'
-import type { CSSProperties, ReactNode } from 'react'
-import type { Column, Row } from './types'
-import { syncLibrary } from '@app/actions/app/syncLibrary'
-import { addTracksToPlaylist } from '@app/actions/playlists/addTracksToPlaylist'
-import { removeTracksFromPlaylist } from '@app/actions/playlists/removeTracksFromPlaylist'
-import { onClickTrack } from '@app/actions/tracks/onClickTrack'
-import { onDoubleClickTrack } from '@app/actions/tracks/onDoubleClickTrack'
-import { onDragStartTracks } from '@app/actions/tracks/onDragStartTracks'
-import { trashTracks } from '@app/actions/tracks/trashTracks'
-import { $playlists } from '@app/state/playlists/playlists'
-import { $playlistsById } from '@app/state/playlists/playlistsById'
-import { $viewingPlaylistId } from '@app/state/playlists/viewingPlaylistId'
-import { $focusedView } from '@app/state/sidebar/focusedView'
-import { $playingTrackId } from '@app/state/tracks/playingTrackId'
-import { $tracksLSM } from '@app/state/tracks/tracksLSM'
-import { getSelections } from '@app/utils/lsm/utils/getSelections'
-import { isFirstSelectionInGroup } from '@app/utils/lsm/utils/isFirstSelectionInGroup'
-import { isLastSelectionInGroup } from '@app/utils/lsm/utils/isLastSelectionInGroup'
-import { isSelected } from '@app/utils/lsm/utils/isSelected'
-import { useMenu } from '@app/utils/menu'
-import { formatTrackIds } from '@app/utils/track/formatTrackIds'
-import { useSignal } from '@monstermann/signals'
-import { confirm } from '@tauri-apps/plugin-dialog'
-import { twMerge } from 'tailwind-merge'
-import { columns } from './config'
-import { TrackListRowColumn } from './TrackListRowColumn'
+import type { CSSProperties, ReactNode } from "react"
+import type { Column, Row } from "./types"
+import { selectAndImportFiles } from "#actions/app/selectAndImportFiles"
+import { syncLibrary } from "#actions/app/syncLibrary"
+import { removeTracksFromPlaylist } from "#actions/playlists/removeTracksFromPlaylist"
+import { onClickTrack } from "#actions/tracks/onClickTrack"
+import { onDoubleClickTrack } from "#actions/tracks/onDoubleClickTrack"
+import { onDragStartTracks } from "#actions/tracks/onDragStartTracks"
+import { trashTracks } from "#actions/tracks/trashTracks"
+import { Menu } from "#components/Core/Menu"
+import { Popover } from "#components/Core/Popover"
+import { LSM } from "#features/LSM"
+import { Playback } from "#features/Playback"
+import { Sidebar } from "#features/Sidebar"
+import { TrackList } from "#features/TrackList"
+import { Tracks } from "#features/Tracks"
+import { Views } from "#features/Views"
+import { useModal } from "#hooks/useModal"
+import { Modals } from "#src/features/Modals"
+import { confirm } from "@tauri-apps/plugin-dialog"
+import { LucideImport, LucideRefreshCw, LucideTrash } from "lucide-react"
+import { twMerge } from "tailwind-merge"
+import { columns } from "./config"
+import { TrackListRowColumn } from "./TrackListRowColumn"
 
-export function TrackListRow({ row, idx, colStyles }: {
-    row: Row
-    idx: number
+export function TrackListRow({ colStyles, idx, row }: {
     colStyles: Record<Column, CSSProperties>
+    idx: number
+    row: Row
 }): ReactNode {
     const isEven = idx % 2 === 0
-    const isFocused = useSignal(() => $focusedView() === 'MAIN')
-    const isPlaying = useSignal(() => $playingTrackId() === row.id)
-    const selected = useSignal(() => isSelected($tracksLSM(), row.id))
+    const isFocused = Views.$focused() === "MAIN"
+    const isPlaying = Playback.$trackId() === row.id
+    const selected = LSM.isSelected(TrackList.$LSM(), row.id)
     const isActive = isFocused && selected
-    const firstSelected = useSignal(() => isFirstSelectionInGroup($tracksLSM(), row.id))
-    const lastSelected = useSignal(() => isLastSelectionInGroup($tracksLSM(), row.id))
-
-    const menu = useMenu([
-        addSelectedTracksToPlaylistMenuItem,
-        removeSelectedTracksToPlaylistMenuItem,
-        { item: 'Separator' },
-        { text: 'Sync Library', action: syncLibrary },
-        { item: 'Separator' },
-        moveSelectedTracksToTrash,
-    ])
+    const firstSelected = LSM.isFirstSelectionInGroup(TrackList.$LSM(), row.id)
+    const lastSelected = LSM.isLastSelectionInGroup(TrackList.$LSM(), row.id)
+    const contextMenu = useModal(() => Modals.createContextMenu({ key: `track-${row.id}` }))
+    const playlist = Sidebar.$playlist()
 
     return (
         <div
@@ -54,110 +44,94 @@ export function TrackListRow({ row, idx, colStyles }: {
             onClick={evt => onClickTrack({ evt, trackId: row.id })}
             onDoubleClick={() => onDoubleClickTrack(row.id)}
             className={twMerge(
-                'relative flex h-8 items-center text-sm leading-7',
-                isEven && !selected && 'bg-[--bg-soft]',
-                isPlaying && 'text-[--fg-accent]',
-                selected && 'bg-[--bg-selected]',
-                isActive && 'bg-[--bg-accent] text-[--fg-accent]',
-                !selected && 'rounded-md',
-                firstSelected && lastSelected && 'rounded-md',
-                firstSelected && !lastSelected && 'rounded-t-md',
-                !firstSelected && lastSelected && 'rounded-b-md',
+                "relative flex h-8 items-center text-sm leading-7 select-none",
+                isEven && !selected && "bg-(--bg-soft)",
+                isPlaying && "text-(--fg-accent)",
+                selected && "bg-(--bg-selected)",
+                isActive && "bg-(--bg-accent) text-(--fg-accent)",
+                !selected && "rounded-md",
+                firstSelected && lastSelected && "rounded-md",
+                firstSelected && !lastSelected && "rounded-t-md",
+                !firstSelected && lastSelected && "rounded-b-md",
             )}
+            onContextMenu={(evt) => {
+                evt.preventDefault()
+                evt.stopPropagation()
+                onClickTrack({ evt, trackId: row.id })
+                contextMenu?.open()
+            }}
             onDragStart={(evt) => {
                 evt.preventDefault()
                 onDragStartTracks(row.id)
             }}
-            onContextMenu={(evt) => {
-                onClickTrack({ evt, trackId: row.id })
-                menu.show(evt)
-            }}
         >
             {columns.map(col => (
                 <TrackListRowColumn
-                    key={col}
                     col={col}
+                    key={col}
                     row={row}
                     style={colStyles[col]}
                 />
             ))}
+            <Popover.Root popover={contextMenu}>
+                <Popover.Floating>
+                    <Popover.Content>
+                        <Menu.Root>
+                            {playlist && (
+                                <Menu.Item
+                                    icon={LucideTrash}
+                                    text="Remove from Playlist"
+                                    onSelect={async () => {
+                                        const trackIds = LSM.getSelections(TrackList.$LSM())
+                                        const prompt = Tracks.format(trackIds, {
+                                            many: count => `Are you sure you want to remove the ${count} selected songs from the playlist "${playlist.title}"?`,
+                                            one: title => `Are you sure you want to remove "${title}" from the playlist "${playlist.title}"?`,
+                                        })
+                                        const answer = await confirm(prompt, {
+                                            cancelLabel: "Cancel",
+                                            kind: "warning",
+                                            okLabel: "Remove Songs",
+                                            title: "",
+                                        })
+                                        if (!answer) return
+                                        removeTracksFromPlaylist({ playlistId: playlist.id, trackIds })
+                                    }}
+                                />
+                            )}
+                            <Menu.Item
+                                icon={LucideTrash}
+                                text="Move to Trash"
+                                onSelect={async () => {
+                                    const trackIds = LSM.getSelections(TrackList.$LSM())
+                                    const prompt = Tracks.format(trackIds, {
+                                        many: count => `Are you sure you want to trash the ${count} selected songs?`,
+                                        one: title => `Are you sure you want to trash the song "${title}"?`,
+                                    })
+                                    const answer = await confirm(prompt, {
+                                        cancelLabel: "Cancel",
+                                        kind: "warning",
+                                        okLabel: "Move to Trash",
+                                        title: "",
+                                    })
+                                    if (!answer) return
+                                    trashTracks(trackIds)
+                                }}
+                            />
+                            <Menu.Item
+                                icon={LucideImport}
+                                onSelect={() => selectAndImportFiles({ playlistId: playlist?.id })}
+                                text="Import Tracks"
+                            />
+                            <Menu.Item
+                                icon={LucideRefreshCw}
+                                onSelect={syncLibrary}
+                                text="Update Library"
+                            />
+                        </Menu.Root>
+                    </Popover.Content>
+                    <Popover.BackgroundBlur />
+                </Popover.Floating>
+            </Popover.Root>
         </div>
     )
-}
-
-function addSelectedTracksToPlaylistMenuItem(): MenuItem {
-    const trackIds = getSelections($tracksLSM())
-    const currentPlaylistId = $viewingPlaylistId()
-
-    const playlists = $playlists()
-        .filter(playlist => playlist.id !== currentPlaylistId)
-        .sort((a, b) => a.title.localeCompare(b.title))
-        .map(playlist => ({
-            text: playlist.title,
-            action: () => addTracksToPlaylist({ trackIds, playlistId: playlist.id }),
-        }))
-
-    if (!playlists.length) return
-
-    return {
-        text: 'Add to Playlist',
-        items: playlists,
-    }
-}
-
-function removeSelectedTracksToPlaylistMenuItem(): MenuItem {
-    const trackIds = getSelections($tracksLSM())
-    if (!trackIds.length) return
-
-    const currentPlaylistId = $viewingPlaylistId()
-    const playlist = $playlistsById(currentPlaylistId)()
-
-    if (!playlist) return
-
-    const prompt = formatTrackIds(trackIds, {
-        one: title => `Are you sure you want to remove "${title}" from the playlist "${playlist.title}"?`,
-        many: count => `Are you sure you want to remove the ${count} selected songs from the playlist "${playlist.title}"?`,
-    })
-
-    return {
-        text: 'Remove from Playlist',
-        action: async () => {
-            const answer = await confirm(prompt, {
-                title: '',
-                kind: 'warning',
-                okLabel: 'Remove Songs',
-                cancelLabel: 'Cancel',
-            })
-            if (!answer) return
-            requestAnimationFrame(() => {
-                removeTracksFromPlaylist({ trackIds, playlistId: playlist.id })
-            })
-        },
-    }
-}
-
-function moveSelectedTracksToTrash(): MenuItem {
-    const trackIds = getSelections($tracksLSM())
-    if (!trackIds.length) return
-
-    const prompt = formatTrackIds(trackIds, {
-        one: title => `Are you sure you want to trash the song "${title}"?`,
-        many: count => `Are you sure you want to trash the ${count} selected songs?`,
-    })
-
-    return {
-        text: 'Move to Trash',
-        action: async () => {
-            const answer = await confirm(prompt, {
-                title: '',
-                kind: 'warning',
-                okLabel: 'Move to Trash',
-                cancelLabel: 'Cancel',
-            })
-            if (!answer) return
-            requestAnimationFrame(() => {
-                trashTracks(trackIds)
-            })
-        },
-    }
 }

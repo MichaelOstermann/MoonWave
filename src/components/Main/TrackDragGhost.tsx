@@ -1,32 +1,30 @@
-import type { ReactNode } from 'react'
-import { useTransition } from '@app/hooks/useTransition'
-import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
-import { $tracksLSM } from '@app/state/tracks/tracksLSM'
-import { getSelections } from '@app/utils/lsm/utils/getSelections'
-import { formatTrackIds } from '@app/utils/track/formatTrackIds'
-import { useSignal } from '@monstermann/signals'
-import { createPortal } from 'react-dom'
-import { Ghost } from '../Ghost'
+import type { ReactNode } from "react"
+import { LSM } from "#features/LSM"
+import { TrackList } from "#features/TrackList"
+import { Tracks } from "#features/Tracks"
+import { useTransition } from "#hooks/useTransition"
+import { createPortal } from "react-dom"
+import { Ghost } from "../Ghost"
 
 export function TrackDragGhost(): ReactNode {
-    const isDragging = useSignal($isDraggingTracks)
-    const trackIds = useSignal(() => getSelections($tracksLSM()))
+    const isDragging = TrackList.$isDragging()
+    const trackIds = LSM.getSelections(TrackList.$LSM())
 
     const transition = useTransition({
+        closeDuration: 100,
         isOpen: isDragging,
         openDuration: 200,
-        closeDuration: 100,
     })
 
     if (!transition.mounted) return null
 
-    const content = formatTrackIds(trackIds, {
-        one: title => title,
+    const content = Tracks.format(trackIds, {
         many: count => `${count} tracks`,
+        one: title => title,
     })
 
     return createPortal(
-        <Ghost transition={transition} className="max-w-40">
+        <Ghost className="max-w-40" transition={transition}>
             <span className="truncate">
                 {content}
             </span>

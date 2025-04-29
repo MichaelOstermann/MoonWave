@@ -1,24 +1,24 @@
-import type { CSSProperties, ReactNode } from 'react'
-import type { Column } from './types'
-import { columns } from './config'
-import { TrackListHeaderColumn } from './TrackListHeaderColumn'
+import type { CSSProperties, ReactNode } from "react"
+import type { Column } from "./types"
+import { columns } from "./config"
+import { TrackListHeaderColumn } from "./TrackListHeaderColumn"
 
 export function TrackListHeader({
-    style,
     colStyles,
+    style,
 }: {
-    style: CSSProperties
     colStyles: Record<Column, CSSProperties>
+    style: CSSProperties
 }): ReactNode {
     return (
         <div
-            style={style}
             className="flex h-8 shrink-0 text-xs"
+            style={style}
         >
             {columns.map(col => (
                 <TrackListHeaderColumn
-                    key={col}
                     col={col}
+                    key={col}
                     style={colStyles[col]}
                 />
             ))}

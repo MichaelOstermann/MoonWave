@@ -1,23 +1,18 @@
-import { easeInOut } from '@app/config/easings'
-import { $dropPlaylistId } from '@app/state/playlists/dropPlaylistId'
-import { $isDraggingTracks } from '@app/state/tracks/isDraggingTracks'
-import { $tracksLSM } from '@app/state/tracks/tracksLSM'
-import { getSelections } from '@app/utils/lsm/utils/getSelections'
-import { action } from '@monstermann/signals'
-import { addTracksToPlaylist } from '../playlists/addTracksToPlaylist'
+import { LSM } from "#features/LSM"
+import { Playlists } from "#features/Playlists"
+import { Sidebar } from "#features/Sidebar"
+import { TrackList } from "#features/TrackList"
+import { action } from "@monstermann/signals"
+import { addTracksToPlaylist } from "../playlists/addTracksToPlaylist"
 
 export const onDragEndTracks = action(() => {
-    const targetPlaylistId = $dropPlaylistId()
-    const trackIds = getSelections($tracksLSM())
+    const targetPlaylistId = Sidebar.$dropId()
+    const trackIds = LSM.getSelections(TrackList.$LSM())
 
-    $isDraggingTracks.set(false)
+    TrackList.$isDragging(false)
 
     if (targetPlaylistId) {
-        addTracksToPlaylist({ trackIds, playlistId: targetPlaylistId })
-        document.querySelector(`[data-playlist-id="${targetPlaylistId}"]`)?.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(.96)' },
-            { transform: 'scale(1)' },
-        ], { duration: 400, easing: easeInOut })
+        addTracksToPlaylist({ playlistId: targetPlaylistId, trackIds })
+        Playlists.bounce(targetPlaylistId)
     }
 })
