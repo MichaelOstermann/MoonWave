@@ -374,14 +374,15 @@ pub fn run() {
             }));
 
             // Initialize media controls (MPRIS)
-            #[cfg(not(target_os = "macos"))]
-            let hwnd = None;
-
-            #[cfg(target_os = "macos")]
+            // Note: hwnd is only needed on Windows, not on macOS or Linux
+            #[cfg(target_os = "windows")]
             let hwnd = {
-                use tauri::WebviewWindowExt as _;
-                window.ns_window().map(|w| w as _)
+                use tauri::window::WindowExt;
+                window.hwnd().ok().map(|h| h.0 as _)
             };
+
+            #[cfg(not(target_os = "windows"))]
+            let hwnd = None;
 
             let config = PlatformConfig {
                 dbus_name: "moonwave",

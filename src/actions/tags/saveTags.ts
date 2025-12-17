@@ -33,9 +33,9 @@ export const saveTags = action(async () => {
     const startedAt = Date.now()
     const timer = setTimeout(() => Tags.$showSavingSpinner(true), 200)
 
-    // const metadata = await Library.saveTags(updates)
-    // const allTracks = Tracks.updateMetadata(Tracks.$all(), metadata)
-    // const finalizedTracks = await Library.reorganizeFiles(allTracks)
+    const metadata = await Library.saveTags(updates)
+    const allTracks = Tracks.updateMetadata(Tracks.$all(), metadata)
+    const finalizedTracks = await Library.reorganizeFiles(allTracks)
 
     clearTimeout(timer)
 
@@ -48,7 +48,7 @@ export const saveTags = action(async () => {
 
     batch(() => {
         Tags.$showSavingDone(true)
-        // Tracks.$all(finalizedTracks)
+        Tracks.$all(finalizedTracks)
     })
 
     await Promise.wait(1000)

@@ -20,6 +20,14 @@ pub struct AudioPlayer {
     pub media_controls: Option<MediaControls>,
 }
 
+// SAFETY: AudioPlayer is wrapped in Arc<Mutex<_>> which provides synchronization.
+// The Send/Sync requirements are needed for Tauri's state management.
+// While rodio::OutputStream contains platform-specific types that may not be Send
+// on macOS (due to cpal 0.16.0's CoreAudio backend), the Mutex wrapper ensures
+// thread-safe access. This is a known limitation of cpal 0.16.0 on macOS.
+unsafe impl Send for AudioPlayer {}
+unsafe impl Sync for AudioPlayer {}
+
 pub type AudioPlayerState = Arc<Mutex<AudioPlayer>>;
 
 #[derive(Clone, Serialize)]
