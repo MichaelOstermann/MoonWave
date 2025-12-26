@@ -1,6 +1,6 @@
 [package]
 name = "moonwave"
-version = "0.7.0"
+version = "0.7.1"
 authors = [ "Michael Ostermann <michaelostermann@me.com>" ]
 repository = "https://github.com/MichaelOstermann/MoonWave"
 edition = "2021"

@@ -6,7 +6,7 @@
 
 <h1>MoonWave</h1>
 
-**Music player for local files on MacOS**
+**Cross-platform music player for local files.**
 
 </div>
 
@@ -30,4 +30,4 @@ bun install --frozen-lockfile
 bun run tauri build
 ```
 
-Afterwards, the app can be found in `src-tauri/target/aarch64-apple-darwin/release/bundle/**`.
+Afterwards, the app can be found in `src-tauri/target/*/release/**`.

@@ -1,11 +1,18 @@
 import { Playback } from "#features/Playback"
-import { Array } from "@monstermann/fn"
-import { effect, signal, untrack } from "@monstermann/signals"
+import { Array, pipe, Set } from "@monstermann/fn"
+import { effect, signal } from "@monstermann/signals"
 import { TrackHistory } from "."
 import { Library } from "../Library"
 import { Tracks } from "../Tracks"
 
 export const $nextQueue = signal<string[]>([])
+const $playedTrackIds = signal<ReadonlySet<string>>(Set.create())
+
+effect(() => {
+    const tid = Playback.$trackId()
+    if (!tid) return
+    $playedTrackIds(tids => Set.add(tids, tid))
+})
 
 effect(() => {
     const mode = Playback.$mode()
@@ -28,22 +35,21 @@ effect(() => {
     }
 
     if (mode === "SHUFFLE") {
-        return $nextQueue(Array.shuffle(Playback.$trackIds()))
+        const tids = pipe(
+            Playback.$trackIds(),
+            Array.removeAll($playedTrackIds()),
+            Array.shuffle(),
+        )
+        return $nextQueue(tids)
     }
 })
 
 effect(() => {
-    const trackId = Playback.$trackId()
-    if (!trackId) return
-    untrack(() => {
-        if (Playback.$mode() !== "SHUFFLE") return
-        if (!Array.isEmpty(TrackHistory.$nextIds())) return
-        const queue = Array.remove($nextQueue(), trackId)
-        const nextQueue = queue.length
-            ? queue
-            : Array.remove(Array.shuffle(Playback.$trackIds()), trackId)
-        $nextQueue(nextQueue)
-    })
+    if (Playback.$mode() !== "SHUFFLE") return
+    if ($nextQueue().length > 0) return
+    if (Playback.$trackIds().length === 0) return
+    if ($playedTrackIds().size === 0) return
+    $playedTrackIds(Set.create<string>())
 })
 
 effect(() => {
