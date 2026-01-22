@@ -31,7 +31,7 @@ export async function reorganizeFiles(tracks: Track[]): Promise<Track[]> {
             const album = safeName(rawAlbum || "No Album")
             for (const track of tracks) {
                 const pos = String.create(++currentPos).padStart(posSize, "0")
-                const title = safeName(track.title || "No Title")
+                const title = safeName(stripPositionPrefix(track.title || "No Title"))
                 const ext = safeName(track.path.split(".").at(-1) || "")
                 const path = pipe(
                     template,
@@ -63,6 +63,10 @@ export async function reorganizeFiles(tracks: Track[]): Promise<Track[]> {
         if (!path) return t
         return Object.merge(t, { path })
     })
+}
+
+function stripPositionPrefix(value: string): string {
+    return value.replace(/^\d+\.\s*/, "")
 }
 
 function safeName(value: string): string {
