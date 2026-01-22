@@ -74,13 +74,13 @@ export function Icons({
             }}
         >
             <div className="flex px-(--px)">
-                <Input.Root className="h-8" input={input}>
-                    <Input.Left className="size-8">
+                <Input.Root className="h-8.5" input={input}>
+                    <Input.Left className="size-8.5">
                         <LucideSearch className="size-4" />
                     </Input.Left>
-                    <Input.Field className="px-8" />
+                    <Input.Field className="px-8.5" />
                     <Input.Right
-                        className="size-8"
+                        className="size-8.5"
                         onClick={() => setValue("")}
                         show={value !== ""}
                     >

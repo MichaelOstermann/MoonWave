@@ -56,13 +56,13 @@ export function TagView({ className, name }: {
             <div className="flex text-xs font-medium text-(--fg-soft)">
                 {titles[name]}
             </div>
-            <Input.Root className="h-8" input={input}>
-                <Input.Left className="size-8">
+            <Input.Root className="h-8.5" input={input}>
+                <Input.Left className="size-8.5">
                     {createElement(icons[name], { className: "size-4" })}
                 </Input.Left>
-                <Input.Field className="px-8" />
+                <Input.Field className="px-8.5" />
                 <Input.Right
-                    className="size-8"
+                    className="size-8.5"
                     onClick={() => resetTag({ name })}
                     show={current !== value && !didFinishSavingTags}
                 >

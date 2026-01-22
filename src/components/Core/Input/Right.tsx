@@ -20,7 +20,7 @@ export function Right({
             {...rest}
             data-show={show}
             className={twMerge(
-                "absolute right-0 flex scale-0 items-center justify-center transition-transform duration-300 ease-in-out data-[show=true]:scale-100",
+                "absolute right-0 flex scale-0 items-center justify-center transition-transform duration-200 ease-in-out data-[show=true]:scale-100",
                 className,
             )}
             onPointerDown={(evt) => {

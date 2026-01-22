@@ -16,7 +16,7 @@ export function Item({ icon, onSelect, text }: {
                 onSelect()
             }}
         >
-            <div className="flex h-9 shrink grow items-center gap-x-2 rounded-md px-1.5 text-sm hover:bg-(--bg-hover)">
+            <div className="flex h-8.5 shrink grow items-center gap-x-2 rounded-md px-1.5 text-sm hover:bg-(--bg-hover)">
                 <div className="flex size-[22px] items-center justify-center">
                     {createElement(icon, { className: "size-4" })}
                 </div>

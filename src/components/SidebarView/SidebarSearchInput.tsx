@@ -18,13 +18,13 @@ export function SidebarSearchInput(): ReactNode {
             className="group flex shrink-0 px-2"
             onClick={evt => evt.stopPropagation()}
         >
-            <Input.Root className="h-8" input={input}>
-                <Input.Left className="size-8">
+            <Input.Root className="h-8.5" input={input}>
+                <Input.Left className="size-8.5">
                     <LucideSearch className="size-4" />
                 </Input.Left>
-                <Input.Field className="sidebar-search-input px-8" />
+                <Input.Field className="sidebar-search-input px-8.5" />
                 <Input.Right
-                    className="size-8"
+                    className="size-8.5"
                     onClick={() => filterLibrary("")}
                     show={value !== ""}
                 >
