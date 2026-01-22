@@ -3,7 +3,7 @@ import { Tracks } from "#features/Tracks"
 import { Array } from "@monstermann/fn"
 import { action } from "@monstermann/signals"
 
-export const trashTracks = action(async (trackIds: string[]) => {
+export const trashTracks = action(async (trackIds: readonly string[]) => {
     const paths = trackIds
         .map(tid => Tracks.$byId.get(tid))
         .filter(t => !!t)

@@ -1,4 +1,4 @@
-import { LSM } from "#features/LSM"
+import { LSM } from "@monstermann/lsm"
 import { effect, signal } from "@monstermann/signals"
 import { TrackList } from "."
 

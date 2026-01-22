@@ -1,27 +1,26 @@
-import type { View } from "../Views"
-import { LSM } from "#features/LSM"
 import { flow, when } from "@monstermann/fn"
+import { LSM } from "@monstermann/lsm"
 import { effect, peek, signal } from "@monstermann/signals"
 import { Sidebar } from "."
+import { Views } from "../Views"
 
-export const $LSM = signal(LSM.createLSM<View>({
-    muliselection: false,
-    getKey: view => "value" in view
-        ? `${view.name}-${view.value}`
-        : view.name,
-}))
+export const $LSM = signal(LSM.create<string>())
 
 effect(() => {
-    const selectables = Sidebar.$items().filter(i => i.name !== "SECTION")
-    const position = LSM.getLastSelectionPosition(peek($LSM))
+    const selectables = Sidebar
+        .$items()
+        .filter(view => view.name !== "SECTION")
+        .map(view => Views.key(view))
+
+    const position = LSM.lastSelectedIndex(peek($LSM))
 
     $LSM(flow(
         lsm => LSM.setSelectables(lsm, selectables),
         // Try to stay on the current position when deleting a playlist.
-        when(LSM.hasNoSelection, lsm => LSM.selectPosition(lsm, position)),
+        when(LSM.hasNoSelection, lsm => LSM.goToIndex(lsm, position)),
         // Select the previous one when deleting the last playlist.
-        when(LSM.hasNoSelection, lsm => LSM.selectPosition(lsm, position - 1)),
+        when(LSM.hasNoSelection, lsm => LSM.goToIndex(lsm, position - 1)),
         // Select the library otherwise.
-        when(LSM.hasNoSelection, lsm => LSM.selectOne(lsm, { name: "LIBRARY" })),
+        when(LSM.hasNoSelection, lsm => LSM.goTo(lsm, "LIBRARY")),
     ))
 })

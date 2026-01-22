@@ -4,7 +4,6 @@ import { syncLibrary } from "#actions/app/syncLibrary"
 import { List } from "#components/Core/List"
 import { Menu } from "#components/Core/Menu"
 import { Popover } from "#components/Core/Popover"
-import { LSM } from "#features/LSM"
 import { Sidebar } from "#features/Sidebar"
 import { TrackList } from "#features/TrackList"
 import { Views } from "#features/Views"
@@ -12,6 +11,7 @@ import { useModal } from "#hooks/useModal"
 import { useTable } from "#hooks/useTable"
 import { Modals } from "#src/features/Modals"
 import { measureText } from "#utils/measureText"
+import { LSM } from "@monstermann/lsm"
 import { memo } from "@monstermann/signals"
 import { useSignal } from "@monstermann/signals-react"
 import { useUpdateEffect } from "@react-hookz/web"
@@ -78,7 +78,7 @@ export function TrackListView() {
         useSignal(Views.$selected),
     ])
 
-    const lastSelectedPosition = LSM.getLastSelectionPosition(TrackList.$LSM())
+    const lastSelectedPosition = LSM.lastSelectedIndex(TrackList.$LSM())
 
     useEffect(() => {
         if (lastSelectedPosition < 0) return

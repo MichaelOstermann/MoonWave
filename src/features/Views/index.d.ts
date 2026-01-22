@@ -8,6 +8,7 @@ import { $focused } from "./$focused.js";
 import { $playing } from "./$playing.js";
 import { $selected } from "./$selected.js";
 import { FocusedView } from "./types.js";
+import { key } from "./key.js";
 import { matches } from "./matches.js";
 import { View } from "./types.js";
 
@@ -16,6 +17,7 @@ declare namespace Views {
         $focused,
         $playing,
         $selected,
+        key,
         matches,
     }
 }

@@ -1,7 +1,7 @@
 import { Array, match } from "@monstermann/fn"
 import { Tracks } from "."
 
-export function format(trackIds: string[], opts: {
+export function format(trackIds: readonly string[], opts: {
     many: (count: number) => string
     one: (title: string) => string
 }): string {

@@ -9,7 +9,6 @@ import { onDragStartTracks } from "#actions/tracks/onDragStartTracks"
 import { trashTracks } from "#actions/tracks/trashTracks"
 import { Menu } from "#components/Core/Menu"
 import { Popover } from "#components/Core/Popover"
-import { LSM } from "#features/LSM"
 import { Playback } from "#features/Playback"
 import { Sidebar } from "#features/Sidebar"
 import { TrackList } from "#features/TrackList"
@@ -17,6 +16,7 @@ import { Tracks } from "#features/Tracks"
 import { Views } from "#features/Views"
 import { useModal } from "#hooks/useModal"
 import { Modals } from "#src/features/Modals"
+import { LSM } from "@monstermann/lsm"
 import { confirm } from "@tauri-apps/plugin-dialog"
 import { LucideImport, LucideRefreshCw, LucideTrash } from "lucide-react"
 import { twMerge } from "tailwind-merge"
@@ -82,7 +82,7 @@ export function TrackListRow({ colStyles, idx, row }: {
                                     icon={LucideTrash}
                                     text="Remove from Playlist"
                                     onSelect={async () => {
-                                        const trackIds = LSM.getSelections(TrackList.$LSM())
+                                        const trackIds = TrackList.$LSM().selected
                                         const prompt = Tracks.format(trackIds, {
                                             many: count => `Are you sure you want to remove the ${count} selected songs from the playlist "${playlist.title}"?`,
                                             one: title => `Are you sure you want to remove "${title}" from the playlist "${playlist.title}"?`,
@@ -102,7 +102,7 @@ export function TrackListRow({ colStyles, idx, row }: {
                                 icon={LucideTrash}
                                 text="Move to Trash"
                                 onSelect={async () => {
-                                    const trackIds = LSM.getSelections(TrackList.$LSM())
+                                    const trackIds = TrackList.$LSM().selected
                                     const prompt = Tracks.format(trackIds, {
                                         many: count => `Are you sure you want to trash the ${count} selected songs?`,
                                         one: title => `Are you sure you want to trash the song "${title}"?`,

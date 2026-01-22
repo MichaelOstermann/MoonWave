@@ -4,7 +4,7 @@ import { action } from "@monstermann/signals"
 
 export const addTracksToPlaylist = action(({ playlistId, trackIds }: {
     playlistId: string
-    trackIds: string[]
+    trackIds: readonly string[]
 }) => {
     Playlists.$all(Array.findMap(
         p => p.id === playlistId,

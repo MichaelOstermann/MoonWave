@@ -11,6 +11,7 @@
         "@monstermann/signals-modal": "^0.4.3",
         "@monstermann/signals-react": "^0.2.2",
         "@monstermann/signals-web": "^0.2.4",
+        "@monstermann/lsm": "^0.0.1",
         "@number-flow/react": "^0.5.10",
         "@radix-ui/react-portal": "^1.1.10",
         "@radix-ui/react-slot": "^1.2.4",
@@ -258,6 +259,7 @@
     "@monstermann/hotkeys": ["@monstermann/hotkeys@0.1.0", "", {}, "sha512-58fIBjOotBg2Vx9Y9AVbgZYLbRHKFiq4Qa+ALoB/77m3jIP43gWUb+Xo7USBH96FbneZXfdt51Ad3a6H1rQsBg=="],
 
     "@monstermann/map": ["@monstermann/map@0.1.2", "", { "dependencies": { "@monstermann/dfdl": "^0.1.0", "@monstermann/remmi": "^0.0.0" } }, "sha512-BNBXjWxHjxtx5rDEyJGCIrUxRPf8MszfEwWnV3HeXDjEyP/NQYou6ZVud+Y5OyaXKU0vg1OucbJ6xaTU+Rl1sg=="],
+    "@monstermann/lsm": ["@monstermann/lsm@0.0.1", "", {}, "sha512-iDV6+tnqfqbGM+uDJF62dshejOkdMTQi47ewZ0HAscYDNp2oMIXGnes33kZQQF8UNvjP443Ugmh8ckn0EINo4w=="],
 
     "@monstermann/match": ["@monstermann/match@0.2.7", "", { "dependencies": { "type-fest": "^5.0.0" } }, "sha512-ucsGSJUHgKrpyfv/+Ccipo/3t37vWDwzEnMu3WUkHVJyS9w/5hOmL1r8KgNpW8dHOYeRM4Ly1dZQyAFkxRzUdA=="],
 

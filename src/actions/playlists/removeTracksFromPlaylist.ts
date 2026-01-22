@@ -4,7 +4,7 @@ import { action } from "@monstermann/signals"
 
 export const removeTracksFromPlaylist = action(({ playlistId, trackIds }: {
     playlistId: string
-    trackIds: string[]
+    trackIds: readonly string[]
 }) => {
     return Playlists.$all(Array.findMap(
         p => p.id === playlistId,

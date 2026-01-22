@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import { LSM } from "#features/LSM"
 import { TrackList } from "#features/TrackList"
 import { Tracks } from "#features/Tracks"
 import { useTransition } from "#hooks/useTransition"
@@ -8,7 +7,7 @@ import { Ghost } from "../Ghost"
 
 export function TrackDragGhost(): ReactNode {
     const isDragging = TrackList.$isDragging()
-    const trackIds = LSM.getSelections(TrackList.$LSM())
+    const trackIds = TrackList.$LSM().selected
 
     const transition = useTransition({
         closeDuration: 100,

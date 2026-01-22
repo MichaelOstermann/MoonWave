@@ -1,7 +1,7 @@
 import type { MouseEvent } from "react"
-import { LSM } from "#features/LSM"
 import { TrackList } from "#features/TrackList"
 import { Views } from "#features/Views"
+import { LSM } from "@monstermann/lsm"
 import { action } from "@monstermann/signals"
 
 export const onClickTrack = action(({ evt, trackId }: {
@@ -12,5 +12,7 @@ export const onClickTrack = action(({ evt, trackId }: {
     Views.$focused("MAIN")
 
     if (!wasFocused && LSM.isSelected(TrackList.$LSM(), trackId)) return
-    TrackList.$LSM(lsm => LSM.handleMouseEvent(lsm, trackId, evt.nativeEvent))
+
+    const [_, lsm] = LSM.handleMouseEvent(TrackList.$LSM(), trackId, evt.nativeEvent)
+    TrackList.$LSM(lsm)
 })

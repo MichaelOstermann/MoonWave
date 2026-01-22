@@ -7,11 +7,13 @@
 import { $focused } from "./$focused.js";
 import { $playing } from "./$playing.js";
 import { $selected } from "./$selected.js";
+import { key } from "./key.js";
 import { matches } from "./matches.js";
 
 export const Views = {
     $focused,
     $playing,
     $selected,
+    key,
     matches,
 }

@@ -5,12 +5,12 @@ import { seekForward } from "#actions/audio/seekForward"
 import { onDoubleClickPlaylist } from "#actions/playlists/onDoubleClickPlaylist"
 import { onDoubleClickTrack } from "#actions/tracks/onDoubleClickTrack"
 import { shortcuts } from "#config/shortcuts"
-import { LSM } from "#features/LSM"
 import { Sidebar } from "#features/Sidebar"
 import { TrackList } from "#features/TrackList"
 import { Views } from "#features/Views"
 import { match } from "@monstermann/fn"
 import { Hotkeys } from "@monstermann/hotkeys"
+import { LSM } from "@monstermann/lsm"
 import { focusSearchInput } from "./actions/app/focusSearchInput"
 import { syncLibrary } from "./actions/app/syncLibrary"
 import { setVolume } from "./actions/audio/setVolume"
@@ -54,12 +54,12 @@ bind(shortcuts.togglePlayback, togglePlayback)
 
 bind(shortcuts.playSelected, () => match(Views.$focused())
     .onCase("MAIN", () => {
-        const tid = LSM.getLastSelection(TrackList.$LSM())
+        const tid = TrackList.$LSM().selected.at(-1)
         if (!tid) return
         onDoubleClickTrack(tid)
     })
     .onCase("SIDEBAR", () => {
-        const view = LSM.getLastSelection(Sidebar.$LSM())
+        const view = Views.$selected()
         if (!view) return
         onDoubleClickPlaylist(view)
     })

@@ -13,7 +13,7 @@ export function forTracks(tracks: Track[]): EditableTags {
 }
 
 function getTag(name: keyof EditableTags, tracks: Track[]): string {
-    let value: Track[keyof EditableTags]
+    let value: Track[keyof EditableTags] | undefined
 
     for (const track of tracks) {
         value ??= track[name]

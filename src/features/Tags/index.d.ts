@@ -18,10 +18,10 @@ import { forTracks } from "./forTracks.js";
 type Tags = {
     album: string
     artist: string
-    diskNr?: number
+    diskNr: number | null
     title: string
-    trackNr?: number
-    year?: number
+    trackNr: number | null
+    year: number | null
 }
 
 type EditableTags = {

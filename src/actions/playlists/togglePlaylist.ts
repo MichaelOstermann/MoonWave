@@ -1,8 +1,9 @@
-import { LSM } from "#features/LSM"
 import { Playlists } from "#features/Playlists"
 import { PlaylistTree } from "#features/PlaylistTree"
 import { Sidebar } from "#features/Sidebar"
+import { Views } from "#src/features/Views"
 import { Array, Object } from "@monstermann/fn"
+import { LSM } from "@monstermann/lsm"
 import { action } from "@monstermann/signals"
 
 export const togglePlaylist = action((playlistId: string) => {
@@ -21,7 +22,7 @@ export const togglePlaylist = action((playlistId: string) => {
     const currentPlaylistId = Sidebar.$playlistId()
     const playlistIds = PlaylistTree.collectIds(tree, playlistId)
     if (isCollapsing && currentPlaylistId && playlistIds.includes(currentPlaylistId))
-        Sidebar.$LSM(lsm => LSM.selectOne(lsm, { name: "PLAYLIST", value: playlistId }))
+        Sidebar.$LSM(lsm => LSM.goTo(lsm, Views.key({ name: "PLAYLIST", value: playlistId })))
 
     Playlists.$all(Array.replace(
         playlistBefore,
