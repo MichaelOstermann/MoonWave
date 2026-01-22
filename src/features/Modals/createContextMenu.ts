@@ -10,7 +10,6 @@ export function createContextMenu(opts: { key: string }) {
         const $floatingElement = withFloatingElement()
         const $anchorMeasurement = withMouseAnchor({
             $status,
-            transform: rect => Rect.translateY(rect, 14),
         })
         const $floatingMeasurement = withFloatingMeasurement({
             $floatingElement,
@@ -24,14 +23,21 @@ export function createContextMenu(opts: { key: string }) {
             $anchorMeasurement,
             $boundary,
             $floatingMeasurement,
-            placement: "down-center",
+            placement: "vertical-center",
         })
         const $position = withPosition({
             $anchorMeasurement,
             $boundary,
             $floatingMeasurement,
             $placement,
+            transform(rect) {
+                const placement = $placement()
+                if (placement.startsWith("down")) return Rect.translateY(rect, 14)
+                if (placement.startsWith("up")) return Rect.translateY(rect, -4)
+                return rect
+            },
         })
+
         return {
             $floatingElement,
             $groups,
