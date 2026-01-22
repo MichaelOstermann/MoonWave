@@ -3,7 +3,7 @@ import { Array, Number, pipe, String, when } from "@monstermann/fn"
 export function formatDuration(seconds: number): string {
     return pipe(
         seconds,
-        Number.or(0),
+        Number.finiteOr(0),
         Number.max(0),
         v => [Number.floor(v / 3600), Number.floor((v % 3600) / 60), Number.floor(v % 60)],
         Array.mapEach(Number.toString()),
