@@ -17,9 +17,9 @@ effect(() => {
     $LSM(flow(
         lsm => LSM.setSelectables(lsm, selectables),
         // Try to stay on the current position when deleting a playlist.
-        when(LSM.hasNoSelection, lsm => LSM.goToIndex(lsm, position)),
+        when(LSM.hasNoSelection, lsm => position >= 0 ? LSM.goToIndex(lsm, position) : lsm),
         // Select the previous one when deleting the last playlist.
-        when(LSM.hasNoSelection, lsm => LSM.goToIndex(lsm, position - 1)),
+        when(LSM.hasNoSelection, lsm => position > 0 ? LSM.goToIndex(lsm, position - 1) : lsm),
         // Select the library otherwise.
         when(LSM.hasNoSelection, lsm => LSM.goTo(lsm, "LIBRARY")),
     ))
