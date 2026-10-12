@@ -3,7 +3,15 @@
 
 MoonWave was my way of working out from scratch how I want to build apps: which libraries, which tools, and TypeScript after a decade of JavaScript. I also could not find a music player I liked.
 
-[Tauri](https://tauri.app) turned out to be a good fit for web apps, local-first ones in particular. What I learned ended up in [stdlib](https://github.com/MichaelOstermann/stdlib), [signals](https://github.com/MichaelOstermann/signals) and [barrels](https://github.com/MichaelOstermann/barrels), which gives you namespaces that still tree-shake. For music I have since moved on to [mpdtui](https://github.com/MichaelOstermann/mpdtui).
+What came out of it:
+
+- [Tauri](https://tauri.app) is a good fit for web apps, local-first ones in particular, and Rust is great.
+- [Tailwind](https://tailwindcss.com) replaced years of CSS, BEM, Sass and CSS-in-JS, some of it my own.
+- Signals replaced the Redux-style state management I had used before.
+- Abstractions can be compiled away when building, instead of being paid for when the code runs.
+- The dumbest, most minimal code that works, built upon later, beats something that tries to solve everything.
+
+Much of it lives on in [stdlib](https://github.com/MichaelOstermann/stdlib), [signals](https://github.com/MichaelOstermann/signals), [barrels](https://github.com/MichaelOstermann/barrels) and [lsm](https://github.com/MichaelOstermann/lsm). For music I have since moved on to [mpdtui](https://github.com/MichaelOstermann/mpdtui).
 
 <div align="center">
 
